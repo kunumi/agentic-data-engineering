@@ -1,0 +1,31 @@
+question,difficulty
+List the name and city of all registered teams.,Easy
+"List the name, position, and height of all players.",Easy
+How many players are registered in the database?,Easy
+"List the players taller than 2.05 m, in descending order of height.",Easy
+"List all games played in January 2025, ordered by date.",Easy
+What is the average height and average weight of all players?,Easy
+"List all players who play the ""Center"" position.",Easy
+"List the 5 oldest players, from oldest to youngest.",Easy
+How many teams are there in each conference (East and West)?,Easy
+List the name of every head coach and the date they were hired.,Easy
+"List the total points scored by each player by summing the statistics across all games, ordered from highest to lowest.",Medium
+List the name of each team and the total points scored by all of its players combined in the season.,Medium
+"List the 5 players with the most accumulated assists, also showing the name of the team they play for.",Medium
+How many wins did each team achieve playing away?,Medium
+"Compute the total number of wins and losses for each team, summing the games played at home and away.",Medium
+List the name of the players and the number of games in which they played more than 35 minutes.,Medium
+"What was the game with the largest point difference between the teams (biggest ""blowout"") of the season?",Medium
+"Compute the average rebounds per game, grouped by player position.",Medium
+List the players whose average points per game is greater than the overall average points of all players.,Medium
+"For each team, count how many games were played at home and how many away during the season.",Medium
+"Rank the players by total points within each team, indicating each one's placement within their own team.",Hard
+Compute the longest streak of consecutive wins of each team throughout the season.,Hard
+"Find the players with an average of more than 20 points per game, considering only those who played at least 15 games.",Hard
+"Compute the running total of points scored by each team throughout the season, showing how this total evolves game by game.",Hard
+Find out which two teams faced each other the most times across all recorded seasons.,Hard
+Identify the players who exceeded their own team's average points in more than half of the games they played.,Hard
+Compute the win rate (wins divided by games played) of each team over the last 10 games.,Hard
+Compare each team's score between consecutive games and identify streaks of improving or declining performance.,Hard
+"For each team, find the ""most consistent"" player: the one with the lowest standard deviation of points across games, considering only those who played at least 15 games.",Hard
+List the 3 teams with the best average point differential (scored minus conceded) in the season.,Hard

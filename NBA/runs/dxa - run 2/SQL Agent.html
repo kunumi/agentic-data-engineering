@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- saved from url=(0036)http://localhost:7860/sql-agent.html -->
-<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SQL Agent</title>
@@ -920,10 +920,10 @@
                         <span id="providerLabel">Claude</span>
                         <span class="chev">▾</span>
                     </button>
-                    <div class="provider-menu" id="providerMenu"><div class="group">Modelo (próxima sessão)</div><div class="item active" data-opt="{&quot;label&quot;:&quot;Claude&quot;,&quot;provider&quot;:&quot;claude&quot;,&quot;model&quot;:null,&quot;sub&quot;:&quot;Anthropic (padrão)&quot;}">
+                    <div class="provider-menu" id="providerMenu"><div class="group">Model (next session)</div><div class="item active" data-opt="{&quot;label&quot;:&quot;Claude&quot;,&quot;provider&quot;:&quot;claude&quot;,&quot;model&quot;:null,&quot;sub&quot;:&quot;Anthropic (default)&quot;}">
                     <div>
                         <div>Claude</div>
-                        <div class="sub">Anthropic (padrão)</div>
+                        <div class="sub">Anthropic (default)</div>
                     </div>
                     <span class="check">✓</span>
                 </div><div class="item" data-opt="{&quot;label&quot;:&quot;Claude Sonnet 4.5&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;anthropic/claude-sonnet-4.5&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
@@ -977,29 +977,29 @@
             <div class="conn-overlay" id="connOverlay" hidden="">
                 <div class="conn-modal">
                     <div class="conn-modal-head">
-                        <span>Conectar a um banco</span>
+                        <span>Connect to a database</span>
                         <button class="conn-close" id="connClose" type="button">×</button>
                     </div>
                     <div class="conn-tabs">
                         <button class="conn-tab" id="tabLocal" type="button">Local</button>
-                        <button class="conn-tab active" id="tabRemote" type="button">Remoto</button>
+                        <button class="conn-tab active" id="tabRemote" type="button">Remote</button>
                     </div>
                     <div class="conn-body">
                         <div id="panelLocal" hidden="">
-                            <input class="conn-path-input" id="connPath" placeholder="/caminho/da/pasta — Enter para ir">
-                            <div class="conn-hint" id="connHint">Navegue ou cole um caminho. Clique num arquivo para conectar.</div>
+                            <input class="conn-path-input" id="connPath" placeholder="/path/to/folder — Enter to go">
+                            <div class="conn-hint" id="connHint">Browse or paste a path. Click a file to connect.</div>
                             <ul class="conn-files" id="connFiles"><li class="conn-file dir"><span>📁 ..</span></li><li class="conn-file dir"><span>📁 Desktop</span></li><li class="conn-file dir"><span>📁 Documents</span></li><li class="conn-file dir"><span>📁 Downloads</span></li><li class="conn-file dir"><span>📁 Music</span></li><li class="conn-file dir"><span>📁 Pictures</span></li><li class="conn-file dir"><span>📁 PlayOnLinux's virtual drives</span></li><li class="conn-file dir"><span>📁 ProgramasRFB</span></li><li class="conn-file dir"><span>📁 Public</span></li><li class="conn-file dir"><span>📁 Templates</span></li><li class="conn-file dir"><span>📁 Videos</span></li><li class="conn-file dir"><span>📁 XiaomiADBFastbootTools</span></li><li class="conn-file dir"><span>📁 anaconda3</span></li><li class="conn-file dir"><span>📁 cachedir_joblib</span></li><li class="conn-file dir"><span>📁 chromium-profile-copy</span></li><li class="conn-file dir"><span>📁 dd_odbc_uninstall_logs</span></li><li class="conn-file dir"><span>📁 go</span></li><li class="conn-file dir"><span>📁 google-cloud-sdk</span></li><li class="conn-file dir"><span>📁 nltk_data</span></li><li class="conn-file dir"><span>📁 scikit_learn_data</span></li><li class="conn-file dir"><span>📁 seaborn-data</span></li><li class="conn-file dir"><span>📁 snap</span></li><li class="conn-file dir"><span>📁 stanza_corenlp</span></li><li class="conn-file dir"><span>📁 tmp</span></li></ul>
                         </div>
                         <div id="panelRemote">
-                            <div class="conn-hint">Postgres — localhost também é uma conexão remota. As credenciais ficam no vault do servidor, nunca no navegador.</div>
+                            <div class="conn-hint">Postgres — localhost is also a remote connection. Credentials stay in the server vault, never in the browser.</div>
                             <div class="conn-row">
                                 <input class="conn-field host" id="rHost" placeholder="host">
                                 <input class="conn-field port" id="rPort" placeholder="5432">
                             </div>
                             <input class="conn-field" id="rDb" placeholder="database">
-                            <input class="conn-field" id="rUser" placeholder="usuário">
-                            <input class="conn-field" id="rPass" type="password" placeholder="senha">
-                            <button class="conn-remote-btn" id="rConnect" type="button">Conectar</button>
+                            <input class="conn-field" id="rUser" placeholder="user">
+                            <input class="conn-field" id="rPass" type="password" placeholder="password">
+                            <button class="conn-remote-btn" id="rConnect" type="button">Connect</button>
                             <div class="conn-hint" id="rHint" style="margin-top:8px;"></div>
                         </div>
                     </div>
@@ -1008,80 +1008,80 @@
 
             <div class="messages" id="messages"><div class="empty-state" id="emptyState" style="display: none;">
                     <h2>Ready when you are.</h2>
-                    <p>Aponte para um banco e pergunte em portugues.</p>
-                </div><div class="msg user"><div class="bubble">Liste todos os jogos disputados em janeiro de 2025, ordenados por data.</div></div><div class="msg system-msg">Session b45dc38c-e178-4dcd-b8ed-b83ddba2dfd7 created</div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">I'll start by reviewing the knowledge files to understand what information is available.</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo RECIPES.md</span><div class="tool-result">1	# SQL Recipes
+                    <p>Point to a database and ask in natural language.</p>
+                </div><div class="msg user"><div class="bubble">List all games played in January 2025, ordered by date.</div></div><div class="msg system-msg">Session b45dc38c-e178-4dcd-b8ed-b83ddba2dfd7 created</div><div class="msg thinking"><button class="think-toggle">💭 Thought for 1s ›</button><div class="think-body" hidden="">I'll start by reviewing the knowledge files to understand what information is available.</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Reading RECIPES.md</span><div class="tool-result">1	# SQL Recipes
 2	
-3	Receitas de SQL validadas neste banco. O agente registra automaticamente.
+3	Validated SQL recipes for this database. The agent records them automatically.
 4	
-5	## RCP-001: Listar nome e cidade de todos os times
-6	- Contexto: tabela `team` (NBA, connection_id 87e6b067). Colunas full_name, city.
+5	## RCP-001: List name and city of all teams
+6	- Context: table `team` (NBA, connection_id 87e6b067). Columns full_name, city.
 7	- Query:
 8	  ```sql
 9	  SELECT full_name, city FROM [TEAM_TABLE] ORDER BY full_name
 10	  ```
-11	- Testada em: team (2026-06-17) → 30 linhas.
+11	- Tested on: team (2026-06-17) → 30 rows.
 12	
-13	## RCP-002: Listar nome, posição e altura dos jogadores
-14	- Contexto: `common_player_info` (NBA, 87e6b067). nome=display_first_last, posicao=position, altura=height ("pés-polegadas", ex 6-10).
+13	## RCP-002: List name, position and height of players
+14	- Context: `common_player_info` (NBA, 87e6b067). name=display_first_last, position=position, height=height ("feet-inches", e.g. 6-10).
 15	- Query:
 16	  ```sql
-17	  SELECT display_first_last AS nome, position AS posicao, height AS altura
+17	  SELECT display_first_last AS name, position AS position, height AS height
 18	  FROM [CPI_TABLE]
 19	  WHERE position IS NOT NULL AND position &lt;&gt; ''
 20	  ORDER BY display_first_last
 21	  ```
-22	-...</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo NOTES.md</span><div class="tool-result">1	# Notes
+22	-...</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Reading NOTES.md</span><div class="tool-result">1	# Notes
 2	
-3	Metadados do banco: schema, relações, regras de negócio, limitações.
+3	Database metadata: schema, relationships, business rules, limitations.
 4	
-5	## Conexão / Setup (IMPORTANTE)
-6	- O `connection_id` fixo nas instruções (`5ee606d7`) **NÃO existe** neste ambiente.
-7	- O processador inicia sem conexões registradas (`GET /connections` =&gt; vazio). É preciso
-8	  registrar via `POST /connections` com `{"type","path"}`. O `connection_id` é determinístico por arquivo.
-9	- Bancos disponíveis (`GET /databases` e `/connections/files`):
+5	## Connection / Setup (IMPORTANT)
+6	- The `connection_id` hardcoded in the instructions (`5ee606d7`) **does NOT exist** in this environment.
+7	- The processor starts with no registered connections (`GET /connections` =&gt; empty). You must
+8	  register via `POST /connections` with `{"type","path"}`. The `connection_id` is deterministic per file.
+9	- Available databases (`GET /databases` and `/connections/files`):
 10	  - `nba.sqlite` (/data/databases/nba.sqlite) =&gt; connection_id **87e6b067**
 11	  - `crime_database.db` =&gt; c907483f
 12	  - `dtsulv5.sqlite` (~10GB) =&gt; 7e459ffb
 13	  - `mimic4_demo.db` =&gt; 67c9a274
 14	  - `quikr_car.csv` =&gt; d4ead505 (type=csv)
-15	- Para perguntas sobre "times"/"teams" → banco **NBA** (connection_id 87e6b067)....</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo ERRORS.md</span><div class="tool-result">1	# Errors
+15	- For questions about "times"/"teams" → **NBA** database (connection_id 87e6b067)....</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Reading ERRORS.md</span><div class="tool-result">1	# Errors
 2	
-3	Registro de erros (sintáticos e de negócio) com post-mortem.
+3	Log of errors (syntactic and business) with post-mortem.
 4	
-5	## ERR-001: CAST falha em strings vazias em common_player_info
-6	- Tipo: syntactic
-7	- Query: `AVG(CAST(weight AS DOUBLE))` e `CAST(SPLIT_PART(height,'-',1) AS INT)`
-8	- Erro: `Could not convert string '' to DOUBLE/INT32`. weight/height têm valores '' (vazio).
-9	- Detalhe: `AVG(... ) FILTER (WHERE ...)` NÃO evita o erro — o CAST é avaliado em todas as linhas antes do FILTER.
-10	- Correção: usar **TRY_CAST** (retorna NULL em vez de erro). Ex.: `AVG(TRY_CAST(weight AS DOUBLE))`,
+5	## ERR-001: CAST fails on empty strings in common_player_info
+6	- Type: syntactic
+7	- Query: `AVG(CAST(weight AS DOUBLE))` and `CAST(SPLIT_PART(height,'-',1) AS INT)`
+8	- Error: `Could not convert string '' to DOUBLE/INT32`. weight/height have '' (empty) values.
+9	- Detail: `AVG(... ) FILTER (WHERE ...)` does NOT avoid the error — the CAST is evaluated on all rows before the FILTER.
+10	- Fix: use **TRY_CAST** (returns NULL instead of error). E.g.: `AVG(TRY_CAST(weight AS DOUBLE))`,
 11	  `TRY_CAST(SPLIT_PART(height,'-',1) AS INT)`.
-12	- Post-mortem: SEMPRE usar TRY_CAST ao converter colunas de texto em common_player_info (weight, height, etc.) — há strings vazias.
+12	- Post-mortem: ALWAYS use TRY_CAST when converting text columns in common_player_info (weight, height, etc.) — there are empty strings.
 13	
-14	## ERR-002: INTERNAL Error (CTE inlining) co...</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo INSIGHTS.md</span><div class="tool-result">1	# Insights
+14	## ERR-002: INTERNAL Error (CTE inlining) co...</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Reading INSIGHTS.md</span><div class="tool-result">1	# Insights
 2	
-3	Descoberta de negócio confirmadas pelo usuário.
-4</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo SKILLS.md</span><div class="chart-container">{"detail":"Plot '...' not found."}</div></div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">I know the NBA dataset only covers games through June 2023, so there won't be any data for January 2025. Still, I should run the query to verify this. I also need to use the correct connection ID—87e6b067 instead of the one in my notes, since that other ID doesn't actually exist.</div></div><div class="msg assistant"><div class="bubble"><p>Minhas notas indicam um limite temporal crítico: os dados de jogos vão até 2023-06-12. Vou confirmar com uma query antes de responder.</p>
-</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Executando query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">CAST</span>(game_date <span class="hljs-keyword">AS</span> <span class="hljs-type">DATE</span>) <span class="hljs-keyword">AS</span> dia, season_id, team_name_home, pts_home, team_name_away, pts_away 
+3	Business discoveries confirmed by the user.
+4</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Reading SKILLS.md</span><div class="chart-container">{"detail":"Plot '...' not found."}</div></div><div class="msg thinking"><button class="think-toggle">💭 Thought for 1s ›</button><div class="think-body" hidden="">I know the NBA dataset only covers games through June 2023, so there won't be any data for January 2025. Still, I should run the query to verify this. I also need to use the correct connection ID—87e6b067 instead of the one in my notes, since that other ID doesn't actually exist.</div></div><div class="msg assistant"><div class="bubble"><p>My notes indicate a critical temporal limit: game data only goes up to 2023-06-12. I'll confirm with a query before answering.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Running query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copy SQL" aria-label="Copy SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">CAST</span>(game_date <span class="hljs-keyword">AS</span> <span class="hljs-type">DATE</span>) <span class="hljs-keyword">AS</span> day, season_id, team_name_home, pts_home, team_name_away, pts_away
 <span class="hljs-keyword">FROM</span> game 
 <span class="hljs-keyword">WHERE</span> game_date <span class="hljs-operator">&gt;=</span> <span class="hljs-string">'\''2025-01-01'</span>\<span class="hljs-string">''</span> 
 <span class="hljs-keyword">AND</span> game_date <span class="hljs-operator">&lt;</span> <span class="hljs-string">'\''2025-02-01'</span>\<span class="hljs-string">''</span> 
-<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> game_date</code></pre></div><div class="tool-result">dia,season_id,team_name_home,pts_home,team_name_away,pts_away</div></div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">Let me check the maximum date in the data to give you some context around what we're working with.</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Executando query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">MIN</span>(<span class="hljs-built_in">CAST</span>(game_date <span class="hljs-keyword">AS</span> <span class="hljs-type">DATE</span>)) <span class="hljs-keyword">AS</span> primeiro, <span class="hljs-built_in">MAX</span>(<span class="hljs-built_in">CAST</span>(game_date <span class="hljs-keyword">AS</span> <span class="hljs-type">DATE</span>)) <span class="hljs-keyword">AS</span> ultimo, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">AS</span> total 
-<span class="hljs-keyword">FROM</span> game</code></pre></div><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>primeiro</th><th>ultimo</th><th>total</th></tr></thead><tbody><tr><td>1946-11-01</td><td>2023-06-12</td><td>65698</td></tr></tbody></table></div></div><div class="msg assistant"><div class="bubble"><p><strong>1. Query executada</strong></p>
-<pre><code class="language-sql">SELECT CAST(game_date AS DATE) AS dia, season_id, team_name_home, pts_home,
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> game_date</code></pre></div><div class="tool-result">dia,season_id,team_name_home,pts_home,team_name_away,pts_away</div></div><div class="msg thinking"><button class="think-toggle">💭 Thought for 1s ›</button><div class="think-body" hidden="">Let me check the maximum date in the data to give you some context around what we're working with.</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Running query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copy SQL" aria-label="Copy SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">MIN</span>(<span class="hljs-built_in">CAST</span>(game_date <span class="hljs-keyword">AS</span> <span class="hljs-type">DATE</span>)) <span class="hljs-keyword">AS</span> first, <span class="hljs-built_in">MAX</span>(<span class="hljs-built_in">CAST</span>(game_date <span class="hljs-keyword">AS</span> <span class="hljs-type">DATE</span>)) <span class="hljs-keyword">AS</span> last, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">AS</span> total
+<span class="hljs-keyword">FROM</span> game</code></pre></div><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>first</th><th>last</th><th>total</th></tr></thead><tbody><tr><td>1946-11-01</td><td>2023-06-12</td><td>65698</td></tr></tbody></table></div></div><div class="msg assistant"><div class="bubble"><p><strong>1. Query executed</strong></p>
+<pre><code class="language-sql">SELECT CAST(game_date AS DATE) AS day, season_id, team_name_home, pts_home,
        team_name_away, pts_away
 FROM game
 WHERE game_date &gt;= '2025-01-01' AND game_date &lt; '2025-02-01'
 ORDER BY game_date;
 </code></pre>
-<p><strong>2. Resultados</strong></p>
-<p><strong>0 linhas.</strong> Nenhum jogo encontrado em janeiro de 2025.</p>
-<p>Confirmação do intervalo disponível na tabela <code>game</code>:</p>
+<p><strong>2. Results</strong></p>
+<p><strong>0 rows.</strong> No games found in January 2025.</p>
+<p>Confirmation of the available range in the <code>game</code> table:</p>
 <table>
 <thead>
 <tr>
-<th>primeiro</th>
-<th>último</th>
-<th>total de jogos</th>
+<th>first</th>
+<th>last</th>
+<th>total games</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -1090,53 +1090,53 @@ ORDER BY game_date;
 <td>65.698</td>
 </tr>
 </tbody></table>
-<p><strong>3. Interpretação</strong></p>
-<p>O banco NBA é um <strong>snapshot histórico encerrado na temporada 2022-23</strong> — não há nenhum jogo registrado após <strong>12/06/2023</strong>. Por isso, janeiro de 2025 (e qualquer data posterior a jun/2023) retorna vazio. Isso já estava documentado nas minhas notas como limitação temporal crítica; a query apenas confirmou.</p>
+<p><strong>3. Interpretation</strong></p>
+<p>The NBA database is a <strong>historical snapshot ending in the 2022-23 season</strong> — there is no game recorded after <strong>2023-06-12</strong>. That's why January 2025 (and any date after Jun/2023) returns empty. This was already documented in my notes as a critical temporal limitation; the query just confirmed it.</p>
 <p><strong>4. Follow-up</strong></p>
-<p>Posso refazer a consulta para um período que exista no banco. Algumas opções:</p>
+<p>I can redo the query for a period that exists in the database. A few options:</p>
 <ul>
-<li>Jogos de <strong>janeiro de 2023</strong> (último mês de jan. disponível, temporada 2022-23)</li>
-<li>Jogos de uma <strong>data/temporada específica</strong> que você queira</li>
-<li>Os jogos mais recentes do banco (junho de 2023, finais da temporada)</li>
+<li>Games from <strong>January 2023</strong> (last available January, 2022-23 season)</li>
+<li>Games from a <strong>specific date/season</strong> you want</li>
+<li>The most recent games in the database (June 2023, season finals)</li>
 </ul>
-<p>Qual prefere?</p>
-</div></div><div class="msg result-msg"><span class="badge"><span>Concluido</span> <span><strong>$0.33</strong></span> <span>8 turns</span></span></div><div class="msg user"><div class="bubble">Calcule o número total de vitórias e derrotas de cada time, somando os jogos em que jogou como casa e como visitante.</div></div><div class="msg system-msg">New message: Calcule o número total de vitórias e derrotas de cada time, somando os jogos em que jogou como casa e como visitante.</div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">I'm identifying this as RCP-006 and using the connection ID 87e6b067 from my notes.</div></div><div class="msg assistant"><div class="bubble"><p>Isso é exatamente a RCP-006 das minhas receitas. Vou aplicá-la.</p>
-</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Executando query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">WITH</span> g 
+<p>Which do you prefer?</p>
+</div></div><div class="msg result-msg"><span class="badge"><span>Completed</span> <span><strong>$0.33</strong></span> <span>8 turns</span></span></div><div class="msg user"><div class="bubble">Calculate the total number of wins and losses for each team, summing the games it played at home and away.</div></div><div class="msg system-msg">New message: Calculate the total number of wins and losses for each team, summing the games it played at home and away.</div><div class="msg thinking"><button class="think-toggle">💭 Thought for 1s ›</button><div class="think-body" hidden="">I'm identifying this as RCP-006 and using the connection ID 87e6b067 from my notes.</div></div><div class="msg assistant"><div class="bubble"><p>This is exactly RCP-006 from my recipes. I'll apply it.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Running query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copy SQL" aria-label="Copy SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">WITH</span> g 
 <span class="hljs-keyword">AS</span> (
-<span class="hljs-keyword">SELECT</span> team_id_home <span class="hljs-keyword">AS</span> tid, team_name_home <span class="hljs-keyword">AS</span> nome, wl_home <span class="hljs-keyword">AS</span> wl 
-<span class="hljs-keyword">FROM</span> game 
-<span class="hljs-keyword">UNION</span> <span class="hljs-keyword">ALL</span> 
-<span class="hljs-keyword">SELECT</span> team_id_away, team_name_away, wl_away 
-<span class="hljs-keyword">FROM</span> game) 
-<span class="hljs-keyword">SELECT</span> ANY_VALUE(nome) <span class="hljs-keyword">AS</span> <span class="hljs-type">time</span>, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
-<span class="hljs-keyword">WHERE</span> wl<span class="hljs-operator">=</span><span class="hljs-string">'\''W'</span>\<span class="hljs-string">''</span>) <span class="hljs-keyword">AS</span> vitorias, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
-<span class="hljs-keyword">WHERE</span> wl<span class="hljs-operator">=</span><span class="hljs-string">'\''L'</span>\<span class="hljs-string">''</span>) <span class="hljs-keyword">AS</span> derrotas 
+<span class="hljs-keyword">SELECT</span> team_id_home <span class="hljs-keyword">AS</span> tid, team_name_home <span class="hljs-keyword">AS</span> name, wl_home <span class="hljs-keyword">AS</span> wl
+<span class="hljs-keyword">FROM</span> game
+<span class="hljs-keyword">UNION</span> <span class="hljs-keyword">ALL</span>
+<span class="hljs-keyword">SELECT</span> team_id_away, team_name_away, wl_away
+<span class="hljs-keyword">FROM</span> game)
+<span class="hljs-keyword">SELECT</span> ANY_VALUE(name) <span class="hljs-keyword">AS</span> <span class="hljs-type">team</span>, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
+<span class="hljs-keyword">WHERE</span> wl<span class="hljs-operator">=</span><span class="hljs-string">'\''W'</span>\<span class="hljs-string">''</span>) <span class="hljs-keyword">AS</span> wins, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
+<span class="hljs-keyword">WHERE</span> wl<span class="hljs-operator">=</span><span class="hljs-string">'\''L'</span>\<span class="hljs-string">''</span>) <span class="hljs-keyword">AS</span> losses
 <span class="hljs-keyword">FROM</span> g 
 <span class="hljs-keyword">WHERE</span> tid <span class="hljs-keyword">IN</span> (
 <span class="hljs-keyword">SELECT</span> id 
 <span class="hljs-keyword">FROM</span> team) 
-<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> tid 
-<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> vitorias <span class="hljs-keyword">DESC</span></code></pre></div><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>time</th><th>vitorias</th><th>derrotas</th></tr></thead><tbody><tr><td>Minneapolis Lakers</td><td>3641</td><td>2495</td></tr><tr><td>Boston Celtics</td><td>3625</td><td>2581</td></tr><tr><td>Syracuse Nationals</td><td>3000</td><td>2818</td></tr><tr><td>New York Knicks</td><td>2863</td><td>3014</td></tr><tr><td>Philadelphia Warriors</td><td>2858</td><td>3057</td></tr><tr><td>Tri-Cities Blackhawks</td><td>2824</td><td>2889</td></tr><tr><td>Ft. Wayne Zollner Pistons</td><td>2779</td><td>2996</td></tr><tr><td>Rochester Royals</td><td>2572</td><td>3039</td></tr><tr><td>San Antonio Spurs</td><td>2427</td><td>1650</td></tr><tr><td>Phoenix Suns</td><td>2424</td><td>2065</td></tr><tr><td>Seattle SuperSonics</td><td>2421</td><td>2163</td></tr><tr><td>Chicago Bulls</td><td>2377</td><td>2231</td></tr><tr><td>San Diego Rockets</td><td>2356</td><td>2223</td></tr><tr><td>Milwaukee Bucks</td><td>2345</td><td>2165</td></tr><tr><td>Portland Trail Blazers</td><td>2274</td><td>2023</td></tr><tr><td>New Orleans Jazz</td><td>2199</td><td>1847</td></tr><tr><td>Chicago Zephyrs</td><td>2187</td><td>2646</td></tr><tr><td>Cleveland Cavaliers</td><td>2015</td><td>2243</td></tr><tr><td>Denver Nuggets</td><td>1935</td><td>2001</td></tr><tr><td>Indiana Pacers</td><td>1932</td><td>1974</td></tr><tr><td>Dallas Mavericks</td><td>1846</td><td>1832</td></tr><tr><td>Buffalo Braves</td><td>1744</td><td>2439</td></tr><tr><td>New Jersey Nets</td><td>1646</td><td>2201</td></tr><tr><td>Miami Heat</td><td>1594</td><td>1477</td></tr><tr><td>Orlando Magic</td><td>1363</td><td>1493</td></tr><tr><td>Charlotte Hornets</td><td>1186</td><td>1518</td></tr><tr><td>Toronto Raptors</td><td>1154</td><td>1207</td></tr><tr><td>Minnesota Timberwolves</td><td>1138</td><td>1646</td></tr><tr><td>Vancouver Grizzlies</td><td>1013</td><td>1333</td></tr><tr><td>New Orleans Hornets</td><td>824</td><td>932</td></tr></tbody></table></div></div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 12s ›</button><div class="think-body" hidden="">I'm looking at a dataset with 30 rows representing each franchise, where the names reflect historical data—using ANY_VALUE to pull one historical name per franchise, like "Minneapolis Lakers" for example.</div></div><div class="msg assistant"><div class="bubble"><p><strong>1. Query executada</strong> (RCP-006)</p>
+<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> tid
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> wins <span class="hljs-keyword">DESC</span></code></pre></div><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>team</th><th>wins</th><th>losses</th></tr></thead><tbody><tr><td>Minneapolis Lakers</td><td>3641</td><td>2495</td></tr><tr><td>Boston Celtics</td><td>3625</td><td>2581</td></tr><tr><td>Syracuse Nationals</td><td>3000</td><td>2818</td></tr><tr><td>New York Knicks</td><td>2863</td><td>3014</td></tr><tr><td>Philadelphia Warriors</td><td>2858</td><td>3057</td></tr><tr><td>Tri-Cities Blackhawks</td><td>2824</td><td>2889</td></tr><tr><td>Ft. Wayne Zollner Pistons</td><td>2779</td><td>2996</td></tr><tr><td>Rochester Royals</td><td>2572</td><td>3039</td></tr><tr><td>San Antonio Spurs</td><td>2427</td><td>1650</td></tr><tr><td>Phoenix Suns</td><td>2424</td><td>2065</td></tr><tr><td>Seattle SuperSonics</td><td>2421</td><td>2163</td></tr><tr><td>Chicago Bulls</td><td>2377</td><td>2231</td></tr><tr><td>San Diego Rockets</td><td>2356</td><td>2223</td></tr><tr><td>Milwaukee Bucks</td><td>2345</td><td>2165</td></tr><tr><td>Portland Trail Blazers</td><td>2274</td><td>2023</td></tr><tr><td>New Orleans Jazz</td><td>2199</td><td>1847</td></tr><tr><td>Chicago Zephyrs</td><td>2187</td><td>2646</td></tr><tr><td>Cleveland Cavaliers</td><td>2015</td><td>2243</td></tr><tr><td>Denver Nuggets</td><td>1935</td><td>2001</td></tr><tr><td>Indiana Pacers</td><td>1932</td><td>1974</td></tr><tr><td>Dallas Mavericks</td><td>1846</td><td>1832</td></tr><tr><td>Buffalo Braves</td><td>1744</td><td>2439</td></tr><tr><td>New Jersey Nets</td><td>1646</td><td>2201</td></tr><tr><td>Miami Heat</td><td>1594</td><td>1477</td></tr><tr><td>Orlando Magic</td><td>1363</td><td>1493</td></tr><tr><td>Charlotte Hornets</td><td>1186</td><td>1518</td></tr><tr><td>Toronto Raptors</td><td>1154</td><td>1207</td></tr><tr><td>Minnesota Timberwolves</td><td>1138</td><td>1646</td></tr><tr><td>Vancouver Grizzlies</td><td>1013</td><td>1333</td></tr><tr><td>New Orleans Hornets</td><td>824</td><td>932</td></tr></tbody></table></div></div><div class="msg thinking"><button class="think-toggle">💭 Thought for 12s ›</button><div class="think-body" hidden="">I'm looking at a dataset with 30 rows representing each franchise, where the names reflect historical data—using ANY_VALUE to pull one historical name per franchise, like "Minneapolis Lakers" for example.</div></div><div class="msg assistant"><div class="bubble"><p><strong>1. Query executed</strong> (RCP-006)</p>
 <pre><code class="language-sql">WITH g AS (
-  SELECT team_id_home AS tid, team_name_home AS nome, wl_home AS wl FROM game
+  SELECT team_id_home AS tid, team_name_home AS name, wl_home AS wl FROM game
   UNION ALL
   SELECT team_id_away, team_name_away, wl_away FROM game
 )
-SELECT ANY_VALUE(nome) AS time,
-       COUNT(*) FILTER (WHERE wl='W') AS vitorias,
-       COUNT(*) FILTER (WHERE wl='L') AS derrotas
+SELECT ANY_VALUE(name) AS team,
+       COUNT(*) FILTER (WHERE wl='W') AS wins,
+       COUNT(*) FILTER (WHERE wl='L') AS losses
 FROM g
-WHERE tid IN (SELECT id FROM team)   -- só as 30 franquias atuais
+WHERE tid IN (SELECT id FROM team)   -- only the 30 current franchises
 GROUP BY tid
-ORDER BY vitorias DESC;
+ORDER BY wins DESC;
 </code></pre>
-<p><strong>2. Resultados</strong> (30 franquias, ordenadas por vitórias)</p>
+<p><strong>2. Results</strong> (30 franchises, ordered by wins)</p>
 <table>
 <thead>
 <tr>
-<th>Time</th>
-<th>Vitórias</th>
-<th>Derrotas</th>
+<th>Team</th>
+<th>Wins</th>
+<th>Losses</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -1290,27 +1290,27 @@ ORDER BY vitorias DESC;
 <td>932</td>
 </tr>
 </tbody></table>
-<p><strong>3. Interpretação</strong></p>
-<p>São as <strong>30 franquias atuais</strong>, com o total acumulado de toda a história disponível (1946–2023). Dois pontos de atenção importantes:</p>
+<p><strong>3. Interpretation</strong></p>
+<p>These are the <strong>30 current franchises</strong>, with the accumulated total of all available history (1946–2023). Two important points to note:</p>
 <ul>
-<li><strong>Os nomes são históricos.</strong> <code>ANY_VALUE</code> traz <em>um</em> nome qualquer entre os que a franquia já usou — por isso aparece "Minneapolis Lakers" (= LA Lakers), "Syracuse Nationals" (= Philadelphia 76ers), "Tri-Cities Blackhawks" (= Atlanta Hawks), "San Diego Rockets" (= Houston Rockets), "Chicago Zephyrs" (= Washington Wizards), "Buffalo Braves" (= LA Clippers), etc. O total é por <strong>franquia</strong> (team_id), não pelo nome exibido.</li>
-<li>Filtrei por <code>tid IN (SELECT id FROM team)</code> para manter só as 30 franquias atuais e excluir times de exibição/extintos sem id canônico.</li>
+<li><strong>The names are historical.</strong> <code>ANY_VALUE</code> returns <em>any one</em> of the names the franchise has used — that's why "Minneapolis Lakers" (= LA Lakers), "Syracuse Nationals" (= Philadelphia 76ers), "Tri-Cities Blackhawks" (= Atlanta Hawks), "San Diego Rockets" (= Houston Rockets), "Chicago Zephyrs" (= Washington Wizards), "Buffalo Braves" (= LA Clippers), etc. appear. The total is per <strong>franchise</strong> (team_id), not by the displayed name.</li>
+<li>I filtered by <code>tid IN (SELECT id FROM team)</code> to keep only the 30 current franchises and exclude exhibition/defunct teams without a canonical id.</li>
 </ul>
 <p><strong>4. Follow-up</strong></p>
-<p>Posso refinar de algumas formas, se quiser:</p>
+<p>I can refine this in a few ways, if you want:</p>
 <ul>
-<li>Trocar o nome histórico pelo <strong>nome atual</strong> da franquia (JOIN com <code>team.full_name</code>)</li>
-<li>Adicionar <strong>aproveitamento (%)</strong> = vitórias / (vitórias+derrotas) e reordenar por ele</li>
-<li>Restringir a uma <strong>temporada</strong> ou só <strong>temporada regular</strong> (excluindo playoffs)</li>
+<li>Replace the historical name with the franchise's <strong>current name</strong> (JOIN with <code>team.full_name</code>)</li>
+<li>Add <strong>win rate (%)</strong> = wins / (wins+losses) and reorder by it</li>
+<li>Restrict to a <strong>season</strong> or only <strong>regular season</strong> (excluding playoffs)</li>
 </ul>
-<p>Quer que eu aplique algum desses ajustes?</p>
-</div></div><div class="msg result-msg"><span class="badge"><span>Concluido</span> <span><strong>$0.42</strong></span> <span>2 turns</span></span></div><div class="msg user"><div class="bubble">Calcule o aproveitamento (vitórias dividido por jogos disputados) de cada time nos últimos 10 jogos.</div></div><div class="msg system-msg">New message: Calcule o aproveitamento (vitórias dividido por jogos disputados) de cada time nos últimos 10 jogos.</div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 2s ›</button><div class="think-body" hidden="">I'm working through RCP-009 regarding the last N games. The approach uses a window function to rank games by date within each team, then filters to keep only the most recent ones while excluding exhibition games and non-team entries. There's some ambiguity about whether "últimos 10 jogos" means the last 10 games in the entire dataset or something else, but the most straightforward reading is the most recent games available through the end of the dataset.
+<p>Would you like me to apply any of these adjustments?</p>
+</div></div><div class="msg result-msg"><span class="badge"><span>Completed</span> <span><strong>$0.42</strong></span> <span>2 turns</span></span></div><div class="msg user"><div class="bubble">Calculate the win rate (wins divided by games played) of each team in the last 10 games.</div></div><div class="msg system-msg">New message: Calculate the win rate (wins divided by games played) of each team in the last 10 games.</div><div class="msg thinking"><button class="think-toggle">💭 Thought for 2s ›</button><div class="think-body" hidden="">I'm working through RCP-009 regarding the last N games. The approach uses a window function to rank games by date within each team, then filters to keep only the most recent ones while excluding exhibition games and non-team entries. There's some ambiguity about whether "last 10 games" means the last 10 games in the entire dataset or something else, but the most straightforward reading is the most recent games available through the end of the dataset.
 
-The real question is whether to include all game types or just regular season games. The note specifies filtering for regular season only, which excludes exhibition games, but this creates an inconsistency — teams that made deep playoff runs would have their last 10 games be playoff games, while teams that missed the playoffs would have regular season games. I'm thinking I should ask for clarification on whether the intent is to include playoffs or stick strictly to regular season games.</div></div><div class="msg assistant"><div class="bubble has-ask"><div class="ask-preamble"><p>Antes de consultar: "últimos 10 jogos" pode ser interpretado de duas formas que mudam o resultado, porque o banco termina nas finais de 2023 (jogos mais recentes incluem playoffs).</p>
-</div><div class="ask-card answered"><div class="ask-card-header">Quais 'últimos 10 jogos' devo considerar para cada time?</div><div class="ask-row"><span class="ask-num">1</span><span class="ask-label">Os 10 jogos mais recentes de qualquer tipo (inclui playoffs/pré-temporada)</span></div><div class="ask-row chosen"><span class="ask-num">2</span><span class="ask-label">Apenas os 10 últimos jogos de temporada regular</span></div><div class="ask-row"><span class="ask-num">3</span><span class="ask-label">Os 10 últimos de uma temporada específica (me diga qual)</span></div><div class="ask-row other"><span class="ask-num">✎</span><span class="ask-label">Outro (responder abaixo)</span></div></div></div></div><div class="msg result-msg"><span class="badge"><span>Concluido</span> <span><strong>$0.48</strong></span> <span>1 turns</span></span></div><div class="msg user"><div class="bubble">Para a pergunta "Quais 'últimos 10 jogos' devo considerar para cada time?", escolho: Apenas os 10 últimos jogos de temporada regular</div></div><div class="msg system-msg">New message: Para a pergunta "Quais 'últimos 10 jogos' devo considerar para cada time?", escolho: Apenas os 10 últimos jogos de temporada regular</div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">I'm applying the RCP-009 last-N approach by filtering for regular season games, then exploding the home and away teams, ranking them by recency within each team, keeping only the last 10 games, and calculating win percentages from that subset.</div></div><div class="msg assistant"><div class="bubble"><p>Perfeito — apenas temporada regular. Aplicando RCP-009 (aproveitamento últimos N).</p>
-</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Executando query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">WITH</span> res 
+The real question is whether to include all game types or just regular season games. The note specifies filtering for regular season only, which excludes exhibition games, but this creates an inconsistency — teams that made deep playoff runs would have their last 10 games be playoff games, while teams that missed the playoffs would have regular season games. I'm thinking I should ask for clarification on whether the intent is to include playoffs or stick strictly to regular season games.</div></div><div class="msg assistant"><div class="bubble has-ask"><div class="ask-preamble"><p>Before querying: "last 10 games" can be interpreted in two ways that change the result, because the database ends with the 2023 finals (the most recent games include playoffs).</p>
+</div><div class="ask-card answered"><div class="ask-card-header">Which 'last 10 games' should I consider for each team?</div><div class="ask-row"><span class="ask-num">1</span><span class="ask-label">The 10 most recent games of any type (includes playoffs/preseason)</span></div><div class="ask-row chosen"><span class="ask-num">2</span><span class="ask-label">Only the last 10 regular season games</span></div><div class="ask-row"><span class="ask-num">3</span><span class="ask-label">The last 10 of a specific season (tell me which)</span></div><div class="ask-row other"><span class="ask-num">✎</span><span class="ask-label">Other (answer below)</span></div></div></div></div><div class="msg result-msg"><span class="badge"><span>Completed</span> <span><strong>$0.48</strong></span> <span>1 turns</span></span></div><div class="msg user"><div class="bubble">For the question "Which 'last 10 games' should I consider for each team?", I choose: Only the last 10 regular season games</div></div><div class="msg system-msg">New message: For the question "Which 'last 10 games' should I consider for each team?", I choose: Only the last 10 regular season games</div><div class="msg thinking"><button class="think-toggle">💭 Thought for 1s ›</button><div class="think-body" hidden="">I'm applying the RCP-009 last-N approach by filtering for regular season games, then exploding the home and away teams, ranking them by recency within each team, keeping only the last 10 games, and calculating win percentages from that subset.</div></div><div class="msg assistant"><div class="bubble"><p>Perfect — regular season only. Applying RCP-009 (win rate over last N).</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Running query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copy SQL" aria-label="Copy SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">WITH</span> res 
 <span class="hljs-keyword">AS</span> (
-<span class="hljs-keyword">SELECT</span> team_id_home <span class="hljs-keyword">AS</span> tid, team_name_home <span class="hljs-keyword">AS</span> nome, game_date, wl_home <span class="hljs-keyword">AS</span> wl 
+<span class="hljs-keyword">SELECT</span> team_id_home <span class="hljs-keyword">AS</span> tid, team_name_home <span class="hljs-keyword">AS</span> name, game_date, wl_home <span class="hljs-keyword">AS</span> wl
 <span class="hljs-keyword">FROM</span> game 
 <span class="hljs-keyword">WHERE</span> season_type<span class="hljs-operator">=</span><span class="hljs-string">'\''Regular Season'</span>\<span class="hljs-string">''</span> 
 <span class="hljs-keyword">UNION</span> <span class="hljs-keyword">ALL</span> 
@@ -1318,49 +1318,49 @@ The real question is whether to include all game types or just regular season ga
 <span class="hljs-keyword">FROM</span> game 
 <span class="hljs-keyword">WHERE</span> season_type<span class="hljs-operator">=</span><span class="hljs-string">'\''Regular Season'</span>\<span class="hljs-string">''</span>), r 
 <span class="hljs-keyword">AS</span> (
-<span class="hljs-keyword">SELECT</span> tid, nome, wl, <span class="hljs-built_in">ROW_NUMBER</span>() <span class="hljs-keyword">OVER</span> (<span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">BY</span> tid 
+<span class="hljs-keyword">SELECT</span> tid, name, wl, <span class="hljs-built_in">ROW_NUMBER</span>() <span class="hljs-keyword">OVER</span> (<span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">BY</span> tid
 <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> game_date <span class="hljs-keyword">DESC</span>) <span class="hljs-keyword">AS</span> rn 
 <span class="hljs-keyword">FROM</span> res 
 <span class="hljs-keyword">WHERE</span> tid <span class="hljs-keyword">IN</span> (
 <span class="hljs-keyword">SELECT</span> id 
 <span class="hljs-keyword">FROM</span> team)) 
-<span class="hljs-keyword">SELECT</span> t.full_name <span class="hljs-keyword">AS</span> <span class="hljs-type">time</span>, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">AS</span> jogos, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
-<span class="hljs-keyword">WHERE</span> r.wl<span class="hljs-operator">=</span><span class="hljs-string">'\''W'</span>\<span class="hljs-string">''</span>) <span class="hljs-keyword">AS</span> vitorias, ROUND(<span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
-<span class="hljs-keyword">WHERE</span> r.wl<span class="hljs-operator">=</span><span class="hljs-string">'\''W'</span>\<span class="hljs-string">''</span>)<span class="hljs-operator">*</span><span class="hljs-number">1.0</span><span class="hljs-operator">/</span><span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>),<span class="hljs-number">3</span>) <span class="hljs-keyword">AS</span> aproveitamento 
+<span class="hljs-keyword">SELECT</span> t.full_name <span class="hljs-keyword">AS</span> <span class="hljs-type">team</span>, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">AS</span> games, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
+<span class="hljs-keyword">WHERE</span> r.wl<span class="hljs-operator">=</span><span class="hljs-string">'\''W'</span>\<span class="hljs-string">''</span>) <span class="hljs-keyword">AS</span> wins, ROUND(<span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
+<span class="hljs-keyword">WHERE</span> r.wl<span class="hljs-operator">=</span><span class="hljs-string">'\''W'</span>\<span class="hljs-string">''</span>)<span class="hljs-operator">*</span><span class="hljs-number">1.0</span><span class="hljs-operator">/</span><span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>),<span class="hljs-number">3</span>) <span class="hljs-keyword">AS</span> win_rate
 <span class="hljs-keyword">FROM</span> r 
 <span class="hljs-keyword">JOIN</span> team t 
 <span class="hljs-keyword">ON</span> t.id<span class="hljs-operator">=</span>r.tid 
 <span class="hljs-keyword">WHERE</span> r.rn<span class="hljs-operator">&lt;=</span><span class="hljs-number">10</span> 
-<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> t.full_name 
-<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> aproveitamento <span class="hljs-keyword">DESC</span>, vitorias <span class="hljs-keyword">DESC</span></code></pre></div><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>time</th><th>jogos</th><th>vitorias</th><th>aproveitamento</th></tr></thead><tbody><tr><td>Los Angeles Lakers</td><td>10</td><td>8</td><td>0.8</td></tr><tr><td>Boston Celtics</td><td>10</td><td>8</td><td>0.8</td></tr><tr><td>Golden State Warriors</td><td>10</td><td>8</td><td>0.8</td></tr><tr><td>Phoenix Suns</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>Minnesota Timberwolves</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>New Orleans Pelicans</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>Cleveland Cavaliers</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>Toronto Raptors</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Milwaukee Bucks</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Brooklyn Nets</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Memphis Grizzlies</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Los Angeles Clippers</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Miami Heat</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Chicago Bulls</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Atlanta Hawks</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Sacramento Kings</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Orlando Magic</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>New York Knicks</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Denver Nuggets</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Philadelphia 76ers</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Charlotte Hornets</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Oklahoma City Thunder</td><td>10</td><td>4</td><td>0.4</td></tr><tr><td>Houston Rockets</td><td>10</td><td>4</td><td>0.4</td></tr><tr><td>San Antonio Spurs</td><td>10</td><td>3</td><td>0.3</td></tr><tr><td>Washington Wizards</td><td>10</td><td>3</td><td>0.3</td></tr><tr><td>Indiana Pacers</td><td>10</td><td>3</td><td>0.3</td></tr><tr><td>Utah Jazz</td><td>10</td><td>2</td><td>0.2</td></tr><tr><td>Dallas Mavericks</td><td>10</td><td>2</td><td>0.2</td></tr><tr><td>Portland Trail Blazers</td><td>10</td><td>1</td><td>0.1</td></tr><tr><td>Detroit Pistons</td><td>10</td><td>1</td><td>0.1</td></tr></tbody></table></div></div><div class="msg assistant"><div class="bubble"><p><strong>1. Query executada</strong> (RCP-009 — aproveitamento últimos N)</p>
+<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> t.full_name
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> win_rate <span class="hljs-keyword">DESC</span>, wins <span class="hljs-keyword">DESC</span></code></pre></div><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>team</th><th>games</th><th>wins</th><th>win_rate</th></tr></thead><tbody><tr><td>Los Angeles Lakers</td><td>10</td><td>8</td><td>0.8</td></tr><tr><td>Boston Celtics</td><td>10</td><td>8</td><td>0.8</td></tr><tr><td>Golden State Warriors</td><td>10</td><td>8</td><td>0.8</td></tr><tr><td>Phoenix Suns</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>Minnesota Timberwolves</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>New Orleans Pelicans</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>Cleveland Cavaliers</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>Toronto Raptors</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Milwaukee Bucks</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Brooklyn Nets</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Memphis Grizzlies</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Los Angeles Clippers</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Miami Heat</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Chicago Bulls</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Atlanta Hawks</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Sacramento Kings</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Orlando Magic</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>New York Knicks</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Denver Nuggets</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Philadelphia 76ers</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Charlotte Hornets</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Oklahoma City Thunder</td><td>10</td><td>4</td><td>0.4</td></tr><tr><td>Houston Rockets</td><td>10</td><td>4</td><td>0.4</td></tr><tr><td>San Antonio Spurs</td><td>10</td><td>3</td><td>0.3</td></tr><tr><td>Washington Wizards</td><td>10</td><td>3</td><td>0.3</td></tr><tr><td>Indiana Pacers</td><td>10</td><td>3</td><td>0.3</td></tr><tr><td>Utah Jazz</td><td>10</td><td>2</td><td>0.2</td></tr><tr><td>Dallas Mavericks</td><td>10</td><td>2</td><td>0.2</td></tr><tr><td>Portland Trail Blazers</td><td>10</td><td>1</td><td>0.1</td></tr><tr><td>Detroit Pistons</td><td>10</td><td>1</td><td>0.1</td></tr></tbody></table></div></div><div class="msg assistant"><div class="bubble"><p><strong>1. Query executed</strong> (RCP-009 — win rate over last N)</p>
 <pre><code class="language-sql">WITH res AS (
-  SELECT team_id_home AS tid, team_name_home AS nome, game_date, wl_home AS wl
+  SELECT team_id_home AS tid, team_name_home AS name, game_date, wl_home AS wl
   FROM game WHERE season_type='Regular Season'
   UNION ALL
   SELECT team_id_away, team_name_away, game_date, wl_away
   FROM game WHERE season_type='Regular Season'
 ),
 r AS (
-  SELECT tid, nome, wl,
+  SELECT tid, name, wl,
          ROW_NUMBER() OVER (PARTITION BY tid ORDER BY game_date DESC) AS rn
   FROM res WHERE tid IN (SELECT id FROM team)
 )
-SELECT t.full_name AS time, COUNT(*) AS jogos,
-       COUNT(*) FILTER (WHERE r.wl='W') AS vitorias,
-       ROUND(COUNT(*) FILTER (WHERE r.wl='W')*1.0/COUNT(*),3) AS aproveitamento
+SELECT t.full_name AS team, COUNT(*) AS games,
+       COUNT(*) FILTER (WHERE r.wl='W') AS wins,
+       ROUND(COUNT(*) FILTER (WHERE r.wl='W')*1.0/COUNT(*),3) AS win_rate
 FROM r JOIN team t ON t.id=r.tid
 WHERE r.rn&lt;=10
 GROUP BY t.full_name
-ORDER BY aproveitamento DESC, vitorias DESC;
+ORDER BY win_rate DESC, wins DESC;
 </code></pre>
-<p><strong>2. Resultados</strong> (30 times — usei <code>team.full_name</code>, nome atual)</p>
+<p><strong>2. Results</strong> (30 teams — used <code>team.full_name</code>, current name)</p>
 <table>
 <thead>
 <tr>
-<th>Time</th>
-<th>Jogos</th>
-<th>Vitórias</th>
-<th>Aproveitamento</th>
+<th>Team</th>
+<th>Games</th>
+<th>Wins</th>
+<th>Win rate</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -1544,35 +1544,35 @@ ORDER BY aproveitamento DESC, vitorias DESC;
 <td>0.100</td>
 </tr>
 </tbody></table>
-<p><strong>3. Interpretação</strong></p>
-<p>São os <strong>últimos 10 jogos de temporada regular</strong> de cada franquia no banco — ou seja, o fim da <strong>temporada regular 2022-23</strong> (≈ abril/2023). Todos os 30 times têm exatamente 10 jogos, então o aproveitamento é simplesmente <code>vitórias/10</code>.</p>
-<p>Destaque: Lakers, Celtics e Warriors terminaram a fase regular embalados (8-2), enquanto Trail Blazers e Pistons fecharam mal (1-9). Como filtramos só temporada regular, eventuais jogos de playoff de 2023 ficaram <strong>de fora</strong> propositalmente, conforme você pediu.</p>
+<p><strong>3. Interpretation</strong></p>
+<p>These are the <strong>last 10 regular season games</strong> of each franchise in the database — that is, the end of the <strong>2022-23 regular season</strong> (≈ April/2023). All 30 teams have exactly 10 games, so the win rate is simply <code>wins/10</code>.</p>
+<p>Highlight: Lakers, Celtics and Warriors finished the regular season on a roll (8-2), while Trail Blazers and Pistons closed poorly (1-9). Since we filtered to regular season only, any 2023 playoff games were intentionally left <strong>out</strong>, as you requested.</p>
 <p><strong>4. Follow-up</strong></p>
-<p>Posso, se quiser:</p>
+<p>If you want, I can:</p>
 <ul>
-<li>Mudar para <strong>últimos N</strong> jogos (5, 15, 20) — basta trocar o <code>rn&lt;=10</code></li>
-<li>Refazer <strong>incluindo playoffs</strong> para comparar a "forma" no fim da temporada vs. campanha completa</li>
-<li>Restringir a uma <strong>temporada específica</strong> (ex.: últimos 10 da 2021-22)</li>
+<li>Switch to <strong>last N</strong> games (5, 15, 20) — just change the <code>rn&lt;=10</code></li>
+<li>Redo it <strong>including playoffs</strong> to compare end-of-season "form" vs. the full campaign</li>
+<li>Restrict to a <strong>specific season</strong> (e.g.: last 10 of 2021-22)</li>
 </ul>
-<p>Quer algum desses?</p>
-</div></div><div class="msg result-msg"><span class="badge"><span>Concluido</span> <span><strong>$0.59</strong></span> <span>2 turns</span></span></div></div>
+<p>Would you like any of these?</p>
+</div></div><div class="msg result-msg"><span class="badge"><span>Completed</span> <span><strong>$0.59</strong></span> <span>2 turns</span></span></div></div>
 
             <div class="qa-banner" id="qaBanner">
                 <div class="qa-question" id="qaQuestion"></div>
                 <div class="qa-actions">
-                    <input type="text" id="qaInput" placeholder="Sua resposta...">
-                    <button onclick="answerQA()">Enviar</button>
+                    <input type="text" id="qaInput" placeholder="Your answer...">
+                    <button onclick="answerQA()">Send</button>
                 </div>
             </div>
 
             <div class="typing" id="typing">
                 <div class="typing-dots"><span></span><span></span><span></span></div>
-                <span id="typingText">Pensando...</span>
+                <span id="typingText">Thinking...</span>
             </div>
 
             <div class="input-bar">
                 <div class="input-wrapper">
-                    <input type="text" id="userInput" placeholder="Pergunte sobre os dados..." onkeydown="if(event.key===&#39;Enter&#39;)send()">
+                    <input type="text" id="userInput" placeholder="Ask about the data..." onkeydown="if(event.key===&#39;Enter&#39;)send()">
                     <button class="send-btn" id="sendBtn" onclick="send()">▶</button>
                 </div>
             </div>
@@ -1588,18 +1588,18 @@ ORDER BY aproveitamento DESC, vitorias DESC;
             'sql-agent': {
                 label: 'SQL Agent',
                 storageKey: 'sql-agent-session',
-                placeholder: 'Pergunte sobre os dados...',
+                placeholder: 'Ask about the data...',
                 emptyTitle: 'Ready when you are.',
-                emptyDesc: 'Aponte para um banco e pergunte em portugues.',
-                typingDefault: 'Analisando...',
+                emptyDesc: 'Point to a database and ask in natural language.',
+                typingDefault: 'Analyzing...',
             },
             'data-eng': {
                 label: 'Data Engineer',
                 storageKey: 'data-eng-session',
-                placeholder: 'Instrucoes para o engenheiro de dados...',
+                placeholder: 'Instructions for the data engineer...',
                 emptyTitle: 'dbt Pipeline Builder',
-                emptyDesc: 'Selecione um banco com CLEANING_ROADMAP pronto e inicie o pipeline.',
-                typingDefault: 'Construindo pipeline...',
+                emptyDesc: 'Select a database with a ready CLEANING_ROADMAP and start the pipeline.',
+                typingDefault: 'Building pipeline...',
             },
         };
 
@@ -1709,7 +1709,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                 connectBtn.classList.add('connected');
                 localStorage.setItem(connKey(), JSON.stringify(conn));
             } else {
-                connectBtn.textContent = 'Conectar';
+                connectBtn.textContent = 'Connect';
                 connectBtn.classList.remove('connected');
                 localStorage.removeItem(connKey());
             }
@@ -1741,14 +1741,14 @@ ORDER BY aproveitamento DESC, vitorias DESC;
 
         // Navigate any folder the container can see. path=null → server default.
         function browseTo(path) {
-            connHint.textContent = 'Carregando…';
+            connHint.textContent = 'Loading…';
             connFiles.innerHTML = '';
             const url = SQL_PROCESSOR + '/connections/browse' + (path ? '?path=' + encodeURIComponent(path) : '');
             fetch(url)
                 .then(r => { if (!r.ok) throw new Error('browse'); return r.json(); })
                 .then(data => {
                     connPath.value = data.path;
-                    connHint.textContent = 'Navegue ou cole um caminho. Clique num arquivo para conectar.';
+                    connHint.textContent = 'Browse or paste a path. Click a file to connect.';
                     if (data.parent) {
                         connFiles.appendChild(row('📁 ..', 'dir', () => browseTo(data.parent)));
                     }
@@ -1764,10 +1764,10 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                         connFiles.appendChild(li);
                     });
                     if (!data.dirs.length && !data.files.length) {
-                        connHint.textContent = 'Pasta vazia (sem subpastas nem bancos).';
+                        connHint.textContent = 'Empty folder (no subfolders or databases).';
                     }
                 })
-                .catch(() => { connHint.textContent = 'Não foi possível abrir essa pasta.'; });
+                .catch(() => { connHint.textContent = 'Could not open this folder.'; });
         }
 
         function openConnModal() {
@@ -1792,7 +1792,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                 setConnection({ id: connection_id, name, db_key });
                 closeConnModal();
             } catch (e) {
-                connHint.textContent = 'Não foi possível conectar a ' + name + '.';
+                connHint.textContent = 'Could not connect to ' + name + '.';
             }
         }
 
@@ -1819,14 +1819,14 @@ ORDER BY aproveitamento DESC, vitorias DESC;
         async function connectRemote() {
             const host = document.getElementById('rHost').value.trim();
             const database = document.getElementById('rDb').value.trim();
-            if (!host || !database) { rHint.textContent = 'Informe ao menos host e database.'; return; }
+            if (!host || !database) { rHint.textContent = 'Provide at least host and database.'; return; }
             const body = {
                 type: 'postgres', host, database,
                 port: parseInt(document.getElementById('rPort').value.trim(), 10) || 5432,
                 user: document.getElementById('rUser').value.trim() || 'postgres',
                 password: document.getElementById('rPass').value,   // sent once, kept only in the vault
             };
-            rConnect.disabled = true; rHint.textContent = 'Conectando…';
+            rConnect.disabled = true; rHint.textContent = 'Connecting…';
             try {
                 const r = await fetch(SQL_PROCESSOR + '/connections/remote', {
                     method: 'POST',
@@ -1840,7 +1840,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                 setConnection({ id: connection_id, name: database, db_key });
                 closeConnModal();
             } catch (e) {
-                rHint.textContent = 'Não foi possível conectar a ' + host + '/' + database + '.';
+                rHint.textContent = 'Could not connect to ' + host + '/' + database + '.';
             } finally {
                 rConnect.disabled = false;
             }
@@ -1891,7 +1891,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
         const toolRegistry = {};  // tool_id → {el: DOM, name: str}
 
         // Thinking: a live muted element that overwrites with the latest thought,
-        // then collapses to "💭 Pensou por Xs ›" (click to expand the reasoning).
+        // then collapses to "💭 Thought for Xs ›" (click to expand the reasoning).
         let thinkEl = null, thinkStart = 0, thinkParts = [];
 
         function finalizeThinking() {
@@ -1904,7 +1904,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
             body.className = 'think-body';
             body.hidden = true;
             body.textContent = full;
-            const setLabel = () => { btn.textContent = `💭 Pensou por ${secs}s ${body.hidden ? '›' : '⌄'}`; };
+            const setLabel = () => { btn.textContent = `💭 Thought for ${secs}s ${body.hidden ? '›' : '⌄'}`; };
             btn.onclick = () => { body.hidden = !body.hidden; setLabel(); };
             setLabel();
             thinkEl.innerHTML = '';
@@ -1930,14 +1930,14 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                 if (cmd.includes('dagster')) return 'dagster: ' + cmd.substring(0, 60);
                 // SQL queries (SQL Agent)
                 const sql = extractSQL(cmd);
-                if (sql) return 'Executando query...';
+                if (sql) return 'Running query...';
                 const short = cmd.length > 60 ? cmd.substring(0, 60) + '...' : cmd;
                 return 'Bash: ' + short;
             }
-            if (name === 'Write') return 'Criando ' + file;
-            if (name === 'Edit') return 'Editando ' + file;
-            if (name === 'Read') return 'Lendo ' + file;
-            if (name === 'Glob') return 'Buscando: ' + (input.pattern || '');
+            if (name === 'Write') return 'Creating ' + file;
+            if (name === 'Edit') return 'Editing ' + file;
+            if (name === 'Read') return 'Reading ' + file;
+            if (name === 'Glob') return 'Searching: ' + (input.pattern || '');
             if (name === 'Grep') return 'Grep: ' + (input.pattern || '');
             return name;
         }
@@ -1950,7 +1950,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
         function sendChoice(question, opt) {
             // Send the pick framed as the answer to the agent's own question,
             // so it doesn't read a bare label as a context-less fragment.
-            userInput.value = question ? `Para a pergunta "${question}", escolho: ${opt}` : opt;
+            userInput.value = question ? `For the question "${question}", I choose: ${opt}` : opt;
             send();
         }
 
@@ -2004,7 +2004,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
             // "Outro" — answer freely in the input below
             const other = document.createElement('div');
             other.className = 'ask-row other';
-            other.innerHTML = '<span class="ask-num">✎</span><span class="ask-label">Outro (responder abaixo)</span>';
+            other.innerHTML = '<span class="ask-num">✎</span><span class="ask-label">Other (answer below)</span>';
             other.onclick = () => userInput.focus();
             card.appendChild(other);
 
@@ -2024,7 +2024,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                 // rendering them produced empty lines (the growing blank gap).
                 // Only show lifecycle messages that actually have text.
                 if (ev.message) addMessage('system-msg', ev.message);
-                showTyping(true, 'Pensando...');
+                showTyping(true, 'Thinking...');
             }
 
             else if (t === 'assistant') {
@@ -2043,7 +2043,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                     const pre = assistantBuffer.slice(0, askOpen).replace(/`{3}[a-z]*\s*$/i, '').trim();
                     currentAssistantBubble.innerHTML = pre
                         ? marked.parse(pre)
-                        : '<span class="think-live">preparando opções…</span>';
+                        : '<span class="think-live">preparing options…</span>';
                 } else if (!tryRenderAsk(currentAssistantBubble, assistantBuffer)) {
                     currentAssistantBubble.innerHTML = marked.parse(assistantBuffer);
                 }
@@ -2063,14 +2063,14 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                 }
                 thinkParts.push(txt);
                 thinkEl.querySelector('.think-text').textContent = txt;  // overwrite live
-                showTyping(true, 'Pensando...');
+                showTyping(true, 'Thinking...');
                 scrollBottom();
             }
 
             else if (t === 'question') {
                 showTyping(false);
                 currentAssistantBubble = null;
-                const question = ev.question || ev.message || 'O agente precisa de uma resposta.';
+                const question = ev.question || ev.message || 'The agent needs an answer.';
                 showQA(question);
             }
 
@@ -2098,7 +2098,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                             `<div class="sql-query">`
                             + `<div class="sql-head">`
                             + `<span class="sql-label">&lt;/&gt; SQL</span>`
-                            + `<button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL">${COPY_ICON}</button>`
+                            + `<button class="sql-copy" title="Copy SQL" aria-label="Copy SQL">${COPY_ICON}</button>`
                             + `</div>`
                             + `<pre><code class="hljs language-sql">${highlighted}</code></pre>`
                             + `</div>`);
@@ -2109,7 +2109,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
             }
 
             else if (t === 'tool_result') {
-                showTyping(true, 'Pensando...');
+                showTyping(true, 'Thinking...');
                 const content = String(ev.content || '').trim();
                 const useId = ev.tool_use_id;
                 const entry = useId && toolRegistry[useId];
@@ -2178,7 +2178,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                 const cost = ev.cost_usd ? '$' + Number(ev.cost_usd).toFixed(2) : '?';
                 const turns = ev.num_turns || '?';
                 addMessage('result-msg',
-                    `<span class="badge"><span>Concluido</span> <span><strong>${cost}</strong></span> <span>${turns} turns</span></span>`
+                    `<span class="badge"><span>Completed</span> <span><strong>${cost}</strong></span> <span>${turns} turns</span></span>`
                 );
                 sendBtn.disabled = false;
             }
@@ -2186,7 +2186,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
             else if (t === 'error') {
                 currentAssistantBubble = null;
                 showTyping(false);
-                addMessage('system-msg', 'Erro: ' + (ev.message || ev.error || ''));
+                addMessage('system-msg', 'Error: ' + (ev.message || ev.error || ''));
                 sendBtn.disabled = false;
             }
         }
@@ -2249,7 +2249,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
 
             html += '</tbody>';
             if (totalRows > maxRows) {
-                html += `<tfoot><tr><td colspan="${headers.length}" class="row-count">Mostrando ${maxRows} de ${totalRows} linhas</td></tr></tfoot>`;
+                html += `<tfoot><tr><td colspan="${headers.length}" class="row-count">Showing ${maxRows} of ${totalRows} rows</td></tr></tfoot>`;
             }
             html += '</table></div>';
             return html;
@@ -2434,7 +2434,7 @@ ORDER BY aproveitamento DESC, vitorias DESC;
 
         // ── PROVIDER PICKER ───────────────────────────────────────────
         const PROVIDER_OPTIONS = [
-            { label: 'Claude',           provider: 'claude',     model: null,                                       sub: 'Anthropic (padrão)' },
+            { label: 'Claude',           provider: 'claude',     model: null,                                       sub: 'Anthropic (default)' },
             { label: 'Claude Sonnet 4.5',provider: 'openrouter', model: 'anthropic/claude-sonnet-4.5',              sub: 'via OpenRouter' },
             { label: 'GPT-4o',           provider: 'openrouter', model: 'openai/gpt-4o',                            sub: 'via OpenRouter' },
             { label: 'GPT-4o mini',      provider: 'openrouter', model: 'openai/gpt-4o-mini',                       sub: 'via OpenRouter' },
@@ -2480,12 +2480,12 @@ ORDER BY aproveitamento DESC, vitorias DESC;
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ provider: opt.provider, model: opt.model }),
                 });
-                if (!r.ok) { alert('Falha ao trocar: ' + (await r.text())); return; }
+                if (!r.ok) { alert('Failed to switch: ' + (await r.text())); return; }
                 paintPill(await r.json());
-            } catch (e) { alert('Erro: ' + e.message); }
+            } catch (e) { alert('Error: ' + e.message); }
         }
         function buildMenu(state) {
-            providerMenuEl.innerHTML = '<div class="group">Modelo (próxima sessão)</div>';
+            providerMenuEl.innerHTML = '<div class="group">Model (next session)</div>';
             for (const opt of PROVIDER_OPTIONS) {
                 const item = document.createElement('div');
                 item.className = 'item';
