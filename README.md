@@ -1,174 +1,172 @@
-# Agentes de Dados sobre Linguagem Natural — Estudo de Caso NBA
+# Data Agents over Natural Language — NBA Case Study
 
-> Material de apoio submetido ao **SBBD (Simpósio Brasileiro de Banco de Dados)**.
-> Demonstração de dois agentes de IA — um de **exploração/consulta** e um de **engenharia de dados** — que operam sobre um banco relacional a partir de instruções em **português**, registrando conhecimento, qualidade de dados e um pipeline de transformação reproduzível.
+> Supporting material submitted to **SBBD (Brazilian Symposium on Databases)**.
+> A demonstration of two AI agents — one for **exploration/querying** and one for **data engineering** — that operate over a relational database from **natural-language** instructions, recording knowledge, data-quality findings, and a reproducible transformation pipeline.
 
-Este repositório reúne **as perguntas de avaliação, as execuções (runs) dos agentes e todos os artefatos por eles produzidos**, de modo que um avaliador consiga inspecionar exatamente o que cada agente leu, decidiu e gerou.
-
----
-
-## 1. Visão geral
-
-O experimento usa o **Maestro Agent Runtime** (Instituto Kunumi), que expõe dois agentes complementares sobre o mesmo banco de dados (`nba.sqlite`):
-
-| Agente | Ícone | Papel | O que produz |
-|--------|-------|-------|--------------|
-| **DXA** | 📊 | Responde perguntas de negócio em português, explora o schema, valida SQL e acumula conhecimento sobre o banco. | Arquivos de conhecimento: `NOTES.md`, `RECIPES.md`, `ERRORS.md`, `INSIGHTS.md`, `CLEANING_ROADMAP.md`, `SKILLS.md`. |
-| **DTA** | ⚙ | Lê o `CLEANING_ROADMAP` produzido na exploração e constrói um pipeline de transformação (dbt + Dagster) que materializa o roadmap de limpeza em modelos testados. | Projeto dbt `nba_pipeline`, data warehouse DuckDB, `MODELS.md`, `TESTS.md`, `PIPELINE.md`. |
-
-Os agentes são guiados por **perguntas em linguagem natural** (ver [`NBA/questions/`](NBA/questions/)) e podem usar diferentes LLMs de backend (Claude, GPT‑4o, Gemini, Llama, Mistral — selecionáveis na interface).
-
-> **Sobre os rótulos `dxa` e `dta`:** são identificadores das execuções gravadas. Pela inspeção das transcrições, **`dxa` corresponde a execuções do DXA (exploração)** e **`dta` corresponde à execução do DTA (pipeline)**. Cada pasta `… - run N` é uma execução independente.
+This repository gathers **the evaluation questions, the agent runs, and every artifact the agents produced**, so a reviewer can inspect exactly what each agent read, decided, and generated.
 
 ---
 
-## 2. Mapa do repositório
+## 1. Overview
+
+The experiment uses the **Maestro Agent Runtime** (Instituto Kunumi), which exposes two complementary agents over the same database (`nba.sqlite`):
+
+| Agent | Icon | Role | What it produces |
+|-------|------|------|------------------|
+| **DXA** | 📊 | Answers business questions in natural language, explores the schema, validates SQL, and accumulates knowledge about the database. | Knowledge files: `NOTES.md`, `RECIPES.md`, `ERRORS.md`, `INSIGHTS.md`, `CLEANING_ROADMAP.md`, `SKILLS.md`. |
+| **DTA** | ⚙ | Reads the `CLEANING_ROADMAP` produced during exploration and builds a transformation pipeline (dbt + Dagster) that materializes the cleaning roadmap into tested models. | dbt project `nba_pipeline`, DuckDB data warehouse, `MODELS.md`, `TESTS.md`, `PIPELINE.md`. |
+
+The agents are driven by **natural-language questions** (see [`NBA/questions/`](NBA/questions/)) and can use different backend LLMs (Claude, GPT‑4o, Gemini, Llama, Mistral — selectable in the interface).
+
+> **About the `dxa` and `dta` labels:** they identify the recorded runs. By inspecting the transcripts, **`dxa` corresponds to DXA runs (exploration)** and **`dta` corresponds to the DTA run (pipeline)**. Each `… - run N` folder is an independent run.
+
+---
+
+## 2. Repository map
 
 ```
 SBBD/
 └── NBA/
-    ├── questions/          # Conjunto de perguntas de avaliação (entrada do experimento)
-    ├── runs/               # Transcrições HTML das conversas com os agentes (evidência das execuções)
-    └── artifacts/          # Tudo que os agentes produziram (conhecimento + pipeline + warehouse)
+    ├── questions/          # Evaluation question set (experiment input)
+    ├── runs/               # HTML transcripts of the conversations with the agents (run evidence)
+    └── artifacts/          # Everything the agents produced (knowledge + pipeline + warehouse)
 ```
 
-A seguir, cada parte em detalhe.
+Each part is detailed below.
 
 ---
 
-### 2.1 `NBA/questions/` — Conjunto de avaliação
+### 2.1 `NBA/questions/` — Evaluation set
 
-[`perguntas_sql_nba.csv`](NBA/questions/perguntas_sql_nba.csv) — **30 perguntas em português** sobre o domínio NBA, classificadas por dificuldade (`Fácil`, `Médio`, `Difícil`). É a entrada do experimento: o que se pede aos agentes responder.
+[`questions_sql_nba.csv`](NBA/questions/questions_sql_nba.csv) — **30 questions** about the NBA domain, classified by difficulty (`Easy`, `Medium`, `Hard`). This is the experiment input: what the agents are asked to answer.
 
-| Dificuldade | Nº de perguntas | Exemplos |
-|-------------|-----------------|----------|
-| Fácil | 10 | "Liste o nome e a cidade de todos os times cadastrados."; "Qual é a altura média e o peso médio de todos os jogadores?" |
-| Médio | 10 | "Quantas vitórias cada time obteve jogando como visitante?"; "Qual foi a partida com a maior diferença de pontos (maior 'goleada')?" |
-| Difícil | 10 | "Calcule a maior sequência de vitórias consecutivas de cada time."; "Para cada time, encontre o jogador mais consistente (menor desvio padrão de pontos)…" |
+| Difficulty | # of questions | Examples |
+|------------|----------------|----------|
+| Easy | 10 | "List the name and city of all registered teams."; "What is the average height and average weight of all players?" |
+| Medium | 10 | "How many wins did each team achieve playing away?"; "What was the game with the largest point difference (biggest 'blowout')?" |
+| Hard | 10 | "Compute the longest streak of consecutive wins of each team."; "For each team, find the most consistent player (lowest standard deviation of points)…" |
 
-> As perguntas foram deliberadamente desenhadas para **expor limitações do banco**: algumas (estatística por jogador, conferência/divisão, jogos de jan/2025, data de contratação de técnicos) **não têm resposta possível** com os dados disponíveis. O valor da avaliação está em observar como o agente **detecta e comunica** essas lacunas — não apenas em acertar SQL.
->
-> *(O arquivo `.~lock.…#` é um lock temporário do LibreOffice; pode ser ignorado.)*
+> The questions were deliberately designed to **expose limitations of the database**: some of them (per-player statistics, conference/division, January 2025 games, head-coach hire dates) **cannot be answered** with the available data. The value of the evaluation lies in observing how the agent **detects and communicates** these gaps — not merely in getting the SQL right.
 
 ---
 
-### 2.2 `NBA/runs/` — Transcrições das execuções
+### 2.2 `NBA/runs/` — Run transcripts
 
-Cada subpasta é uma **página HTML autocontida** (abra no navegador) com a conversa completa: pergunta do usuário, raciocínio do agente, consultas SQL executadas, erros, correções e leitura/escrita dos arquivos de conhecimento.
+Each subfolder is a **self-contained HTML page** (open it in a browser) with the full conversation: the user's question, the agent's reasoning, the SQL queries executed, errors, fixes, and reads/writes of the knowledge files.
 
-| Pasta | Agente | Conteúdo |
-|-------|--------|----------|
-| [`dxa - run 1/`](NBA/runs/dxa%20-%20run%201/) | 📊 DXA | Sessão de exploração mais longa (≈238 KB) — descoberta de schema, construção das receitas e do roadmap. Arquivo: `dxa.html`. |
-| [`dxa - run 2/`](NBA/runs/dxa%20-%20run%202/) | 📊 DXA | Segunda execução de exploração. Arquivo: `SQL Agent.html`. |
-| [`dta - run 1/`](NBA/runs/dta%20-%20run%201/) | ⚙ DTA | Construção do pipeline dbt a partir do roadmap. Arquivo: `SQL Agent.html`. |
+| Folder | Agent | Content |
+|--------|-------|---------|
+| [`dxa - run 1/`](NBA/runs/dxa%20-%20run%201/) | 📊 DXA | Longest exploration session (≈238 KB) — schema discovery, building the recipes and the roadmap. File: `dxa.html`. |
+| [`dxa - run 2/`](NBA/runs/dxa%20-%20run%202/) | 📊 DXA | Second exploration run. File: `SQL Agent.html`. |
+| [`dta - run 1/`](NBA/runs/dta%20-%20run%201/) | ⚙ DTA | Building the dbt pipeline from the roadmap. File: `SQL Agent.html`. |
 
-As subpastas `*_files/` contêm apenas os assets estáticos (CSS, realce de sintaxe, `marked.js`) necessários para renderizar o HTML — **não há conteúdo de pesquisa ali**.
+The `*_files/` subfolders contain only the static assets (CSS, syntax highlighting, `marked.js`) needed to render the HTML — **there is no research content there**.
 
 ---
 
-### 2.3 `NBA/artifacts/` — Artefatos produzidos
+### 2.3 `NBA/artifacts/` — Produced artifacts
 
-Saída efetiva dos agentes. Dividida pela execução que a gerou.
+The agents' actual output, split by the run that generated it.
 
-#### `artifacts/dxa - run 1/` — Conhecimento da exploração (DXA)
+#### `artifacts/dxa - run 1/` — Exploration knowledge (DXA)
 
-Arquivos de conhecimento que o DXA acumula e reutiliza entre sessões:
+Knowledge files that DXA accumulates and reuses across sessions:
 
-| Arquivo | O que contém |
-|---------|--------------|
-| [`NOTES.md`](NBA/artifacts/dxa%20-%20run%201/NOTES.md) | **Metadados do banco**: tabelas, tipos, relações, regras de negócio confirmadas com o usuário e limitações. Ponto de partida para entender o schema NBA. |
-| [`RECIPES.md`](NBA/artifacts/dxa%20-%20run%201/RECIPES.md) | **Receitas de SQL validadas** (RCP‑001…009) — consultas testadas no banco, com contexto, resultado obtido e *gotchas*. Cobre desde "listar times" até janelas (sequências de vitórias, acumulados, aproveitamento). |
-| [`ERRORS.md`](NBA/artifacts/dxa%20-%20run%201/ERRORS.md) | **Registro de erros com post‑mortem** (ERR‑001…) — erros sintáticos e de negócio encontrados e como evitá‑los (ex.: usar `TRY_CAST` em colunas texto com vazios; `data` é palavra reservada no DuckDB). |
-| [`CLEANING_ROADMAP.md`](NBA/artifacts/dxa%20-%20run%201/CLEANING_ROADMAP.md) | **Roadmap prescritivo de qualidade de dados** (CLEAN‑001…010), ordenado por severidade, com evidência SQL, resultado e ação recomendada. **É a ponte entre os dois agentes**: o DTA o consome como especificação. |
-| [`INSIGHTS.md`](NBA/artifacts/dxa%20-%20run%201/INSIGHTS.md) | Descobertas de negócio confirmadas pelo usuário (neste run, em branco). |
-| [`SKILLS.md`](NBA/artifacts/dxa%20-%20run%201/SKILLS.md) | **Habilidades avançadas** do agente: protocolos de **análise causal** (prepare → discover → estimate → refute → report), **geração de gráficos** (`/plot`) e **profiling de dados** com Desbordante (FDs, UCCs, INDs, regras de associação, *denial constraints*). |
+| File | Contents |
+|------|----------|
+| [`NOTES.md`](NBA/artifacts/dxa%20-%20run%201/NOTES.md) | **Database metadata**: tables, types, relationships, business rules confirmed with the user, and limitations. The starting point for understanding the NBA schema. |
+| [`RECIPES.md`](NBA/artifacts/dxa%20-%20run%201/RECIPES.md) | **Validated SQL recipes** (RCP‑001…009) — queries tested on the database, with context, the result obtained, and gotchas. Covers everything from "list teams" to window functions (win streaks, running totals, win rate). |
+| [`ERRORS.md`](NBA/artifacts/dxa%20-%20run%201/ERRORS.md) | **Error log with post‑mortems** (ERR‑001…) — syntactic and business errors encountered and how to avoid them (e.g., use `TRY_CAST` on text columns with empty strings; `data` is a reserved word in DuckDB). |
+| [`CLEANING_ROADMAP.md`](NBA/artifacts/dxa%20-%20run%201/CLEANING_ROADMAP.md) | **Prescriptive data-quality roadmap** (CLEAN‑001…010), ordered by severity, with SQL evidence, result, and recommended action. **This is the bridge between the two agents**: DTA consumes it as a specification. |
+| [`INSIGHTS.md`](NBA/artifacts/dxa%20-%20run%201/INSIGHTS.md) | Business findings confirmed by the user (empty in this run). |
+| [`SKILLS.md`](NBA/artifacts/dxa%20-%20run%201/SKILLS.md) | **Advanced agent skills**: protocols for **causal analysis** (prepare → discover → estimate → refute → report), **chart generation** (`/plot`), and **data profiling** with Desbordante (FDs, UCCs, INDs, association rules, denial constraints). |
 
-#### `artifacts/dta - run 1/` — Pipeline de engenharia de dados (DTA)
+#### `artifacts/dta - run 1/` — Data-engineering pipeline (DTA)
 
-Materializa o `CLEANING_ROADMAP` em um pipeline dbt reproduzível.
+Materializes the `CLEANING_ROADMAP` into a reproducible dbt pipeline.
 
 ```
 dta - run 1/
-├── PIPELINE.md          # Inventário do pipeline: engine, conexão, DAG, orquestração, comandos
-├── MODELS.md            # Catálogo dos 12 modelos dbt (MOD-001…012) e o que cada um limpa
-├── TESTS.md             # Resultado dos testes (61 PASS / 1 WARN / 0 ERROR) e validações de negócio
-├── CLEANING_ROADMAP.md  # Cópia do roadmap, anotada com o status de cada item (✅ resolvido / ⚠️ requer fonte externa)
-├── ERRORS.md            # Erros encontrados ao construir o pipeline (ex.: game_id não é único)
-├── SKILLS.md            # Referência de comandos dbt e Dagster usados
-├── nba_pipeline/        # >>> Projeto dbt completo (ver abaixo) <<<
+├── PIPELINE.md          # Pipeline inventory: engine, connection, DAG, orchestration, commands
+├── MODELS.md            # Catalog of the 12 dbt models (MOD-001…012) and what each one cleans
+├── TESTS.md             # Test results (61 PASS / 1 WARN / 0 ERROR) and business validations
+├── CLEANING_ROADMAP.md  # Copy of the roadmap, annotated with each item's status (✅ resolved / ⚠️ needs external source)
+├── ERRORS.md            # Errors found while building the pipeline (e.g., game_id is not unique)
+├── SKILLS.md            # Reference of the dbt and Dagster commands used
+├── nba_pipeline/        # >>> Complete dbt project (see below) <<<
 └── warehouse/
-    └── nba_dbt.duckdb   # Data warehouse DuckDB materializado (saída do `dbt build`)
+    └── nba_dbt.duckdb   # Materialized DuckDB data warehouse (output of `dbt build`)
 ```
 
-**Projeto dbt `nba_pipeline/`** — arquitetura em camadas (`source → staging → intermediate → marts`):
+**dbt project `nba_pipeline/`** — layered architecture (`source → staging → intermediate → marts`):
 
-| Camada | Materialização | Modelos | Função |
-|--------|----------------|---------|--------|
-| **staging** (`models/staging/`) | view | 6 | Limpeza 1:1 das fontes: padroniza `season_type`, deduplica `game_id`, converte altura/peso para numérico, trata datas sentinela e posições vazias. |
-| **intermediate** (`models/intermediate/`) | ephemeral | 3 | Lógica de negócio: classifica jogos oficiais vs. exibição, resolve nomes históricos de franquias, calcula cobertura de fichas de jogadores. |
-| **marts** (`models/marts/`) | table | 3 | Tabelas de consumo: `mart_nba__games`, `mart_nba__teams`, `mart_nba__player_profiles`. |
+| Layer | Materialization | Models | Function |
+|-------|-----------------|--------|----------|
+| **staging** (`models/staging/`) | view | 6 | 1:1 cleanup of the sources: standardizes `season_type`, deduplicates `game_id`, converts height/weight to numeric, handles sentinel dates and empty positions. |
+| **intermediate** (`models/intermediate/`) | ephemeral | 3 | Business logic: classifies official vs. exhibition games, resolves historical franchise names, computes player-profile coverage. |
+| **marts** (`models/marts/`) | table | 3 | Consumption tables: `mart_nba__games`, `mart_nba__teams`, `mart_nba__player_profiles`. |
 
-Outros componentes do projeto dbt:
-- `macros/unit_conversions.sql` — conversões pés→cm e libras→kg.
-- `tests/` — testes singulares (domínio de `birthdate`, marts não‑vazios) e genérico `positive_values`.
-- `definitions.py` — orquestração **Dagster** (`dbt build` como asset, job e schedule diário `0 6 * * *`).
-- `profiles.yml` — anexa o `nba.sqlite` em **modo somente‑leitura** via extensão `sqlite` do DuckDB.
-- `target/` — artefatos gerados pelo dbt (`manifest.json`, `catalog.json`, SQL compilado, `run_results.json`, docs). Útil para auditar exatamente o que rodou.
+Other components of the dbt project:
+- `macros/unit_conversions.sql` — feet→cm and pounds→kg conversions.
+- `tests/` — singular tests (birthdate domain, non-empty marts) and the generic `positive_values` test.
+- `definitions.py` — **Dagster** orchestration (`dbt build` as an asset, a job, and a daily schedule `0 6 * * *`).
+- `profiles.yml` — attaches `nba.sqlite` in **read-only** mode via DuckDB's `sqlite` extension.
+- `target/` — dbt-generated artifacts (`manifest.json`, `catalog.json`, compiled SQL, `run_results.json`, docs). Useful to audit exactly what ran.
 
-> **Como ler em conjunto:** comece por `PIPELINE.md` (visão geral e DAG) → `MODELS.md` (o que cada modelo faz e qual item CLEAN ele resolve) → `TESTS.md` (evidência de que funcionou). O `CLEANING_ROADMAP.md` anotado mostra o rastreamento item‑a‑item do roadmap de exploração até a implementação.
-
----
-
-## 3. O banco de dados NBA (resumo)
-
-`nba.sqlite` (~2,3 GB) — snapshot histórico da NBA. Tabelas principais: `game`, `player`, `team`, `common_player_info`, `team_details`, `team_info_common`, `play_by_play`, entre outras. Pontos essenciais (detalhados em [`NOTES.md`](NBA/artifacts/dxa%20-%20run%201/NOTES.md)):
-
-- **Cobertura temporal:** 1946‑11‑01 a **2023‑06‑12** (encerra na temporada 2022‑23). Não há jogos após jun/2023.
-- **Estatísticas só por time:** `pts/ast/reb/min…` existem apenas em nível de time (`_home`/`_away`) na tabela `game`. **Não há box score por jogador.**
-- **`team_info_common` está vazia** (0 linhas) — única fonte de conferência/divisão/classificação.
-- **30 franquias atuais**, mas a tabela `game` contém 122 entidades distintas de time (inclui times de exibição e franquias extintas).
-
-### Lacunas que tornam perguntas irrespondíveis
-
-Esta é a principal contribuição analítica do estudo de caso — perguntas do conjunto de avaliação que **não podem ser respondidas** com os dados, e por quê:
-
-| Lacuna (item do roadmap) | Perguntas afetadas |
-|--------------------------|--------------------|
-| Sem box score por jogador (**CLEAN‑002**) | Pontos/assistências/rebotes por jogador, PPG, líderes, consistência, partidas com >35 min, rebotes por posição. |
-| `team_info_common` vazia (**CLEAN‑001**) | Times por conferência (Leste/Oeste). |
-| Sem data de contratação de técnico (**CLEAN‑010**) | "Técnicos e a data em que foram contratados." |
-| Limite temporal 2023 | "Jogos de janeiro de 2025" → 0 linhas. |
+> **How to read it together:** start with `PIPELINE.md` (overview and DAG) → `MODELS.md` (what each model does and which CLEAN item it resolves) → `TESTS.md` (evidence that it worked). The annotated `CLEANING_ROADMAP.md` shows the item-by-item traceability from the exploration roadmap to the implementation.
 
 ---
 
-## 4. Resultados principais
+## 3. The NBA database (summary)
 
-- **Exploração (DXA):** 9 receitas SQL validadas, 5 erros documentados com post‑mortem, **10 itens de qualidade de dados** mapeados com severidade e evidência.
-- **Engenharia (DTA):** **12 modelos dbt**, **62 testes** (61 PASS, 1 WARN intencional, 0 ERROR). 7 dos 10 itens do roadmap foram resolvidos em código; 3 dependem de ingestão de fonte externa e ficaram explicitamente documentados (com modelo/teste placeholder onde aplicável).
+`nba.sqlite` (~2.3 GB) — a historical NBA snapshot. Main tables: `game`, `player`, `team`, `common_player_info`, `team_details`, `team_info_common`, `play_by_play`, among others. Key points (detailed in [`NOTES.md`](NBA/artifacts/dxa%20-%20run%201/NOTES.md)):
+
+- **Temporal coverage:** 1946‑11‑01 to **2023‑06‑12** (ends with the 2022‑23 season). No games after June 2023.
+- **Team-level stats only:** `pts/ast/reb/min…` exist only at team level (`_home`/`_away`) in the `game` table. **There is no per-player box score.**
+- **`team_info_common` is empty** (0 rows) — the only source of conference/division/standings data.
+- **30 current franchises**, but the `game` table contains 122 distinct team entities (including exhibition teams and defunct franchises).
+
+### Gaps that make some questions unanswerable
+
+This is the main analytical contribution of the case study — questions from the evaluation set that **cannot be answered** with the data, and why:
+
+| Gap (roadmap item) | Affected questions |
+|--------------------|--------------------|
+| No per-player box score (**CLEAN‑002**) | Points/assists/rebounds per player, PPG, leaders, consistency, games with >35 min, rebounds by position. |
+| `team_info_common` empty (**CLEAN‑001**) | Teams by conference (East/West). |
+| No head-coach hire date (**CLEAN‑010**) | "Coaches and the date they were hired." |
+| 2023 temporal cutoff | "Games in January 2025" → 0 rows. |
 
 ---
 
-## 5. Como navegar (sugestão para avaliadores)
+## 4. Key results
 
-1. **Entrada:** leia [`NBA/questions/perguntas_sql_nba.csv`](NBA/questions/perguntas_sql_nba.csv) para ver o que foi pedido.
-2. **Execuções:** abra os HTML em [`NBA/runs/`](NBA/runs/) no navegador para acompanhar o raciocínio dos agentes passo a passo.
-3. **Conhecimento da exploração:** leia, nesta ordem, `NOTES.md` → `RECIPES.md` → `ERRORS.md` → `CLEANING_ROADMAP.md` em [`artifacts/dxa - run 1/`](NBA/artifacts/dxa%20-%20run%201/).
-4. **Pipeline de dados:** leia `PIPELINE.md` → `MODELS.md` → `TESTS.md` em [`artifacts/dta - run 1/`](NBA/artifacts/dta%20-%20run%201/), e inspecione o projeto dbt em `nba_pipeline/models/`.
+- **Exploration (DXA):** 9 validated SQL recipes, 5 documented errors with post‑mortems, **10 data-quality items** mapped with severity and evidence.
+- **Engineering (DTA):** **12 dbt models**, **62 tests** (61 PASS, 1 intentional WARN, 0 ERROR). 7 of the 10 roadmap items were resolved in code; 3 depend on external-source ingestion and were explicitly documented (with a placeholder model/test where applicable).
 
-### Reproduzir o pipeline dbt (opcional)
+---
 
-Requer `dbt-duckdb` e o `nba.sqlite` montado em `/data/databases/`. A partir de `artifacts/dta - run 1/nba_pipeline/`:
+## 5. How to navigate (suggested for reviewers)
+
+1. **Input:** read [`NBA/questions/questions_sql_nba.csv`](NBA/questions/questions_sql_nba.csv) to see what was asked.
+2. **Runs:** open the HTML files in [`NBA/runs/`](NBA/runs/) in a browser to follow the agents' reasoning step by step.
+3. **Exploration knowledge:** read, in this order, `NOTES.md` → `RECIPES.md` → `ERRORS.md` → `CLEANING_ROADMAP.md` in [`artifacts/dxa - run 1/`](NBA/artifacts/dxa%20-%20run%201/).
+4. **Data pipeline:** read `PIPELINE.md` → `MODELS.md` → `TESTS.md` in [`artifacts/dta - run 1/`](NBA/artifacts/dta%20-%20run%201/), and inspect the dbt project under `nba_pipeline/models/`.
+
+### Reproducing the dbt pipeline (optional)
+
+Requires `dbt-duckdb` and `nba.sqlite` mounted at `/data/databases/`. From `artifacts/dta - run 1/nba_pipeline/`:
 
 ```bash
 export DBT_PROFILES_DIR="$(pwd)"
-dbt build           # executa todos os modelos + testes em ordem de dependência
-dbt docs generate   # gera manifesto + catálogo
+dbt build           # run all models + tests in dependency order
+dbt docs generate   # generate manifest + catalog
 ```
 
-O warehouse resultante já está versionado em [`artifacts/dta - run 1/warehouse/nba_dbt.duckdb`](NBA/artifacts/dta%20-%20run%201/warehouse/) e pode ser consultado diretamente com a CLI do DuckDB.
+The resulting warehouse is already versioned at [`artifacts/dta - run 1/warehouse/nba_dbt.duckdb`](NBA/artifacts/dta%20-%20run%201/warehouse/) and can be queried directly with the DuckDB CLI.
 
 ---
 
-## 6. Estrutura técnica em uma frase
+## 6. Technical structure in one sentence
 
-> Dado um banco relacional e perguntas em português, um **agente de exploração** descobre o schema, valida SQL e produz um roadmap de qualidade de dados; um **agente de engenharia** consome esse roadmap e o materializa num pipeline **dbt + Dagster** testado sobre **DuckDB** — com todas as decisões, erros e evidências registrados em arquivos de conhecimento auditáveis.
+> Given a relational database and natural-language questions, an **exploration agent** discovers the schema, validates SQL, and produces a data-quality roadmap; an **engineering agent** consumes that roadmap and materializes it into a tested **dbt + Dagster** pipeline over **DuckDB** — with every decision, error, and piece of evidence recorded in auditable knowledge files.

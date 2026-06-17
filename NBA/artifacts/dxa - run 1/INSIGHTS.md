@@ -1,3 +1,3 @@
 # Insights
 
-Descoberta de negócio confirmadas pelo usuário.
+Business findings confirmed by the user.
