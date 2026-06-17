@@ -1,0 +1,15 @@
+nba_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/warehouse/nba_dbt.duckdb
+      threads: 4
+      extensions:
+        - sqlite
+      attach:
+        - path: /data/databases/nba.sqlite
+          type: sqlite
+          alias: nba
+          options:
+            read_only: true

@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: int_nba__games_classified
+    description: "Games with NBA-franchise classification flags (CLEAN-004)."
+    columns:
+      - name: game_id
+        description: "Game primary key."
+        data_tests:
+          - not_null
+          - unique
+      - name: is_official_nba_matchup
+        description: "True when both teams are current franchises and the season type is a real NBA type."
+        data_tests:
+          - not_null
+
+  - name: int_nba__franchise_names
+    description: "Distinct historical names per franchise observed in game (CLEAN-009)."
+    columns:
+      - name: team_id
+        description: "Team id."
+        data_tests:
+          - not_null
+          - unique
+
+  - name: int_nba__player_coverage
+    description: "Canonical players left-joined to detailed info, with has_detailed_info flag (CLEAN-008)."
+    columns:
+      - name: player_id
+        description: "Player primary key."
+        data_tests:
+          - not_null
+          - unique
+      - name: has_detailed_info
+        description: "Whether the player has a row in common_player_info."
+        data_tests:
+          - not_null

@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: nba
+    description: "Raw NBA database (SQLite, attached read-only via DuckDB sqlite scanner). connection_id 87e6b067."
+    database: nba
+    schema: main
+    tables:
+      - name: game
+        description: "One row per game with team-level box score (home/away suffixes). Grain: game_id (56 duplicate game_ids exist and are deduped in staging)."
+      - name: team
+        description: "Canonical dimension of the 30 current NBA franchises."
+        columns:
+          - name: id
+            description: "Team primary key (string)."
+            data_tests:
+              - not_null
+              - unique
+      - name: player
+        description: "Canonical list of all players (4815)."
+        columns:
+          - name: id
+            description: "Player primary key (string)."
+            data_tests:
+              - not_null
+              - unique
+      - name: common_player_info
+        description: "Detailed player attributes (position, height, weight, birthdate). Covers ~3632 of 4815 players."
+        columns:
+          - name: person_id
+            description: "Player id; FK to player.id."
+            data_tests:
+              - not_null
+              - unique
+      - name: team_details
+        description: "Team metadata (arena, owner, headcoach). No coach hire date available (CLEAN-010)."
+      - name: team_info_common
+        description: "Conference/division/standings per season. EMPTY in source (0 rows) — see CLEAN-001."

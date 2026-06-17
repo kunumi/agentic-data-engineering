@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)http://localhost:7860/sql-agent.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SQL Agent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./SQL Agent_files/css2" rel="stylesheet">
+    <script src="./SQL Agent_files/marked.min.js"></script>
+    <link rel="stylesheet" href="./SQL Agent_files/github-dark.min.css">
+    <script src="./SQL Agent_files/highlight.min.js"></script>
+    <script src="./SQL Agent_files/sql.min.js"></script>
+    <style>
+        :root {
+            --chumbo: #1C2127;
+            --chumbo-light: #232930;
+            --grafite: #5E5E5E;
+            --concreto: #B4ADA4;
+            --gelo: #F0F0F0;
+            --urucum: #FD4E44;
+            --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Figtree', sans-serif;
+            background: var(--chumbo);
+            color: var(--gelo);
+        }
+
+        /* ── LAYOUT ── */
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 260px;
+            background: #111518;
+            border-right: 1px solid #2A3038;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid #2A3038;
+        }
+
+        .sidebar-header h1 {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--urucum);
+        }
+
+        .sidebar-header span {
+            font-size: 11px;
+            color: var(--grafite);
+            letter-spacing: 1px;
+        }
+
+        .sidebar-section {
+            padding: 16px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--grafite);
+            margin-bottom: 10px;
+        }
+
+        .profile-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .profile-item:hover { background: var(--chumbo-light); }
+        .profile-item.active { background: var(--chumbo); }
+
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .profile-item.active .profile-icon {
+            border-color: var(--urucum);
+        }
+
+        .profile-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid #2A3038;
+        }
+
+        .sidebar-footer .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-footer .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--urucum);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .sidebar-footer .name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .sidebar-footer .org {
+            font-size: 11px;
+            color: var(--grafite);
+        }
+
+        /* ── MAIN ── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            height: 48px;
+            border-bottom: 1px solid #2A3038;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            flex-shrink: 0;
+        }
+
+        .topbar .model-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--concreto);
+        }
+
+        .topbar .model-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--chumbo-light);
+            color: var(--grafite);
+            margin-left: 8px;
+        }
+
+        .topbar .db-select {
+            margin-left: auto;
+            font-size: 12px;
+            font-family: 'Figtree', sans-serif;
+            color: var(--concreto);
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 6px;
+            padding: 4px 8px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .topbar .db-select:focus { border-color: var(--urucum); }
+
+        @keyframes flash-select {
+            0%, 100% { border-color: #2A3038; }
+            50% { border-color: var(--urucum); }
+        }
+        .topbar .db-select.flash { animation: flash-select 0.4s ease 3; }
+
+        /* ── CONNECT BUTTON + MODAL (DB-2) ── */
+        .topbar .db-connect-btn {
+            margin-left: auto;
+            font-size: 12px;
+            font-family: 'Figtree', sans-serif;
+            color: var(--concreto);
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 6px;
+            padding: 4px 12px;
+            cursor: pointer;
+        }
+        .topbar .db-connect-btn:hover { border-color: var(--urucum); }
+        .topbar .db-connect-btn.connected { color: var(--urucum); border-color: var(--urucum); }
+        .topbar .db-connect-btn.flash { animation: flash-select 0.4s ease 3; }
+
+        .conn-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0, 0, 0, 0.55);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .conn-overlay[hidden] { display: none; }
+        .conn-modal {
+            width: 420px; max-width: 90vw;
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038; border-radius: 10px;
+            overflow: hidden;
+            font-family: 'Figtree', sans-serif; color: var(--concreto);
+        }
+        .conn-modal-head {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 14px; border-bottom: 1px solid #2A3038; font-size: 13px;
+        }
+        .conn-close { background: none; border: none; color: var(--concreto); font-size: 18px; line-height: 1; cursor: pointer; }
+        .conn-tabs { display: flex; gap: 6px; padding: 10px 14px 0; }
+        .conn-tab {
+            font-size: 12px; padding: 5px 12px; border-radius: 6px;
+            border: 1px solid #2A3038; background: transparent; color: var(--concreto); cursor: pointer;
+        }
+        .conn-tab.active { border-color: var(--urucum); color: var(--urucum); }
+        .conn-tab:disabled { opacity: 0.45; cursor: not-allowed; }
+        .conn-body { padding: 12px 14px 16px; }
+        .conn-hint { font-size: 12px; opacity: 0.7; margin-bottom: 8px; }
+        .conn-files { list-style: none; margin: 0; padding: 0; max-height: 280px; overflow-y: auto; }
+        .conn-file {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 10px; margin-bottom: 6px;
+            border: 1px solid #2A3038; border-radius: 6px; cursor: pointer; font-size: 12px;
+        }
+        .conn-file:hover { border-color: var(--urucum); }
+        .conn-file .sz { opacity: 0.55; font-size: 11px; }
+        .conn-file.dir { color: var(--concreto); }
+        .conn-path-input {
+            width: 100%; box-sizing: border-box;
+            font-size: 11px; font-family: monospace;
+            padding: 5px 8px; margin-bottom: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #2A3038; border-radius: 6px; color: var(--concreto);
+            outline: none;
+        }
+        .conn-path-input:focus { border-color: var(--urucum); }
+
+        /* Remote form (DB-4): host/port/db/user/password → /connections/remote */
+        .conn-field {
+            width: 100%; box-sizing: border-box;
+            font-size: 12px; font-family: 'Figtree', sans-serif;
+            padding: 7px 9px; margin-bottom: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #2A3038; border-radius: 6px; color: var(--concreto);
+            outline: none;
+        }
+        .conn-field:focus { border-color: var(--urucum); }
+        .conn-row { display: flex; gap: 8px; }
+        .conn-row .conn-field.host { flex: 3; }
+        .conn-row .conn-field.port { flex: 1; }
+        .conn-remote-btn {
+            width: 100%; box-sizing: border-box; margin-top: 2px;
+            font-size: 13px; font-family: 'Figtree', sans-serif;
+            padding: 8px; border-radius: 6px; cursor: pointer;
+            background: var(--urucum); color: #fff; border: none;
+        }
+        .conn-remote-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ── PROVIDER PICKER (claude.ai-style pill) ── */
+        .provider-picker { position: relative; margin-left: 12px; }
+        .provider-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            color: var(--gelo);
+            font: 500 12px 'Figtree', sans-serif;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+        .provider-pill:hover { border-color: var(--urucum); }
+        .provider-pill .dot {
+            width: 6px; height: 6px; border-radius: 50%; background: var(--urucum);
+        }
+        .provider-pill .dot.openrouter { background: #6FB28E; }
+        .provider-pill .chev { color: var(--grafite); font-size: 10px; }
+        .provider-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            min-width: 240px;
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            padding: 4px;
+            z-index: 100;
+        }
+        .provider-menu.open { display: block; }
+        .provider-menu .group {
+            font: 600 10px 'Figtree', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--grafite);
+            padding: 8px 10px 4px;
+        }
+        .provider-menu .item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--gelo);
+        }
+        .provider-menu .item:hover { background: var(--chumbo-light); }
+        .provider-menu .item .check {
+            margin-left: auto;
+            color: var(--urucum);
+            font-size: 12px;
+            visibility: hidden;
+        }
+        .provider-menu .item.active .check { visibility: visible; }
+        .provider-menu .item .sub {
+            font-size: 11px;
+            color: var(--grafite);
+            font-family: var(--mono);
+        }
+
+        /* ── MESSAGES ── */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: #2A3038; border-radius: 3px; }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--concreto);
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            color: var(--grafite);
+        }
+
+        .msg {
+            max-width: 780px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 12px 0;
+        }
+
+        .msg.user {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .msg.user .bubble {
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 16px 16px 4px 16px;
+            padding: 12px 16px;
+            max-width: 70%;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .msg.assistant .bubble {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--gelo);
+        }
+
+        .msg.tool {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--grafite);
+            padding: 8px 0;
+        }
+
+        .msg.tool .tool-name {
+            color: var(--urucum);
+            font-weight: 600;
+        }
+
+        .msg.tool .tool-result {
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 6px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .msg.tool .sql-query {
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 10px;
+            margin-top: 4px;
+            overflow: hidden;            /* card clips; the inner <pre> scrolls */
+        }
+
+        .msg.tool .sql-query .sql-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #2A3038;
+        }
+
+        .msg.tool .sql-query .sql-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font: 700 11px var(--mono);
+            letter-spacing: 0.5px;
+            color: var(--concreto);
+        }
+
+        .msg.tool .sql-query .sql-copy {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--grafite);
+            padding: 3px;
+            line-height: 0;
+            border-radius: 5px;
+            transition: color 0.15s, background 0.15s;
+        }
+        .msg.tool .sql-query .sql-copy:hover { color: var(--gelo); background: rgba(255, 255, 255, 0.06); }
+        .msg.tool .sql-query .sql-copy.copied { color: #6FB28E; }
+
+        .msg.tool .sql-query pre {
+            margin: 0;
+            padding: 12px 14px;
+            background: transparent !important;
+            overflow-x: auto;
+            max-height: 360px;
+            /* discrete scrollbar (Firefox) */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+        }
+        /* discrete scrollbar (WebKit) */
+        .msg.tool .sql-query pre::-webkit-scrollbar { width: 7px; height: 7px; }
+        .msg.tool .sql-query pre::-webkit-scrollbar-track { background: transparent; }
+        .msg.tool .sql-query pre::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+        }
+        .msg.tool .sql-query pre::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
+
+        .msg.tool .sql-query code {
+            font-family: var(--mono);
+            font-size: 12px;
+            line-height: 1.6;
+            background: transparent !important;
+        }
+
+        /* Let github-dark theme handle colors, just fix background */
+        .msg.tool .sql-query .hljs { background: transparent; }
+
+        /* ── CSV TABLE ── */
+        .csv-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            font-family: var(--mono);
+            margin-top: 6px;
+        }
+
+        .csv-table-wrapper {
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            overflow: auto;
+            max-height: 300px;
+            margin-top: 6px;
+        }
+
+        .csv-table th {
+            background: #0D1013;
+            color: var(--urucum);
+            font-weight: 600;
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 1px solid #2A3038;
+            position: sticky;
+            top: 0;
+        }
+
+        .csv-table td {
+            padding: 6px 12px;
+            border-bottom: 1px solid #1A1F25;
+            color: var(--concreto);
+        }
+
+        .csv-table tr:hover td { background: var(--chumbo-light); }
+
+        .csv-table .row-count {
+            font-size: 10px;
+            color: var(--grafite);
+            padding: 6px 12px;
+        }
+
+        /* ── MARKDOWN in assistant bubbles ── */
+        .msg.assistant .bubble h1,
+        .msg.assistant .bubble h2,
+        .msg.assistant .bubble h3 {
+            color: var(--gelo);
+            margin: 12px 0 6px;
+        }
+        .msg.assistant .bubble h1 { font-size: 18px; }
+        .msg.assistant .bubble h2 { font-size: 16px; }
+        .msg.assistant .bubble h3 { font-size: 14px; }
+
+        .msg.assistant .bubble p { margin: 6px 0; }
+
+        .msg.assistant .bubble ul,
+        .msg.assistant .bubble ol {
+            margin: 6px 0;
+            padding-left: 20px;
+        }
+
+        .msg.assistant .bubble li { margin: 3px 0; }
+
+        .msg.assistant .bubble code {
+            background: #111518;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+
+        .msg.assistant .bubble pre {
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            overflow-x: auto;
+        }
+
+        .msg.assistant .bubble pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .msg.assistant .bubble table {
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        .msg.assistant .bubble th,
+        .msg.assistant .bubble td {
+            border: 1px solid #2A3038;
+            padding: 6px 10px;
+        }
+
+        .msg.assistant .bubble th {
+            background: #111518;
+            color: var(--urucum);
+        }
+
+        .msg.assistant .bubble strong { color: var(--gelo); }
+        .msg.assistant .bubble em { color: var(--concreto); }
+
+        .msg.assistant .bubble blockquote {
+            border-left: 3px solid var(--urucum);
+            padding-left: 12px;
+            color: var(--concreto);
+            margin: 8px 0;
+        }
+
+        /* ── CHART ── */
+        .chart-container {
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 6px;
+            width: 100%;
+        }
+
+        .chart-container svg {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            display: block;
+        }
+
+        /* ── dbt result badges ── */
+        .dbt-pass { color: #22C55E; font-weight: 600; }
+        .dbt-fail { color: #EF4444; font-weight: 600; }
+        .dbt-warn { color: #EAB308; font-weight: 600; }
+
+        /* ── TOOL INDICATOR ── */
+        .tool-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--grafite);
+            padding: 4px 0;
+        }
+
+        .tool-indicator .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--urucum);
+            opacity: 0.6;
+        }
+
+        .msg.system-msg {
+            text-align: center;
+            font-size: 12px;
+            color: var(--grafite);
+            padding: 4px 0;
+        }
+
+        /* ── THINKING (live → collapsible "Pensou por Xs") ── */
+        .think-live {
+            display: flex; gap: 6px; align-items: baseline;
+            color: var(--grafite); font-size: 12px; font-style: italic;
+        }
+        .think-toggle {
+            background: none; border: none; padding: 0;
+            color: var(--grafite); font-size: 12px; cursor: pointer; font-family: inherit;
+        }
+        .think-toggle:hover { color: var(--concreto); }
+        .think-body {
+            margin-top: 6px; padding-left: 10px;
+            border-left: 2px solid #2A3038;
+            color: var(--grafite); font-size: 12px; line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .think-body[hidden] { display: none; }
+
+        /* ── ASK (disambiguation card — Claude.ai-style, dark theme) ── */
+        .msg.assistant .bubble.has-ask { background: none; padding: 0; }
+        .ask-preamble { margin-bottom: 12px; color: var(--gelo); }
+        .ask-card {
+            max-width: 640px;
+            border: 1px solid #2A3038; border-radius: 12px; overflow: hidden;
+            background: var(--chumbo-light);
+        }
+        .ask-card-header {
+            padding: 14px 16px; font-size: 14px; color: var(--gelo);
+            border-bottom: 1px solid #2A3038;
+        }
+        .ask-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; cursor: pointer;
+            border-bottom: 1px solid rgba(42, 48, 56, 0.5);
+            transition: background 0.12s ease;
+        }
+        .ask-row:last-child { border-bottom: none; }
+        .ask-row:hover { background: rgba(255, 255, 255, 0.04); }
+        .ask-num {
+            flex: none; width: 24px; height: 24px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; color: var(--concreto); background: rgba(255, 255, 255, 0.06);
+            transition: background 0.12s ease, color 0.12s ease;
+        }
+        .ask-row:hover .ask-num, .ask-row.chosen .ask-num { background: var(--urucum); color: #fff; }
+        .ask-label { font-size: 13px; color: var(--gelo); }
+        .ask-row.other .ask-num, .ask-row.other .ask-label { color: var(--concreto); }
+        .ask-row.chosen { background: rgba(225, 78, 45, 0.12); }
+        .ask-card.answered .ask-row { pointer-events: none; }
+        .ask-card.answered .ask-row:not(.chosen) { opacity: 0.45; }
+
+        .msg.result-msg {
+            text-align: center;
+        }
+
+        .msg.result-msg .badge {
+            display: inline-flex;
+            gap: 16px;
+            background: #111518;
+            border: 1px solid var(--urucum);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--concreto);
+        }
+
+        .msg.result-msg .badge strong {
+            color: var(--urucum);
+        }
+
+        /* ── Q&A BANNER ── */
+        .qa-banner {
+            display: none;
+            background: #2A1A18;
+            border: 1px solid var(--urucum);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 0 auto;
+            max-width: 780px;
+            width: 100%;
+        }
+
+        .qa-banner.visible { display: block; }
+
+        .qa-banner .qa-question {
+            font-size: 13px;
+            color: var(--gelo);
+            margin-bottom: 8px;
+        }
+
+        .qa-banner .qa-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .qa-banner input {
+            flex: 1;
+            background: var(--chumbo);
+            border: 1px solid #2A3038;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: 'Figtree', sans-serif;
+            font-size: 13px;
+            color: var(--gelo);
+            outline: none;
+        }
+
+        .qa-banner input:focus { border-color: var(--urucum); }
+
+        .qa-banner button {
+            background: var(--urucum);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-family: 'Figtree', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ── INPUT BAR ── */
+        .input-bar {
+            padding: 16px 24px 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .input-wrapper {
+            max-width: 780px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 24px;
+            padding: 4px 4px 4px 20px;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrapper:focus-within { border-color: var(--urucum); }
+
+        .input-wrapper input {
+            flex: 1;
+            background: none;
+            border: none;
+            font-family: 'Figtree', sans-serif;
+            font-size: 14px;
+            color: var(--gelo);
+            outline: none;
+        }
+
+        .input-wrapper input::placeholder { color: var(--grafite); }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--urucum);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover { background: #E8443B; }
+        .send-btn:disabled { background: var(--grafite); cursor: not-allowed; }
+
+        /* ── TYPING INDICATOR ── */
+        .typing {
+            display: none;
+            max-width: 780px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 8px 0;
+            font-size: 12px;
+            color: var(--grafite);
+        }
+
+        .typing.visible { display: flex; align-items: center; gap: 8px; }
+
+        .typing-dots span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--urucum);
+            animation: dot-pulse 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dot-pulse {
+            0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ── Readonly viewer (manager.html iframe) ── */
+        body.readonly .sidebar,
+        body.readonly .input-bar,
+        body.readonly .qa-banner { display: none !important; }
+        body.readonly .topbar .db-connect-btn { pointer-events: none; opacity: 0.6; }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>Maestro</h1>
+                <span>Agent Runtime</span>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Agents</h3>
+                <div class="profile-item" data-profile="sql-agent" onclick="switchProfile(&#39;sql-agent&#39;)">
+                    <div class="profile-icon">📊</div>
+                    <div class="profile-name">SQL Agent</div>
+                </div>
+                <div class="profile-item active" data-profile="data-eng" onclick="switchProfile(&#39;data-eng&#39;)">
+                    <div class="profile-icon">⚙</div>
+                    <div class="profile-name">Data Engineer</div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user">
+                    <div class="avatar">L</div>
+                    <div>
+                        <div class="name">Luan Prado</div>
+                        <div class="org">Instituto Kunumi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN -->
+        <div class="main">
+            <div class="topbar">
+                <span class="model-name">Data Engineer</span>
+                <div class="provider-picker">
+                    <button class="provider-pill" id="providerPill" type="button">
+                        <span class="dot" id="providerDot"></span>
+                        <span id="providerLabel">Claude</span>
+                        <span class="chev">▾</span>
+                    </button>
+                    <div class="provider-menu" id="providerMenu"><div class="group">Modelo (próxima sessão)</div><div class="item active" data-opt="{&quot;label&quot;:&quot;Claude&quot;,&quot;provider&quot;:&quot;claude&quot;,&quot;model&quot;:null,&quot;sub&quot;:&quot;Anthropic (padrão)&quot;}">
+                    <div>
+                        <div>Claude</div>
+                        <div class="sub">Anthropic (padrão)</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Claude Sonnet 4.5&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;anthropic/claude-sonnet-4.5&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Claude Sonnet 4.5</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;GPT-4o&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;openai/gpt-4o&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>GPT-4o</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;GPT-4o mini&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;openai/gpt-4o-mini&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>GPT-4o mini</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Gemini 2.5 Pro&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;google/gemini-2.5-pro&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Gemini 2.5 Pro</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Gemini 2.5 Flash&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;google/gemini-2.5-flash&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Gemini 2.5 Flash</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Llama 3.3 70B&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;meta-llama/llama-3.3-70b-instruct&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Llama 3.3 70B</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Mistral Large&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;mistralai/mistral-large&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Mistral Large</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div></div>
+                </div>
+                <button class="db-connect-btn connected" id="connectBtn" type="button">nba.sqlite</button>
+            </div>
+
+            <!-- Connect modal: Local picks a file; Remote = Postgres (DB-4) -->
+            <div class="conn-overlay" id="connOverlay" hidden="">
+                <div class="conn-modal">
+                    <div class="conn-modal-head">
+                        <span>Conectar a um banco</span>
+                        <button class="conn-close" id="connClose" type="button">×</button>
+                    </div>
+                    <div class="conn-tabs">
+                        <button class="conn-tab active" id="tabLocal" type="button">Local</button>
+                        <button class="conn-tab" id="tabRemote" type="button">Remoto</button>
+                    </div>
+                    <div class="conn-body">
+                        <div id="panelLocal">
+                            <input class="conn-path-input" id="connPath" placeholder="/caminho/da/pasta — Enter para ir">
+                            <div class="conn-hint" id="connHint">Navegue ou cole um caminho.</div>
+                            <ul class="conn-files" id="connFiles"></ul>
+                        </div>
+                        <div id="panelRemote" hidden="">
+                            <div class="conn-hint">Postgres — localhost também é uma conexão remota. As credenciais ficam no vault do servidor, nunca no navegador.</div>
+                            <div class="conn-row">
+                                <input class="conn-field host" id="rHost" placeholder="host">
+                                <input class="conn-field port" id="rPort" placeholder="5432">
+                            </div>
+                            <input class="conn-field" id="rDb" placeholder="database">
+                            <input class="conn-field" id="rUser" placeholder="usuário">
+                            <input class="conn-field" id="rPass" type="password" placeholder="senha">
+                            <button class="conn-remote-btn" id="rConnect" type="button">Conectar</button>
+                            <div class="conn-hint" id="rHint" style="margin-top:8px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="messages" id="messages"><div class="empty-state" id="emptyState" style="display: none;">
+                    <h2>dbt Pipeline Builder</h2>
+                    <p>Selecione um banco com CLEANING_ROADMAP pronto e inicie o pipeline.</p>
+                </div><div class="msg user"><div class="bubble">Siga o roadmap de limpeza.</div></div><div class="msg system-msg">Session 7814b65b-8b4f-4b6e-9d17-89daaf87e650 created</div><div class="msg assistant"><div class="bubble"><p>I'll start by reading the knowledge files from the working directory.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo CLEANING_ROADMAP.md</span><div class="tool-result">1	# Cleaning Roadmap — Banco NBA (connection_id 87e6b067)
+2	
+3	Roadmap prescritivo de qualidade de dados para o Agente de Engenharia de Dados.
+4	Gerado em 2026-06-17 a partir da exploração interativa. Ordenado por severidade.
+5	
+6	---
+7	
+8	## CLEAN-001: Tabela `team_info_common` está completamente vazia
+9	- **Table:** team_info_common
+10	- **Severity:** critical
+11	- **Problem:** É a ÚNICA tabela com informações de conferência (`team_conference`), divisão (`team_division`), ranking (`conf_rank`/`div_rank`) e standings por temporada (w, l, pct). Está com 0 linhas — torna impossível qualquer análise por conferência/divisão.
+12	- **Evidence:**
+13	  ```sql
+14	  SELECT COUNT(*) AS n_rows FROM team_info_common;
+15	  ```
+16	- **Result:** 0 linhas.
+17	- **Recommended action:** Repovoar a tabela a ...</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo MODELS.md</span><div class="tool-result">1	# Models
+2	
+3	Inventory of dbt models implemented by this agent.
+4</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo TESTS.md</span><div class="tool-result">1	# Tests
+2	
+3	Test results and coverage for each model.
+4</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo PIPELINE.md</span><div class="tool-result">1	# Pipeline
+2	
+3	Pipeline inventory: models, schedules, dependencies.
+4</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo ERRORS.md</span><div class="tool-result">1	# Errors
+2	
+3	Registro de erros (sintáticos e de negócio) com post-mortem.
+4	
+5	## ERR-001: CAST falha em strings vazias em common_player_info
+6	- Tipo: syntactic
+7	- Query: `AVG(CAST(weight AS DOUBLE))` e `CAST(SPLIT_PART(height,'-',1) AS INT)`
+8	- Erro: `Could not convert string '' to DOUBLE/INT32`. weight/height têm valores '' (vazio).
+9	- Detalhe: `AVG(... ) FILTER (WHERE ...)` NÃO evita o erro — o CAST é avaliado em todas as linhas antes do FILTER.
+10	- Correção: usar **TRY_CAST** (retorna NULL em vez de erro). Ex.: `AVG(TRY_CAST(weight AS DOUBLE))`,
+11	  `TRY_CAST(SPLIT_PART(height,'-',1) AS INT)`.
+12	- Post-mortem: SEMPRE usar TRY_CAST ao converter colunas de texto em common_player_info (weight, height, etc.) — há strings vazias.
+13	
+14	## ERR-002: INTERNAL Error (CTE inlining) co...</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo SKILLS.md</span><div class="tool-result">1	# Skills: dbt &amp; Dagster Commands
+2	
+3	## dbt Quick Reference
+4	
+5	```bash
+6	# Project setup
+7	dbt init &lt;name&gt;                           # scaffold new project
+8	dbt debug                                 # verify connection &amp; config
+9	
+10	# Run
+11	dbt run                                   # run all models
+12	dbt run --select &lt;model&gt;                  # run single model
+13	dbt run --select staging.*                # run all staging
+14	dbt run --select +&lt;model&gt;                 # model + all upstream deps
+15	dbt run --select &lt;model&gt;+                 # model + all downstream deps
+16	dbt run --full-refresh                    # rebuild incremental from scratch
+17	
+18	# Test
+19	dbt test                                  # all tests
+20	dbt test --select &lt;model&gt;                 # tests for one model...</div></div><div class="msg assistant"><div class="bubble"><p>First session — knowledge files are empty (except ERRORS.md which has useful prior learnings). This is a DuckDB/NBA database. Let me explore the environment to locate the database and check tooling.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: echo "=== cwd ==="; pwd; echo "=== dbt ==="; which dbt &amp;&amp; db...</span><div class="tool-result">=== cwd ===
+/tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor
+=== dbt ===
+=== ls tmp dir ===
+total 152
+drwx------  2 maestro maestro   4096 Jun 17 13:25 .
+drwxrwxrwt 30 root    root    118784 Jun 17 13:25 ..
+-rw-r--r--  1 maestro maestro   7941 Jun 17 13:25 CLEANING_ROADMAP.md
+-rw-r--r--  1 maestro maestro   1635 Jun 17 13:25 ERRORS.md
+-rw-r--r--  1 maestro maestro     61 Jun 17 13:25 MODELS.md
+-rw-r--r--  1 maestro maestro     65 Jun 17 13:25 PIPELINE.md
+-r--r--r--  1 maestro maestro   3157 Jun 17 13:25 SKILLS.md
+-rw-r--r--  1 maestro maestro     51 Jun 17 13:25 TESTS.md
+=== databases ===
+total 12209328
+drwxrwxr-x 2    1001    1001        4096 Jun 15 21:41 .
+drwxr-xr-x 4 maestro maestro        4096 Jun 17 13:25 ..
+-rw-rw-r-- 1    1001    1001         267 Jun 15 21:41 .dockerignore
+-rw-rw-r-- 1 ...</div></div><div class="msg assistant"><div class="bubble"><p>NBA database is <code>nba.sqlite</code> (2.3GB sqlite). dbt isn't installed. Prior errors mention DuckDB scanner over sqlite, so I'll use dbt-duckdb with the sqlite extension. Let me check Python tooling and install.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: echo "=== python ==="; which python3 python pip pip3 2&gt;&amp;1; p...</span><div class="tool-result">=== python ===
+/usr/local/bin/python3
+/usr/local/bin/python
+/usr/local/bin/pip
+/usr/local/bin/pip3
+Python 3.11.15
+=== duckdb cli ===
+=== pip dbt ===
+=== git ===
+/usr/bin/git
+git version 2.47.3</div></div><div class="msg assistant"><div class="bubble"><p>Let me install dbt-duckdb.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: pip3 install dbt-duckdb 2&gt;&amp;1 | tail -15</span><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>Consider adding this directory to PATH or</th><th>if you prefer to suppress this warning</th><th>use --no-warn-script-location.</th></tr></thead><tbody><tr><td>WARNING: The script slugify is installed in '/home/maestro/.local/bin' which is not on PATH.</td></tr><tr><td>Consider adding this directory to PATH or</td><td>if you prefer to suppress this warning</td><td>use --no-warn-script-location.</td></tr><tr><td>WARNING: The script normalizer is installed in '/home/maestro/.local/bin' which is not on PATH.</td></tr><tr><td>Consider adding this directory to PATH or</td><td>if you prefer to suppress this warning</td><td>use --no-warn-script-location.</td></tr><tr><td>WARNING: The script pybabel is installed in '/home/maestro/.local/bin' which is not on PATH.</td></tr><tr><td>Consider adding this directory to PATH or</td><td>if you prefer to suppress this warning</td><td>use --no-warn-script-location.</td></tr><tr><td>WARNING: The script deep is installed in '/home/maestro/.local/bin' which is not on PATH.</td></tr><tr><td>Consider adding this directory to PATH or</td><td>if you prefer to suppress this warning</td><td>use --no-warn-script-location.</td></tr><tr><td>WARNING: The script dbt is installed in '/home/maestro/.local/bin' which is not on PATH.</td></tr><tr><td>Consider adding this directory to PATH or</td><td>if you prefer to suppress this warning</td><td>use --no-warn-script-location.</td></tr><tr><td>Successfully installed Babel-2.18.0 agate-1.9.1 charset_normalizer-3.4.7 colorama-0.4.6 daff-1.4.2 dbt-adapters-1.24.2 dbt-common-1.38.0 dbt-core-1.11.11 dbt-duckdb-1.10.1 dbt-extractor-0.6.0 dbt-protos-1.0.514 dbt-semantic-interfaces-0.9.0 deepdiff-8.6.2 duckdb-1.5.4 importlib-metadata-8.9.0 isodate-0.7.2 leather-0.4.1 mashumaro-3.14 more-itertools-10.8.0 msgpack-1.2.0 networkx-3.6.1 orderly-set-5.5.0 parsedatetime-2.6 pathspec-0.12.1 protobuf-6.33.6 python-dateutil-2.9.0.post0 python-slugify-8.0.4 pytimeparse-1.1.8 pytz-2026.2 requests-2.34.2 six-1.17.0 snowplow-tracker-1.1.0 sqlparse-0.5.5 text-unidecode-1.3 urllib3-2.7.0 zipp-4.1.0</td></tr><tr><td></td></tr><tr><td>[notice] A new release of pip is available: 24.0 -&gt; 26.1.2</td></tr><tr><td>[notice] To update</td><td>run: pip install --upgrade pip</td></tr></tbody></table></div></div><div class="msg assistant"><div class="bubble"><p>dbt-duckdb installed. Let me verify the sqlite extension works and inspect the NBA schema for the columns I'll need.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: export PATH="$HOME/.local/bin:$PATH"
+dbt --version 2&gt;&amp;1 | he...</span><div class="tool-result">Exit code 1
+Core:
+  - installed: 1.11.11
+  - latest:    1.11.11 - Up to date!
+
+Plugins:
+=== test duckdb sqlite scanner ===
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 5, in &lt;module&gt;
+_duckdb.CatalogException: Catalog Error: Table with name sqlite_master does not exist!
+Did you mean "main.sqlite_master"?
+
+LINE 1: SELECT name FROM nba.sqlite_master WHERE type='table' ORDER BY name
+                         ^</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: python3 - &lt;&lt;'EOF'
+import duckdb
+con = duckdb.connect()
+con.e...</span><div class="tool-result">TABLES: ['common_player_info', 'draft_combine_stats', 'draft_history', 'game', 'game_info', 'game_summary', 'inactive_players', 'line_score', 'officials', 'other_stats', 'play_by_play', 'player', 'team', 'team_details', 'team_history', 'team_info_common']</div></div><div class="msg assistant"><div class="bubble"><p>Sqlite scanner works. Let me inspect schemas of the tables I'll transform.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: python3 - &lt;&lt;'EOF'
+import duckdb
+con = duckdb.connect()
+con.e...</span><div class="tool-result">=== team (7 cols) ===
+  id: VARCHAR
+  full_name: VARCHAR
+  abbreviation: VARCHAR
+  nickname: VARCHAR
+  city: VARCHAR
+  state: VARCHAR
+  year_founded: DOUBLE
+
+=== common_player_info (33 cols) ===
+  person_id: VARCHAR
+  first_name: VARCHAR
+  last_name: VARCHAR
+  display_first_last: VARCHAR
+  display_last_comma_first: VARCHAR
+  display_fi_last: VARCHAR
+  player_slug: VARCHAR
+  birthdate: TIMESTAMP
+  school: VARCHAR
+  country: VARCHAR
+  last_affiliation: VARCHAR
+  height: VARCHAR
+  weight: VARCHAR
+  season_exp: DOUBLE
+  jersey: VARCHAR
+  position: VARCHAR
+  rosterstatus: VARCHAR
+  games_played_current_season_flag: VARCHAR
+  team_id: BIGINT
+  team_name: VARCHAR
+  team_abbreviation: VARCHAR
+  team_code: VARCHAR
+  team_city: VARCHAR
+  playercode: VARCHAR
+  from_year: DOUBLE
+  to_year: DOUBLE
+  dl...</div></div><div class="msg assistant"><div class="bubble"><p>Let me check data types/values for the columns I'll clean.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: python3 - &lt;&lt;'EOF'
+import duckdb
+con = duckdb.connect()
+con.e...</span><div class="tool-result">game id/date/season types:
+  game_id: VARCHAR
+  game_date: TIMESTAMP
+  season_id: VARCHAR
+  team_id_home: VARCHAR
+  team_id_away: VARCHAR
+  min: BIGINT
+season_type values: [('Regular Season', 60192), ('Playoffs', 3842), ('Pre Season', 1536), ('All Star', 65), ('All-Star', 63)]
+sample game_date: [(datetime.datetime(1946, 11, 1, 0, 0),), (datetime.datetime(1946, 11, 2, 0, 0),), (datetime.datetime(1946, 11, 2, 0, 0),)]
+sample height/weight: [('6-10', '240'), ('6-9', '235'), ('7-2', '225')]
+birthdate sentinel: (1,)
+team count: (30,)
+team.id sample: [('1610612737', 'Atlanta Hawks'), ('1610612738', 'Boston Celtics'), ('1610612739', 'Cleveland Cavaliers')]
+game team_id sample: [('1610610035',), ('1610610025',), ('1610610031',)]
+cpi person_id sample: [('76001',), ('76002',), ('76003',)]
+player.id ...</div></div><div class="msg assistant"><div class="bubble"><p>Everything verified. Let me check distinct position values for the accepted_values test, then build the project.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: python3 - &lt;&lt;'EOF'
+import duckdb
+con = duckdb.connect()
+con.e...</span><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>positions: [(''</th><th>)</th><th>('Center'</th><th>)</th><th>('Center-Forward'</th><th>)</th><th>('Forward'</th><th>)</th><th>('Forward-Center'</th><th>)</th><th>('Forward-Guard'</th><th>)</th><th>('Guard'</th><th>)</th><th>('Guard-Forward'</th><th>)]</th></tr></thead><tbody><tr><td>min birthdate (non-sentinel): (datetime.date(1905</td><td>4</td><td>2)</td><td>)</td></tr><tr><td>game_id unique?: (65698</td><td>65642)</td></tr><tr><td>cpi person_id unique?: (3632</td><td>3632)</td></tr></tbody></table></div></div><div class="msg assistant"><div class="bubble"><p>Key finding: <code>game_id</code> is <strong>not unique</strong> (65698 rows, 65642 distinct → 56 dupes). I'll dedup in staging per the ERR post-mortem on duplicates. Now let me scaffold the dbt project.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: cd /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor
+mkdir -p nba_...</span><div class="tool-result">created
+analyses
+docs
+macros
+models
+seeds
+snapshots
+tests</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando dbt_project.yml</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/dbt_project.yml (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando profiles.yml</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/profiles.yml (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Now the macros and source declaration:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando unit_conversions.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/macros/unit_conversions.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando test_positive_values.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/tests/generic/test_positive_values.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando _stg__sources.yml</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/staging/_stg__sources.yml (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Let me verify the connection before building models.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>dbt debug</span><div class="tool-result">[0m13:27:59  adapter version: 1.10.1
+[0m13:27:59  Configuration:
+[0m13:27:59    profiles.yml file [[32mOK found and valid[0m]
+[0m13:27:59    dbt_project.yml file [[32mOK found and valid[0m]
+[0m13:27:59  Required dependencies:
+[0m13:27:59   - git [[32mOK found[0m]
+
+[0m13:27:59  Connection:
+[0m13:27:59    database: nba_dbt
+[0m13:27:59    schema: main
+[0m13:27:59    path: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/warehouse/nba_dbt.duckdb
+[0m13:27:59    config_options: None
+[0m13:27:59    extensions: ['sqlite']
+[0m13:27:59    settings: {}
+[0m13:27:59    external_root: .
+[0m13:27:59    use_credential_provider: None
+[0m13:27:59    attach: [{'path': '/data/databases/nba.sqlite', 'type': 'sqlite', 'alias': 'nba', 'secret': None, 'read_only': False, 'options': {'read_only': ...</div></div><div class="msg assistant"><div class="bubble"><p>Connection OK (read-only applied via options). Now I'll work through the roadmap sequentially. Let me set up task tracking and start with CLEAN-001.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>ToolSearch</span><div class="tool-result">[{'type': 'tool_reference', 'tool_name': 'TaskCreate'}, {'type': 'tool_reference', 'tool_name': 'TaskUpdate'}]</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #1 created successfully: CLEAN-001: stg team_info_common (empty)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #2 created successfully: CLEAN-002: player box score gap</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #3 created successfully: CLEAN-003: standardize season_type</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #4 created successfully: CLEAN-004: classify game teams</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #5 created successfully: CLEAN-005: parse height/weight</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #6 created successfully: CLEAN-006: birthdate sentinel</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #7 created successfully: CLEAN-007: clean position</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #8 created successfully: CLEAN-008: player coverage gap</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #9 created successfully: CLEAN-009: canonical franchise dim</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskCreate</span><div class="tool-result">Task #10 created successfully: CLEAN-010: coach hire date</div></div><div class="msg assistant"><div class="bubble"><p>Now I'll build the staging layer. Writing the staging models:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando stg_nba__teams.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/staging/stg_nba__teams.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando stg_nba__players.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/staging/stg_nba__players.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando stg_nba__player_info.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/staging/stg_nba__player_info.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando stg_nba__games.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/staging/stg_nba__games.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando stg_nba__team_details.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/staging/stg_nba__team_details.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando stg_nba__team_info_common.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/staging/stg_nba__team_info_common.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Now the staging models YAML (tests + docs) and the warn-severity emptiness test:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando assert_team_info_common_not_empty.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/tests/assert_team_info_common_not_empty.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando _stg__models.yml</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/staging/_stg__models.yml (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>I left a bogus placeholder test in the birthdate block. Let me fix it and add a proper singular domain test for birthdate (CLEAN-006).</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando _stg__models.yml</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/staging/_stg__models.yml has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando assert_player_info_birthdate_domain.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/tests/assert_player_info_birthdate_domain.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Now let me build and test the full staging layer:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>dbt build staging</span><div class="tool-result">[0m13:30:10  19 of 34 <span class="dbt-pass">OK</span> created sql view model main.stg_nba__players ....................... [[32mOK[0m in 0.37s]
+[0m13:30:10  23 of 34 START test assert_player_info_birthdate_domain ........................ [RUN]
+[0m13:30:10  24 of 34 START test not_null_stg_nba__player_info_player_id .................... [RUN]
+[0m13:30:10  22 of 34 <span class="dbt-pass">PASS</span> accepted_values_stg_nba__player_info_position_group__Guard__Forward__Center__Guard_Forward__Forward_Guard__Forward_Center__Center_Forward__Unknown  [[32mPASS[0m in 0.16s]
+[0m13:30:10  21 of 34 <span class="dbt-pass">PASS</span> accepted_values_stg_nba__player_info_position__Guard__Forward__Center__Guard_Forward__Forward_Guard__Forward_Center__Center_Forward  [[32mPASS[0m in 0.16s]
+[0m13:30:10  25 of 34 START test not_null_stg_nba__player_info_position_group .................</div></div><div class="msg assistant"><div class="bubble"><p>Staging green: <strong>PASS=33, WARN=1</strong> (the intended CLEAN-001 emptiness warning). Now the intermediate + mart layers for CLEAN-004, 008, 009.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando int_nba__games_classified.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/intermediate/int_nba__games_classified.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando int_nba__franchise_names.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/intermediate/int_nba__franchise_names.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando int_nba__player_coverage.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/intermediate/int_nba__player_coverage.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Now the marts:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando mart_nba__teams.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/marts/mart_nba__teams.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando mart_nba__games.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/marts/mart_nba__games.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando mart_nba__player_profiles.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/marts/mart_nba__player_profiles.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Now the intermediate and mart YAML with tests, plus mart non-empty singular tests:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando _int__models.yml</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/intermediate/_int__models.yml (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando _mart__models.yml</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/models/marts/_mart__models.yml (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando assert_marts_not_empty.sql</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/tests/assert_marts_not_empty.sql (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Now build the full pipeline (run + test in dependency order):</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>dbt build </span><div class="tool-result">[0m13:31:38  33 of 62 <span class="dbt-pass">PASS</span> unique_stg_nba__teams_team_id .................................... [[32mPASS[0m in 0.23s]
+[0m13:31:38  34 of 62 <span class="dbt-pass">PASS</span> not_null_stg_nba__players_player_id .............................. [[32mPASS[0m in 0.27s]
+[0m13:31:38  37 of 62 START sql table model main.mart_nba__teams ............................ [RUN]
+[0m13:31:38  38 of 62 START test not_null_int_nba__games_classified_game_id ................. [RUN]
+[0m13:31:38  35 of 62 <span class="dbt-pass">PASS</span> relationships_stg_nba__player_info_player_id__player_id__ref_stg_nba__players_  [[32mPASS[0m in 0.29s]
+[0m13:31:38  39 of 62 START test not_null_int_nba__games_classified_is_official_nba_matchup . [RUN]
+[0m13:31:38  36 of 62 <span class="dbt-pass">PASS</span> unique_stg_nba__players_player_id ................................ [[32mPASS[0m in 0.31s]
+[0m...</div></div><div class="msg assistant"><div class="bubble"><p>Full pipeline green: <strong>PASS=61, WARN=1</strong> (intended CLEAN-001), <strong>ERROR=0</strong>. Let me validate the business outcomes against the database.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Bash: python3 - &lt;&lt;'EOF'
+import duckdb
+con = duckdb.connect('/tmp/m...</span><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>CLEAN-003 season_type (mart): [('Regular Season'</th><th>60192)</th><th>('Playoffs'</th><th>3842)</th><th>('Pre Season'</th><th>1536)</th><th>('All-Star'</th><th>72)]</th></tr></thead><tbody><tr><td>CLEAN-004 official matchup flag: [(True</td><td>63703)</td><td>(False</td><td>1939)]</td></tr><tr><td>CLEAN-005 measures sample: [(Decimal('208.3')</td><td>108.9)</td><td>(Decimal('205.7')</td><td>106.6)</td><td>(Decimal('218.4')</td><td>102.1)]</td></tr><tr><td>CLEAN-006 sentinel birthdates remaining: (0</td><td>)</td></tr><tr><td>CLEAN-007 position_group dist: [('Guard'</td><td>1416)</td><td>('Forward'</td><td>1306)</td><td>('Unknown'</td><td>1228)</td><td>('Center'</td><td>497)</td><td>('Guard-Forward'</td><td>134)</td><td>('Forward-Center'</td><td>112)</td><td>('Center-Forward'</td><td>68)</td><td>('Forward-Guard'</td><td>54)]</td></tr><tr><td>CLEAN-008 coverage: [(False</td><td>1183)</td><td>(True</td><td>3632)]</td></tr><tr><td>CLEAN-009 multi-name franchises: [('Washington Wizards'</td><td>5)</td><td>('Sacramento Kings'</td><td>5)</td><td>('Atlanta Hawks'</td><td>4)</td><td>('Los Angeles Clippers'</td><td>4)</td><td>('New Orleans Pelicans'</td><td>3)]</td></tr></tbody></table></div></div><div class="msg assistant"><div class="bubble"><p>All cleaning outcomes verified. Note: the 56 deduped rows were all All-Star games (128→72 distinct), confirming the dedup worked correctly. Now I'll generate docs, set up Dagster, and update all knowledge files. Let me do these in parallel where independent.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>dbt docs</span><div class="tool-result">[0m13:32:11  Building catalog
+[0m13:32:11  Catalog written to /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/target/catalog.json
+=== manifest exists ===
+-rw-r--r-- 1 maestro maestro 780368 Jun 17 13:32 target/manifest.json</div></div><div class="msg assistant"><div class="bubble"><p>Now the Dagster integration (Rule 13) and pip install:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>dagster: pip3 install dagster dagster-dbt 2&gt;&amp;1 | tail -3</span><div class="tool-result">[notice] A new release of pip is available: 24.0 -&gt; 26.1.2
+[notice] To update, run: pip install --upgrade pip</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando definitions.py</span><div class="tool-result">File created successfully at: /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline/definitions.py (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>dagster: cd /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/nba_pipeline
+</span><div class="tool-result">=== dagster asset list ===
+/home/maestro/.local/lib/python3.11/site-packages/dagster/_core/definitions/antlr_asset_selection/antlr_asset_selection.py:100: BetaWarning: Parameter `include_sources` of function `AssetSelection.all` is currently in beta, and may have breaking changes in minor version releases, with behavior changes in patch releases.
+  return AssetSelection.all(include_sources=self.include_sources)
+mart_nba__games
+mart_nba__player_profiles
+mart_nba__teams
+stg_nba__games
+stg_nba__player_info
+stg_nba__players
+stg_nba__team_details
+stg_nba__team_info_common
+stg_nba__teams</div></div><div class="msg assistant"><div class="bubble"><p>Dagster assets load. Now I'll update all knowledge files. Writing MODELS.md, TESTS.md, PIPELINE.md, and appending the dedup finding to ERRORS.md:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando MODELS.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/MODELS.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando TESTS.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/TESTS.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Criando PIPELINE.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/PIPELINE.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Now append the dedup learning to ERRORS.md and mark roadmap items:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando ERRORS.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/ERRORS.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Now mark the roadmap items. Let me update the CLEANING_ROADMAP.md headers with status:</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Editando CLEANING_ROADMAP.md</span><div class="tool-result">The file /tmp/maestro-deng-47db742bf8e7b3e3-ryih7kor/CLEANING_ROADMAP.md has been updated successfully. (file state is current in your context — no need to Read it back)</div></div><div class="msg assistant"><div class="bubble"><p>Now let me mark all tasks complete and set up git with atomic-ish commits.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #1 status</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #2 status</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #3 status</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #4 status</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #5 status</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #6 status</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #7 status</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #8 status</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #9 status</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>TaskUpdate</span><div class="tool-result">Updated task #10 status</div></div><div class="msg result-msg"><span class="badge"><span>Concluido</span> <span><strong>$3.19</strong></span> <span>51 turns</span></span></div></div>
+
+            <div class="qa-banner" id="qaBanner">
+                <div class="qa-question" id="qaQuestion"></div>
+                <div class="qa-actions">
+                    <input type="text" id="qaInput" placeholder="Sua resposta...">
+                    <button onclick="answerQA()">Enviar</button>
+                </div>
+            </div>
+
+            <div class="typing" id="typing">
+                <div class="typing-dots"><span></span><span></span><span></span></div>
+                <span id="typingText">Pensando...</span>
+            </div>
+
+            <div class="input-bar">
+                <div class="input-wrapper">
+                    <input type="text" id="userInput" placeholder="Instrucoes para o engenheiro de dados..." onkeydown="if(event.key===&#39;Enter&#39;)send()">
+                    <button class="send-btn" id="sendBtn" onclick="send()">▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MAESTRO = 'http://localhost:8000';
+        const WS_BASE = 'ws://localhost:8000';
+
+        // ── Profile config ──
+        const PROFILES = {
+            'sql-agent': {
+                label: 'SQL Agent',
+                storageKey: 'sql-agent-session',
+                placeholder: 'Pergunte sobre os dados...',
+                emptyTitle: 'Ready when you are.',
+                emptyDesc: 'Aponte para um banco e pergunte em portugues.',
+                typingDefault: 'Analisando...',
+            },
+            'data-eng': {
+                label: 'Data Engineer',
+                storageKey: 'data-eng-session',
+                placeholder: 'Instrucoes para o engenheiro de dados...',
+                emptyTitle: 'dbt Pipeline Builder',
+                emptyDesc: 'Selecione um banco com CLEANING_ROADMAP pronto e inicie o pipeline.',
+                typingDefault: 'Construindo pipeline...',
+            },
+        };
+
+        // ── Readonly viewer mode (used by manager.html iframe) ─────────────
+        // URL: ?session=<id>&readonly=1 attaches read-only to an existing session
+        const URL_PARAMS = new URLSearchParams(window.location.search);
+        const URL_SESSION = URL_PARAMS.get('session');
+        const IS_READONLY = URL_PARAMS.get('readonly') === '1';
+        if (IS_READONLY) document.body.classList.add('readonly');
+
+        let activeProfile = 'sql-agent';
+        let sessionId = URL_SESSION || localStorage.getItem(PROFILES[activeProfile].storageKey) || null;
+        let ws = null;
+        let assistantBuffer = '';
+        // ── DOM refs ──
+        const messagesEl = document.getElementById('messages');
+        const emptyState = document.getElementById('emptyState');
+
+        // Copy icon (two overlapping rounded rects) for the SQL block header.
+        const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+
+        // Copy the raw SQL when the block's copy button is clicked (delegated).
+        messagesEl.addEventListener('click', (e) => {
+            const btn = e.target.closest('.sql-copy');
+            if (!btn) return;
+            const code = btn.closest('.sql-query').querySelector('code');
+            navigator.clipboard.writeText(code.textContent).then(() => {
+                btn.classList.add('copied');
+                setTimeout(() => btn.classList.remove('copied'), 1200);
+            }).catch(() => {});
+        });
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typing = document.getElementById('typing');
+        const typingText = document.getElementById('typingText');
+        const qaBanner = document.getElementById('qaBanner');
+        const qaQuestion = document.getElementById('qaQuestion');
+        const qaInput = document.getElementById('qaInput');
+        const connectBtn = document.getElementById('connectBtn');
+        const connOverlay = document.getElementById('connOverlay');
+        const connClose = document.getElementById('connClose');
+        const connFiles = document.getElementById('connFiles');
+        const connHint = document.getElementById('connHint');
+        const connPath = document.getElementById('connPath');
+
+        // Selected connection: {id, name} or null. The agent queries by
+        // connection_id (registered with the sql-processor), never by path.
+        let connection = null;
+
+        const modelNameEl = document.querySelector('.topbar .model-name');
+
+        // ── Profile switcher ──
+        function switchProfile(profile) {
+            if (profile === activeProfile) return;
+
+            // Disconnect current WS
+            if (ws) { ws.close(); ws = null; }
+
+            // Save nothing — each profile has its own localStorage key
+            activeProfile = profile;
+            const cfg = PROFILES[activeProfile];
+            sessionId = localStorage.getItem(cfg.storageKey) || null;
+
+            // Update sidebar active state
+            document.querySelectorAll('.profile-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.profile === activeProfile);
+            });
+
+            // Update topbar + input
+            modelNameEl.textContent = cfg.label;
+            userInput.placeholder = cfg.placeholder;
+
+            // Clear chat
+            currentAssistantBubble = null;
+            assistantBuffer = '';
+            thinkEl = null; thinkParts = [];
+            while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
+            messagesEl.appendChild(emptyState);
+            emptyState.style.display = '';
+            emptyState.querySelector('h2').textContent = cfg.emptyTitle;
+            emptyState.querySelector('p').textContent = cfg.emptyDesc;
+
+            // Reconnect if session exists
+            if (sessionId) {
+                fetch(MAESTRO + '/sessions/' + sessionId + '/status')
+                    .then(r => { if (r.ok) return r.json(); throw new Error('gone'); })
+                    .then(() => {
+                        emptyState.style.display = 'none';
+                        connectWS();
+                        sendBtn.disabled = false;
+                    })
+                    .catch(() => {
+                        sessionId = null;
+                        localStorage.removeItem(cfg.storageKey);
+                    });
+            }
+        }
+
+        // ── Connect modal: pick a local file → register → connection_id ──
+        const SQL_PROCESSOR = 'http://localhost:8001';
+        const connKey = () => PROFILES[activeProfile].storageKey + '-conn';
+
+        function setConnection(conn) {
+            connection = conn;
+            if (conn) {
+                connectBtn.textContent = conn.name;
+                connectBtn.classList.add('connected');
+                localStorage.setItem(connKey(), JSON.stringify(conn));
+            } else {
+                connectBtn.textContent = 'Conectar';
+                connectBtn.classList.remove('connected');
+                localStorage.removeItem(connKey());
+            }
+        }
+
+        function resetSession() {
+            if (sessionId) {
+                fetch(MAESTRO + '/sessions/' + sessionId, { method: 'DELETE' }).catch(() => {});
+            }
+            sessionId = null;
+            localStorage.removeItem(PROFILES[activeProfile].storageKey);
+            if (ws) { ws.close(); ws = null; }
+            while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
+            messagesEl.appendChild(emptyState);
+            emptyState.style.display = '';
+            currentAssistantBubble = null;
+            thinkEl = null; thinkParts = [];
+        }
+
+        function row(label, cls, onClick) {
+            const li = document.createElement('li');
+            li.className = 'conn-file' + (cls ? ' ' + cls : '');
+            const name = document.createElement('span');
+            name.textContent = label;
+            li.appendChild(name);
+            li.addEventListener('click', onClick);
+            return li;
+        }
+
+        // Navigate any folder the container can see. path=null → server default.
+        function browseTo(path) {
+            connHint.textContent = 'Carregando…';
+            connFiles.innerHTML = '';
+            const url = SQL_PROCESSOR + '/connections/browse' + (path ? '?path=' + encodeURIComponent(path) : '');
+            fetch(url)
+                .then(r => { if (!r.ok) throw new Error('browse'); return r.json(); })
+                .then(data => {
+                    connPath.value = data.path;
+                    connHint.textContent = 'Navegue ou cole um caminho. Clique num arquivo para conectar.';
+                    if (data.parent) {
+                        connFiles.appendChild(row('📁 ..', 'dir', () => browseTo(data.parent)));
+                    }
+                    (data.dirs || []).forEach(d => {
+                        connFiles.appendChild(row('📁 ' + d.name, 'dir', () => browseTo(d.path)));
+                    });
+                    (data.files || []).forEach(f => {
+                        const li = row(f.name, '', () => connectLocal(f.path, f.name));
+                        const sz = document.createElement('span');
+                        sz.className = 'sz';
+                        sz.textContent = (f.size / 1e6).toFixed(1) + ' MB';
+                        li.appendChild(sz);
+                        connFiles.appendChild(li);
+                    });
+                    if (!data.dirs.length && !data.files.length) {
+                        connHint.textContent = 'Pasta vazia (sem subpastas nem bancos).';
+                    }
+                })
+                .catch(() => { connHint.textContent = 'Não foi possível abrir essa pasta.'; });
+        }
+
+        function openConnModal() {
+            connOverlay.hidden = false;
+            showConnTab(false);   // always open on Local
+            browseTo(null);
+        }
+
+        function closeConnModal() { connOverlay.hidden = true; }
+
+        async function connectLocal(path, name) {
+            const type = (name.split('.').pop() || '').toLowerCase();
+            try {
+                const r = await fetch(SQL_PROCESSOR + '/connections', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type, path }),
+                });
+                if (!r.ok) throw new Error('register failed');
+                const { connection_id, db_key } = await r.json();
+                resetSession();               // new database → fresh session
+                setConnection({ id: connection_id, name, db_key });
+                closeConnModal();
+            } catch (e) {
+                connHint.textContent = 'Não foi possível conectar a ' + name + '.';
+            }
+        }
+
+        // ── Remote (Postgres): form → /connections/remote → connection_id ──
+        // localhost counts as remote — the engine is the Postgres driver, not a
+        // local file scan. Credentials go to the server's vault; the browser
+        // keeps only the opaque id (never the password).
+        const tabLocal = document.getElementById('tabLocal');
+        const tabRemote = document.getElementById('tabRemote');
+        const panelLocal = document.getElementById('panelLocal');
+        const panelRemote = document.getElementById('panelRemote');
+        const rHint = document.getElementById('rHint');
+        const rConnect = document.getElementById('rConnect');
+
+        function showConnTab(remote) {
+            tabLocal.classList.toggle('active', !remote);
+            tabRemote.classList.toggle('active', remote);
+            panelLocal.hidden = remote;
+            panelRemote.hidden = !remote;
+        }
+        tabLocal.addEventListener('click', () => showConnTab(false));
+        tabRemote.addEventListener('click', () => showConnTab(true));
+
+        async function connectRemote() {
+            const host = document.getElementById('rHost').value.trim();
+            const database = document.getElementById('rDb').value.trim();
+            if (!host || !database) { rHint.textContent = 'Informe ao menos host e database.'; return; }
+            const body = {
+                type: 'postgres', host, database,
+                port: parseInt(document.getElementById('rPort').value.trim(), 10) || 5432,
+                user: document.getElementById('rUser').value.trim() || 'postgres',
+                password: document.getElementById('rPass').value,   // sent once, kept only in the vault
+            };
+            rConnect.disabled = true; rHint.textContent = 'Conectando…';
+            try {
+                const r = await fetch(SQL_PROCESSOR + '/connections/remote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                if (!r.ok) throw new Error('register failed');
+                const { connection_id, db_key } = await r.json();
+                document.getElementById('rPass').value = '';   // don't leave it in the DOM
+                resetSession();                                 // new database → fresh session
+                setConnection({ id: connection_id, name: database, db_key });
+                closeConnModal();
+            } catch (e) {
+                rHint.textContent = 'Não foi possível conectar a ' + host + '/' + database + '.';
+            } finally {
+                rConnect.disabled = false;
+            }
+        }
+        rConnect.addEventListener('click', connectRemote);
+        panelRemote.addEventListener('keydown', (e) => { if (e.key === 'Enter') connectRemote(); });
+
+        connectBtn.addEventListener('click', openConnModal);
+        connClose.addEventListener('click', closeConnModal);
+        connPath.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && connPath.value.trim()) browseTo(connPath.value.trim());
+        });
+        connOverlay.addEventListener('click', (e) => { if (e.target === connOverlay) closeConnModal(); });
+
+        tryReconnect();
+
+        // ── Create session on first message ──
+        async function ensureSession(prompt) {
+            if (sessionId) return;
+            if (!connection) return;
+            const r = await fetch(MAESTRO + '/sessions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    profile: activeProfile,
+                    prompt: prompt,
+                    // db_key keys the agent's knowledge files per-database
+                    // (avoids the shared-default-path collision).
+                    options: { connection_id: connection.id, db_key: connection.db_key },
+                }),
+            });
+            const data = await r.json();
+            sessionId = data.session_id;
+            localStorage.setItem(PROFILES[activeProfile].storageKey, sessionId);
+            connectWS();
+        }
+
+        // ── WebSocket ──
+        function connectWS() {
+            if (ws) return;
+            ws = new WebSocket(WS_BASE + '/sessions/' + sessionId + '/ws');
+            ws.onmessage = (e) => handleEvent(JSON.parse(e.data));
+            ws.onclose = () => { ws = null; };
+        }
+
+        // ── Handle events ──
+        let currentAssistantBubble = null;
+        const toolRegistry = {};  // tool_id → {el: DOM, name: str}
+
+        // Thinking: a live muted element that overwrites with the latest thought,
+        // then collapses to "💭 Pensou por Xs ›" (click to expand the reasoning).
+        let thinkEl = null, thinkStart = 0, thinkParts = [];
+
+        function finalizeThinking() {
+            if (!thinkEl) return;
+            const secs = Math.max(1, Math.round((Date.now() - thinkStart) / 1000));
+            const full = thinkParts.join('\n\n');
+            const btn = document.createElement('button');
+            btn.className = 'think-toggle';
+            const body = document.createElement('div');
+            body.className = 'think-body';
+            body.hidden = true;
+            body.textContent = full;
+            const setLabel = () => { btn.textContent = `💭 Pensou por ${secs}s ${body.hidden ? '›' : '⌄'}`; };
+            btn.onclick = () => { body.hidden = !body.hidden; setLabel(); };
+            setLabel();
+            thinkEl.innerHTML = '';
+            thinkEl.appendChild(btn);
+            if (full) thinkEl.appendChild(body);
+            thinkEl = null;
+            thinkParts = [];
+        }
+
+        function toolLabel(name, input) {
+            const file = (input.file_path || '').split('/').pop();
+            if (name === 'Bash') {
+                const cmd = input.command || '';
+                // dbt/dagster commands (Data Eng)
+                if (cmd.includes('dbt run')) return 'dbt run ' + extractDbtSelect(cmd);
+                if (cmd.includes('dbt test')) return 'dbt test ' + extractDbtSelect(cmd);
+                if (cmd.includes('dbt build')) return 'dbt build ' + extractDbtSelect(cmd);
+                if (cmd.includes('dbt compile')) return 'dbt compile ' + extractDbtSelect(cmd);
+                if (cmd.includes('dbt debug')) return 'dbt debug';
+                if (cmd.includes('dbt init')) return 'dbt init';
+                if (cmd.includes('dbt docs')) return 'dbt docs';
+                if (cmd.includes('dbt source')) return 'dbt source freshness';
+                if (cmd.includes('dagster')) return 'dagster: ' + cmd.substring(0, 60);
+                // SQL queries (SQL Agent)
+                const sql = extractSQL(cmd);
+                if (sql) return 'Executando query...';
+                const short = cmd.length > 60 ? cmd.substring(0, 60) + '...' : cmd;
+                return 'Bash: ' + short;
+            }
+            if (name === 'Write') return 'Criando ' + file;
+            if (name === 'Edit') return 'Editando ' + file;
+            if (name === 'Read') return 'Lendo ' + file;
+            if (name === 'Glob') return 'Buscando: ' + (input.pattern || '');
+            if (name === 'Grep') return 'Grep: ' + (input.pattern || '');
+            return name;
+        }
+
+        function extractDbtSelect(cmd) {
+            const m = cmd.match(/--select\s+(\S+)/);
+            return m ? m[1] : '';
+        }
+
+        function sendChoice(question, opt) {
+            // Send the pick framed as the answer to the agent's own question,
+            // so it doesn't read a bare label as a context-less fragment.
+            userInput.value = question ? `Para a pergunta "${question}", escolho: ${opt}` : opt;
+            send();
+        }
+
+        // Detect the ===ASK===…===/ASK=== disambiguation block in assistant
+        // output → render preamble + clickable options. Deterministic markers
+        // (like ===HANDOFF===), parsed by delimiter — never NL regex.
+        function tryRenderAsk(bubble, buffer) {
+            const open = buffer.indexOf('===ASK===');
+            const close = buffer.indexOf('===/ASK===');
+            if (open === -1 || close === -1 || close < open) return false;
+            let spec;
+            try { spec = JSON.parse(buffer.slice(open + 9, close).trim()); }
+            catch (e) { return false; }
+            if (!spec || !Array.isArray(spec.options) || !spec.options.length) return false;
+
+            bubble.classList.add('has-ask');
+            bubble.innerHTML = '';
+
+            // The model may wrap the marker in a ``` fence — drop a dangling
+            // opening fence so it isn't rendered as an empty (black) code block.
+            const preamble = buffer.slice(0, open).replace(/`{3}[a-z]*\s*$/i, '').trim();
+            if (preamble) {
+                const pre = document.createElement('div');
+                pre.className = 'ask-preamble';
+                pre.innerHTML = marked.parse(preamble);
+                bubble.appendChild(pre);
+            }
+
+            const card = document.createElement('div');
+            card.className = 'ask-card';
+            if (spec.question) {
+                const h = document.createElement('div');
+                h.className = 'ask-card-header';
+                h.textContent = spec.question;
+                card.appendChild(h);
+            }
+            const choose = (row, text) => {
+                card.classList.add('answered');
+                row.classList.add('chosen');
+                sendChoice(spec.question, text);
+            };
+            spec.options.forEach((opt, i) => {
+                const text = String(opt);
+                const row = document.createElement('div');
+                row.className = 'ask-row';
+                row.innerHTML = `<span class="ask-num">${i + 1}</span><span class="ask-label"></span>`;
+                row.querySelector('.ask-label').textContent = text;
+                row.onclick = () => choose(row, text);
+                card.appendChild(row);
+            });
+            // "Outro" — answer freely in the input below
+            const other = document.createElement('div');
+            other.className = 'ask-row other';
+            other.innerHTML = '<span class="ask-num">✎</span><span class="ask-label">Outro (responder abaixo)</span>';
+            other.onclick = () => userInput.focus();
+            card.appendChild(other);
+
+            bubble.appendChild(card);
+            return true;
+        }
+
+        function handleEvent(ev) {
+            const t = ev.type;
+
+            // Any real content ends the current thinking burst → collapse it.
+            // (system = SDK metadata like thinking_tokens, which interleaves.)
+            if (t !== 'thinking' && t !== 'system') finalizeThinking();
+
+            if (t === 'system') {
+                // SDK SystemMessage events carry subtype/data but no human text —
+                // rendering them produced empty lines (the growing blank gap).
+                // Only show lifecycle messages that actually have text.
+                if (ev.message) addMessage('system-msg', ev.message);
+                showTyping(true, 'Pensando...');
+            }
+
+            else if (t === 'assistant') {
+                showTyping(false);
+                if (!currentAssistantBubble) {
+                    assistantBuffer = '';
+                    const msg = addMessage('assistant', '');
+                    currentAssistantBubble = msg.querySelector('.bubble');
+                }
+                assistantBuffer += ev.text || '';
+                const askOpen = assistantBuffer.indexOf('===ASK===');
+                if (askOpen !== -1 && assistantBuffer.indexOf('===/ASK===') === -1) {
+                    // marker open but not closed yet — boxless + muted placeholder
+                    // (avoids the empty dark "black box" while it streams)
+                    currentAssistantBubble.classList.add('has-ask');
+                    const pre = assistantBuffer.slice(0, askOpen).replace(/`{3}[a-z]*\s*$/i, '').trim();
+                    currentAssistantBubble.innerHTML = pre
+                        ? marked.parse(pre)
+                        : '<span class="think-live">preparando opções…</span>';
+                } else if (!tryRenderAsk(currentAssistantBubble, assistantBuffer)) {
+                    currentAssistantBubble.innerHTML = marked.parse(assistantBuffer);
+                }
+                scrollBottom();
+            }
+
+            else if (t === 'thinking') {
+                const txt = (ev.text || '').trim();
+                if (!txt) return;
+                if (!thinkEl) {
+                    thinkEl = document.createElement('div');
+                    thinkEl.className = 'msg thinking';
+                    thinkEl.innerHTML = '<div class="think-live">💭 <span class="think-text"></span></div>';
+                    messagesEl.appendChild(thinkEl);
+                    thinkStart = Date.now();
+                    thinkParts = [];
+                }
+                thinkParts.push(txt);
+                thinkEl.querySelector('.think-text').textContent = txt;  // overwrite live
+                showTyping(true, 'Pensando...');
+                scrollBottom();
+            }
+
+            else if (t === 'question') {
+                showTyping(false);
+                currentAssistantBubble = null;
+                const question = ev.question || ev.message || 'O agente precisa de uma resposta.';
+                showQA(question);
+            }
+
+            else if (t === 'tool_use') {
+                currentAssistantBubble = null;
+                const name = ev.tool_name || '?';
+                const input = ev.input || {};
+                const toolId = ev.tool_id;
+
+                // Always show the tool action inline
+                const label = toolLabel(name, input);
+                const el = addToolIndicator(label);
+
+                // Register for pairing with tool_result
+                if (toolId) toolRegistry[toolId] = { el, name };
+
+                // Special: SQL gets highlighted block appended to the indicator
+                if (name === 'Bash') {
+                    const cmd = input.command || '';
+                    const sql = extractSQL(cmd);
+                    if (sql) {
+                        const formatted = formatSQL(sql);
+                        const highlighted = hljs.highlight(formatted, { language: 'sql' }).value;
+                        el.insertAdjacentHTML('beforeend',
+                            `<div class="sql-query">`
+                            + `<div class="sql-head">`
+                            + `<span class="sql-label">&lt;/&gt; SQL</span>`
+                            + `<button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL">${COPY_ICON}</button>`
+                            + `</div>`
+                            + `<pre><code class="hljs language-sql">${highlighted}</code></pre>`
+                            + `</div>`);
+                    }
+                }
+
+                showTyping(true, label);
+            }
+
+            else if (t === 'tool_result') {
+                showTyping(true, 'Pensando...');
+                const content = String(ev.content || '').trim();
+                const useId = ev.tool_use_id;
+                const entry = useId && toolRegistry[useId];
+                const parentEl = entry ? entry.el : null;
+                const toolName = entry ? entry.name : '';
+
+                if (!content || content.length < 5) return;
+
+                let html;
+                // Plot reference — fetch SVG directly from sql-processor
+                const plotMatch = content.match(/"plot_id"\s*:\s*"([^"]+)"/);
+                if (plotMatch) {
+                    const plotId = plotMatch[1];
+                    const chartDiv = document.createElement('div');
+                    chartDiv.className = 'chart-container';
+                    chartDiv.textContent = 'Loading chart...';
+                    const target = parentEl || document.getElementById('messages');
+                    target.appendChild(chartDiv);
+                    scrollBottom();
+                    fetch(`${SQL_PROCESSOR}/plot/${plotId}`)
+                        .then(r => r.text())
+                        .then(svg => {
+                            let clean = svg.replace(/width="[^"]*"/i, '').replace(/height="[^"]*"/i, '');
+                            chartDiv.innerHTML = clean;
+                            scrollBottom();
+                        })
+                        .catch(() => { chartDiv.textContent = 'Failed to load chart.'; });
+                    html = null;
+                }
+                // SVG chart — render inline (fallback)
+                else if (content.includes('<svg') && content.includes('</svg>')) {
+                    const svgStart = content.indexOf('<svg');
+                    const svgEnd = content.indexOf('</svg>') + 6;
+                    let svgString = content.substring(svgStart, svgEnd);
+                    svgString = svgString.replace(/width="[^"]*"/i, '').replace(/height="[^"]*"/i, '');
+                    html = `<div class="chart-container">${svgString}</div>`;
+                }
+                // CSV table for query results
+                else if (toolName === 'Bash' && looksLikeCSV(content)) {
+                    html = csvToTable(content);
+                } else {
+                    const truncated = content.length > 800;
+                    const preview = truncated ? content.substring(0, 800) + '...' : content;
+                    // Colorize dbt output (PASS/FAIL/WARN)
+                    if (activeProfile === 'data-eng' && /\b(PASS|FAIL|ERROR|WARN|OK|SUCCESS)\b/.test(preview)) {
+                        html = `<div class="tool-result">${colorizeDbt(preview)}</div>`;
+                    } else {
+                        html = `<div class="tool-result">${escapeHtml(preview)}</div>`;
+                    }
+                }
+
+                if (html !== null) {
+                    if (parentEl) {
+                        parentEl.insertAdjacentHTML('beforeend', html);
+                    } else {
+                        const msg = addMessage('tool', '');
+                        msg.innerHTML = html;
+                    }
+                    scrollBottom();
+                }
+            }
+
+            else if (t === 'result') {
+                currentAssistantBubble = null;
+                showTyping(false);
+                const cost = ev.cost_usd ? '$' + Number(ev.cost_usd).toFixed(2) : '?';
+                const turns = ev.num_turns || '?';
+                addMessage('result-msg',
+                    `<span class="badge"><span>Concluido</span> <span><strong>${cost}</strong></span> <span>${turns} turns</span></span>`
+                );
+                sendBtn.disabled = false;
+            }
+
+            else if (t === 'error') {
+                currentAssistantBubble = null;
+                showTyping(false);
+                addMessage('system-msg', 'Erro: ' + (ev.message || ev.error || ''));
+                sendBtn.disabled = false;
+            }
+        }
+
+        // ── Extract SQL from curl command ──
+        function extractSQL(cmd) {
+            // query_string inside a JSON payload. Capture the WHOLE JSON string
+            // (escaped quotes/backslashes included) then unescape it, so queries
+            // with double-quoted identifiers, newlines or special chars don't get
+            // cut at the first `\"`.
+            const m = cmd.match(/"query_string"\s*:\s*"((?:\\.|[^"\\])*)"/);
+            if (m) {
+                try { return JSON.parse('"' + m[1] + '"'); }
+                catch (e) { return m[1].replace(/\\(["\\/])/g, '$1').replace(/\\n/g, '\n'); }
+            }
+            // Fallback: bare -d form without JSON quoting.
+            const m2 = cmd.match(/query_string['":\s]+([^}'"]+)/);
+            if (m2) return m2[1].replace(/['"\\]/g, '').trim();
+            return null;
+        }
+
+        // ── Format SQL for display ──
+        function formatSQL(sql) {
+            // Replace literal \n with real newlines
+            let s = sql.replace(/\\n/g, '\n');
+            // If still single-line, add breaks before major keywords
+            if (!s.includes('\n') || s.split('\n').length < 3) {
+                s = s.replace(/\b(SELECT|FROM|WHERE|JOIN|LEFT JOIN|RIGHT JOIN|INNER JOIN|OUTER JOIN|CROSS JOIN|ON|AND|OR|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|UNION|UNION ALL|WITH|AS \(|INSERT|UPDATE|DELETE|SET|VALUES|INTO|CREATE|ALTER|DROP|CASE|WHEN|THEN|ELSE|END)\b/gi, '\n$1');
+                s = s.trim();
+            }
+            return s;
+        }
+
+        // ── CSV detection ──
+        function looksLikeCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return false;
+            const commas = (lines[0].match(/,/g) || []).length;
+            return commas >= 1 && lines.length >= 2;
+        }
+
+        // ── CSV → HTML table ──
+        function csvToTable(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = parseCSVLine(lines[0]);
+            const maxRows = 50;
+            const dataLines = lines.slice(1, maxRows + 1);
+            const totalRows = lines.length - 1;
+
+            let html = '<div class="csv-table-wrapper"><table class="csv-table"><thead><tr>';
+            headers.forEach(h => { html += `<th>${escapeHtml(h)}</th>`; });
+            html += '</tr></thead><tbody>';
+
+            dataLines.forEach(line => {
+                const cols = parseCSVLine(line);
+                html += '<tr>';
+                cols.forEach(c => { html += `<td>${escapeHtml(c)}</td>`; });
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            if (totalRows > maxRows) {
+                html += `<tfoot><tr><td colspan="${headers.length}" class="row-count">Mostrando ${maxRows} de ${totalRows} linhas</td></tr></tfoot>`;
+            }
+            html += '</table></div>';
+            return html;
+        }
+
+        // ── Simple CSV line parser (handles quoted fields) ──
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const c = line[i];
+                if (c === '"') { inQuotes = !inQuotes; }
+                else if (c === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+                else { current += c; }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        // ── Send message ──
+        async function send() {
+            if (IS_READONLY) return;
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Must connect a database first (changing it resets the session
+            // in connectLocal, so no stale-db check is needed here).
+            if (!connection) {
+                connectBtn.classList.remove('flash');
+                void connectBtn.offsetWidth;
+                connectBtn.classList.add('flash');
+                openConnModal();
+                return;
+            }
+
+            // Now safe to mutate DOM
+            emptyState.style.display = 'none';
+            addMessage('user', text);
+            userInput.value = '';
+            sendBtn.disabled = true;
+            currentAssistantBubble = null;
+
+            if (!sessionId) {
+                await ensureSession(text);
+                if (!sessionId) return;
+            } else {
+                let r = await fetch(MAESTRO + '/sessions/' + sessionId + '/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text }),
+                });
+                if (!r.ok) {
+                    r = await fetch(MAESTRO + '/sessions/' + sessionId + '/resume', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: text }),
+                    });
+                    if (!r.ok) {
+                        sessionId = null;
+                        localStorage.removeItem(PROFILES[activeProfile].storageKey);
+                        await ensureSession(text);
+                    }
+                }
+            }
+        }
+
+        // ── Answer Q&A ──
+        async function answerQA() {
+            const answer = qaInput.value.trim();
+            if (!answer || !sessionId) return;
+
+            qaBanner.classList.remove('visible');
+            addMessage('user', answer);
+            qaInput.value = '';
+
+            await fetch(MAESTRO + '/sessions/' + sessionId + '/answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answer: answer }),
+            });
+        }
+
+        function showQA(question) {
+            qaQuestion.textContent = question;
+            qaBanner.classList.add('visible');
+            qaInput.focus();
+            qaInput.onkeydown = (e) => { if (e.key === 'Enter') answerQA(); };
+        }
+
+        // ── UI helpers ──
+        function addMessage(type, content) {
+            const div = document.createElement('div');
+            div.className = 'msg ' + type;
+            if (type === 'user') {
+                div.innerHTML = `<div class="bubble">${escapeHtml(content)}</div>`;
+            } else if (type === 'assistant') {
+                div.innerHTML = `<div class="bubble"></div>`;
+            } else if (type === 'result-msg') {
+                div.innerHTML = content;
+            } else {
+                div.textContent = content;
+            }
+            messagesEl.appendChild(div);
+            scrollBottom();
+            return div;
+        }
+
+        function addToolIndicator(text) {
+            const div = document.createElement('div');
+            div.className = 'msg tool';
+            div.innerHTML = `<span class="tool-indicator"><span class="dot"></span>${escapeHtml(text)}</span>`;
+            messagesEl.appendChild(div);
+            scrollBottom();
+            return div;
+        }
+
+        function showTyping(show, text) {
+            typing.classList.toggle('visible', show);
+            if (text) typingText.textContent = text;
+        }
+
+        function scrollBottom() {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function escapeHtml(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function colorizeDbt(text) {
+            return escapeHtml(text)
+                .replace(/\bPASS\b/g, '<span class="dbt-pass">PASS</span>')
+                .replace(/\bOK\b/g, '<span class="dbt-pass">OK</span>')
+                .replace(/\bSUCCESS\b/g, '<span class="dbt-pass">SUCCESS</span>')
+                .replace(/\bFAIL\b/g, '<span class="dbt-fail">FAIL</span>')
+                .replace(/\bERROR\b/g, '<span class="dbt-fail">ERROR</span>')
+                .replace(/\bWARN\b/g, '<span class="dbt-warn">WARN</span>')
+                .replace(/\bSKIP\b/g, '<span class="dbt-warn">SKIP</span>');
+        }
+
+        // Reconnect saved session (called after database options are loaded)
+        function tryReconnect() {
+            if (!sessionId) return;
+            // Readonly viewer: just attach to the WS, skip db/storage logic.
+            if (IS_READONLY) {
+                emptyState.style.display = 'none';
+                connectWS();
+                return;
+            }
+            // Restore the saved connection so the button reflects it.
+            const savedConn = localStorage.getItem(connKey());
+            if (savedConn) {
+                try { setConnection(JSON.parse(savedConn)); } catch (e) {}
+            }
+            // No connection → the session can't be used; drop it.
+            if (!connection) {
+                sessionId = null;
+                localStorage.removeItem(PROFILES[activeProfile].storageKey);
+                return;
+            }
+            fetch(MAESTRO + '/sessions/' + sessionId + '/status')
+                .then(r => {
+                    if (r.ok) return r.json();
+                    throw new Error('gone');
+                })
+                .then(() => {
+                    emptyState.style.display = 'none';
+                    connectWS();
+                    sendBtn.disabled = false;
+                })
+                .catch(() => {
+                    sessionId = null;
+                    localStorage.removeItem(PROFILES[activeProfile].storageKey);
+                });
+        }
+
+        // Focus input on load
+        userInput.focus();
+
+        // ── PROVIDER PICKER ───────────────────────────────────────────
+        const PROVIDER_OPTIONS = [
+            { label: 'Claude',           provider: 'claude',     model: null,                                       sub: 'Anthropic (padrão)' },
+            { label: 'Claude Sonnet 4.5',provider: 'openrouter', model: 'anthropic/claude-sonnet-4.5',              sub: 'via OpenRouter' },
+            { label: 'GPT-4o',           provider: 'openrouter', model: 'openai/gpt-4o',                            sub: 'via OpenRouter' },
+            { label: 'GPT-4o mini',      provider: 'openrouter', model: 'openai/gpt-4o-mini',                       sub: 'via OpenRouter' },
+            { label: 'Gemini 2.5 Pro',   provider: 'openrouter', model: 'google/gemini-2.5-pro',                    sub: 'via OpenRouter' },
+            { label: 'Gemini 2.5 Flash', provider: 'openrouter', model: 'google/gemini-2.5-flash',                  sub: 'via OpenRouter' },
+            { label: 'Llama 3.3 70B',    provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct',        sub: 'via OpenRouter' },
+            { label: 'Mistral Large',    provider: 'openrouter', model: 'mistralai/mistral-large',                  sub: 'via OpenRouter' },
+        ];
+
+        const providerPill   = document.getElementById('providerPill');
+        const providerLabel  = document.getElementById('providerLabel');
+        const providerDot    = document.getElementById('providerDot');
+        const providerMenuEl = document.getElementById('providerMenu');
+
+        function isSameProvider(a, b) {
+            return a.provider === b.provider && (a.model || null) === (b.model || null);
+        }
+        function labelFor(state) {
+            const match = PROVIDER_OPTIONS.find(o => isSameProvider(o, state));
+            if (match) return match.label;
+            if (state.provider === 'openrouter') return state.model || 'OpenRouter';
+            return 'Claude';
+        }
+        function paintPill(state) {
+            providerLabel.textContent = labelFor(state);
+            providerDot.classList.toggle('openrouter', state.provider === 'openrouter');
+            // Mark active in menu
+            providerMenuEl.querySelectorAll('.item').forEach(el => {
+                const opt = JSON.parse(el.dataset.opt);
+                el.classList.toggle('active', isSameProvider(opt, state));
+            });
+        }
+        async function fetchProvider() {
+            try {
+                const r = await fetch(MAESTRO + '/admin/provider');
+                return await r.json();
+            } catch { return { provider: 'claude', model: null }; }
+        }
+        async function setProvider(opt) {
+            try {
+                const r = await fetch(MAESTRO + '/admin/provider', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider: opt.provider, model: opt.model }),
+                });
+                if (!r.ok) { alert('Falha ao trocar: ' + (await r.text())); return; }
+                paintPill(await r.json());
+            } catch (e) { alert('Erro: ' + e.message); }
+        }
+        function buildMenu(state) {
+            providerMenuEl.innerHTML = '<div class="group">Modelo (próxima sessão)</div>';
+            for (const opt of PROVIDER_OPTIONS) {
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.dataset.opt = JSON.stringify(opt);
+                item.innerHTML = `
+                    <div>
+                        <div>${opt.label}</div>
+                        <div class="sub">${opt.sub}</div>
+                    </div>
+                    <span class="check">✓</span>
+                `;
+                item.addEventListener('click', async () => {
+                    providerMenuEl.classList.remove('open');
+                    await setProvider(opt);
+                });
+                providerMenuEl.appendChild(item);
+            }
+            paintPill(state);
+        }
+        providerPill.addEventListener('click', (e) => {
+            e.stopPropagation();
+            providerMenuEl.classList.toggle('open');
+        });
+        document.addEventListener('click', () => providerMenuEl.classList.remove('open'));
+
+        fetchProvider().then(buildMenu);
+    </script>
+
+
+
+</body></html>

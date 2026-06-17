@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: stg_nba__teams
+    description: "Canonical dimension of the 30 current NBA franchises (CLEAN-004, CLEAN-009)."
+    columns:
+      - name: team_id
+        description: "Primary key (string)."
+        data_tests:
+          - not_null
+          - unique
+      - name: team_full_name
+        description: "Current canonical franchise name."
+        data_tests:
+          - not_null
+
+  - name: stg_nba__players
+    description: "Canonical list of all players (spine for coverage, CLEAN-008)."
+    columns:
+      - name: player_id
+        description: "Primary key (string)."
+        data_tests:
+          - not_null
+          - unique
+      - name: is_active
+        description: "Whether the player is currently active."
+
+  - name: stg_nba__player_info
+    description: "Cleaned detailed player attributes (CLEAN-005/006/007)."
+    columns:
+      - name: player_id
+        description: "Primary key; FK to stg_nba__players.player_id."
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_nba__players')
+              field: player_id
+      - name: birthdate
+        description: "Date of birth; 1900-01-01 sentinel replaced with NULL (CLEAN-006). Domain (> 1900-01-01) enforced by assert_player_info_birthdate_domain."
+      - name: position
+        description: "Player position; empty string normalized to NULL (CLEAN-007)."
+        data_tests:
+          - accepted_values:
+              values: ['Guard', 'Forward', 'Center', 'Guard-Forward', 'Forward-Guard', 'Forward-Center', 'Center-Forward']
+      - name: position_group
+        description: "Position with NULL/empty coalesced to 'Unknown' (CLEAN-007)."
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Guard', 'Forward', 'Center', 'Guard-Forward', 'Forward-Guard', 'Forward-Center', 'Center-Forward', 'Unknown']
+      - name: height_cm
+        description: "Height in centimeters parsed from 'ft-in' text (CLEAN-005); NULL when source empty."
+        data_tests:
+          - positive_values
+      - name: weight_kg
+        description: "Weight in kilograms parsed from lbs text (CLEAN-005); NULL when source empty."
+        data_tests:
+          - positive_values
+
+  - name: stg_nba__games
+    description: "Cleaned games, standardized season_type, deduplicated game_id (CLEAN-003)."
+    columns:
+      - name: game_id
+        description: "Primary key after dedup (latest game_date wins)."
+        data_tests:
+          - not_null
+          - unique
+      - name: season_type
+        description: "Canonical season type; 'All Star' collapsed into 'All-Star' (CLEAN-003)."
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Regular Season', 'Playoffs', 'Pre Season', 'All-Star']
+      - name: wl_home
+        description: "Home result: w/l (lowercased), NULL if blank."
+        data_tests:
+          - accepted_values:
+              values: ['w', 'l']
+
+  - name: stg_nba__team_details
+    description: "Cleaned team metadata; head_coach_hire_date is a NULL placeholder (CLEAN-010)."
+    columns:
+      - name: team_id
+        description: "Primary key (string)."
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_nba__team_info_common
+    description: "Conference/division/standings staging. Source is EMPTY (CLEAN-001); see assert_team_info_common_not_empty (warn)."
+    columns:
+      - name: team_id
+        description: "Team id (string)."

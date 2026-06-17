@@ -1,0 +1,2519 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)http://localhost:7860/sql-agent.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SQL Agent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./SQL Agent_files/css2" rel="stylesheet">
+    <script src="./SQL Agent_files/marked.min.js"></script>
+    <link rel="stylesheet" href="./SQL Agent_files/github-dark.min.css">
+    <script src="./SQL Agent_files/highlight.min.js"></script>
+    <script src="./SQL Agent_files/sql.min.js"></script>
+    <style>
+        :root {
+            --chumbo: #1C2127;
+            --chumbo-light: #232930;
+            --grafite: #5E5E5E;
+            --concreto: #B4ADA4;
+            --gelo: #F0F0F0;
+            --urucum: #FD4E44;
+            --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Figtree', sans-serif;
+            background: var(--chumbo);
+            color: var(--gelo);
+        }
+
+        /* ── LAYOUT ── */
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 260px;
+            background: #111518;
+            border-right: 1px solid #2A3038;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid #2A3038;
+        }
+
+        .sidebar-header h1 {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--urucum);
+        }
+
+        .sidebar-header span {
+            font-size: 11px;
+            color: var(--grafite);
+            letter-spacing: 1px;
+        }
+
+        .sidebar-section {
+            padding: 16px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--grafite);
+            margin-bottom: 10px;
+        }
+
+        .profile-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .profile-item:hover { background: var(--chumbo-light); }
+        .profile-item.active { background: var(--chumbo); }
+
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .profile-item.active .profile-icon {
+            border-color: var(--urucum);
+        }
+
+        .profile-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid #2A3038;
+        }
+
+        .sidebar-footer .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-footer .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--urucum);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .sidebar-footer .name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .sidebar-footer .org {
+            font-size: 11px;
+            color: var(--grafite);
+        }
+
+        /* ── MAIN ── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            height: 48px;
+            border-bottom: 1px solid #2A3038;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            flex-shrink: 0;
+        }
+
+        .topbar .model-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--concreto);
+        }
+
+        .topbar .model-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--chumbo-light);
+            color: var(--grafite);
+            margin-left: 8px;
+        }
+
+        .topbar .db-select {
+            margin-left: auto;
+            font-size: 12px;
+            font-family: 'Figtree', sans-serif;
+            color: var(--concreto);
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 6px;
+            padding: 4px 8px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .topbar .db-select:focus { border-color: var(--urucum); }
+
+        @keyframes flash-select {
+            0%, 100% { border-color: #2A3038; }
+            50% { border-color: var(--urucum); }
+        }
+        .topbar .db-select.flash { animation: flash-select 0.4s ease 3; }
+
+        /* ── CONNECT BUTTON + MODAL (DB-2) ── */
+        .topbar .db-connect-btn {
+            margin-left: auto;
+            font-size: 12px;
+            font-family: 'Figtree', sans-serif;
+            color: var(--concreto);
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 6px;
+            padding: 4px 12px;
+            cursor: pointer;
+        }
+        .topbar .db-connect-btn:hover { border-color: var(--urucum); }
+        .topbar .db-connect-btn.connected { color: var(--urucum); border-color: var(--urucum); }
+        .topbar .db-connect-btn.flash { animation: flash-select 0.4s ease 3; }
+
+        .conn-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0, 0, 0, 0.55);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .conn-overlay[hidden] { display: none; }
+        .conn-modal {
+            width: 420px; max-width: 90vw;
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038; border-radius: 10px;
+            overflow: hidden;
+            font-family: 'Figtree', sans-serif; color: var(--concreto);
+        }
+        .conn-modal-head {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 14px; border-bottom: 1px solid #2A3038; font-size: 13px;
+        }
+        .conn-close { background: none; border: none; color: var(--concreto); font-size: 18px; line-height: 1; cursor: pointer; }
+        .conn-tabs { display: flex; gap: 6px; padding: 10px 14px 0; }
+        .conn-tab {
+            font-size: 12px; padding: 5px 12px; border-radius: 6px;
+            border: 1px solid #2A3038; background: transparent; color: var(--concreto); cursor: pointer;
+        }
+        .conn-tab.active { border-color: var(--urucum); color: var(--urucum); }
+        .conn-tab:disabled { opacity: 0.45; cursor: not-allowed; }
+        .conn-body { padding: 12px 14px 16px; }
+        .conn-hint { font-size: 12px; opacity: 0.7; margin-bottom: 8px; }
+        .conn-files { list-style: none; margin: 0; padding: 0; max-height: 280px; overflow-y: auto; }
+        .conn-file {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 10px; margin-bottom: 6px;
+            border: 1px solid #2A3038; border-radius: 6px; cursor: pointer; font-size: 12px;
+        }
+        .conn-file:hover { border-color: var(--urucum); }
+        .conn-file .sz { opacity: 0.55; font-size: 11px; }
+        .conn-file.dir { color: var(--concreto); }
+        .conn-path-input {
+            width: 100%; box-sizing: border-box;
+            font-size: 11px; font-family: monospace;
+            padding: 5px 8px; margin-bottom: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #2A3038; border-radius: 6px; color: var(--concreto);
+            outline: none;
+        }
+        .conn-path-input:focus { border-color: var(--urucum); }
+
+        /* Remote form (DB-4): host/port/db/user/password → /connections/remote */
+        .conn-field {
+            width: 100%; box-sizing: border-box;
+            font-size: 12px; font-family: 'Figtree', sans-serif;
+            padding: 7px 9px; margin-bottom: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #2A3038; border-radius: 6px; color: var(--concreto);
+            outline: none;
+        }
+        .conn-field:focus { border-color: var(--urucum); }
+        .conn-row { display: flex; gap: 8px; }
+        .conn-row .conn-field.host { flex: 3; }
+        .conn-row .conn-field.port { flex: 1; }
+        .conn-remote-btn {
+            width: 100%; box-sizing: border-box; margin-top: 2px;
+            font-size: 13px; font-family: 'Figtree', sans-serif;
+            padding: 8px; border-radius: 6px; cursor: pointer;
+            background: var(--urucum); color: #fff; border: none;
+        }
+        .conn-remote-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ── PROVIDER PICKER (claude.ai-style pill) ── */
+        .provider-picker { position: relative; margin-left: 12px; }
+        .provider-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            color: var(--gelo);
+            font: 500 12px 'Figtree', sans-serif;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+        .provider-pill:hover { border-color: var(--urucum); }
+        .provider-pill .dot {
+            width: 6px; height: 6px; border-radius: 50%; background: var(--urucum);
+        }
+        .provider-pill .dot.openrouter { background: #6FB28E; }
+        .provider-pill .chev { color: var(--grafite); font-size: 10px; }
+        .provider-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            min-width: 240px;
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            padding: 4px;
+            z-index: 100;
+        }
+        .provider-menu.open { display: block; }
+        .provider-menu .group {
+            font: 600 10px 'Figtree', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--grafite);
+            padding: 8px 10px 4px;
+        }
+        .provider-menu .item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--gelo);
+        }
+        .provider-menu .item:hover { background: var(--chumbo-light); }
+        .provider-menu .item .check {
+            margin-left: auto;
+            color: var(--urucum);
+            font-size: 12px;
+            visibility: hidden;
+        }
+        .provider-menu .item.active .check { visibility: visible; }
+        .provider-menu .item .sub {
+            font-size: 11px;
+            color: var(--grafite);
+            font-family: var(--mono);
+        }
+
+        /* ── MESSAGES ── */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: #2A3038; border-radius: 3px; }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--concreto);
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            color: var(--grafite);
+        }
+
+        .msg {
+            max-width: 780px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 12px 0;
+        }
+
+        .msg.user {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .msg.user .bubble {
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 16px 16px 4px 16px;
+            padding: 12px 16px;
+            max-width: 70%;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .msg.assistant .bubble {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--gelo);
+        }
+
+        .msg.tool {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--grafite);
+            padding: 8px 0;
+        }
+
+        .msg.tool .tool-name {
+            color: var(--urucum);
+            font-weight: 600;
+        }
+
+        .msg.tool .tool-result {
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 6px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .msg.tool .sql-query {
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 10px;
+            margin-top: 4px;
+            overflow: hidden;            /* card clips; the inner <pre> scrolls */
+        }
+
+        .msg.tool .sql-query .sql-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #2A3038;
+        }
+
+        .msg.tool .sql-query .sql-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font: 700 11px var(--mono);
+            letter-spacing: 0.5px;
+            color: var(--concreto);
+        }
+
+        .msg.tool .sql-query .sql-copy {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--grafite);
+            padding: 3px;
+            line-height: 0;
+            border-radius: 5px;
+            transition: color 0.15s, background 0.15s;
+        }
+        .msg.tool .sql-query .sql-copy:hover { color: var(--gelo); background: rgba(255, 255, 255, 0.06); }
+        .msg.tool .sql-query .sql-copy.copied { color: #6FB28E; }
+
+        .msg.tool .sql-query pre {
+            margin: 0;
+            padding: 12px 14px;
+            background: transparent !important;
+            overflow-x: auto;
+            max-height: 360px;
+            /* discrete scrollbar (Firefox) */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+        }
+        /* discrete scrollbar (WebKit) */
+        .msg.tool .sql-query pre::-webkit-scrollbar { width: 7px; height: 7px; }
+        .msg.tool .sql-query pre::-webkit-scrollbar-track { background: transparent; }
+        .msg.tool .sql-query pre::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+        }
+        .msg.tool .sql-query pre::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
+
+        .msg.tool .sql-query code {
+            font-family: var(--mono);
+            font-size: 12px;
+            line-height: 1.6;
+            background: transparent !important;
+        }
+
+        /* Let github-dark theme handle colors, just fix background */
+        .msg.tool .sql-query .hljs { background: transparent; }
+
+        /* ── CSV TABLE ── */
+        .csv-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            font-family: var(--mono);
+            margin-top: 6px;
+        }
+
+        .csv-table-wrapper {
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            overflow: auto;
+            max-height: 300px;
+            margin-top: 6px;
+        }
+
+        .csv-table th {
+            background: #0D1013;
+            color: var(--urucum);
+            font-weight: 600;
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 1px solid #2A3038;
+            position: sticky;
+            top: 0;
+        }
+
+        .csv-table td {
+            padding: 6px 12px;
+            border-bottom: 1px solid #1A1F25;
+            color: var(--concreto);
+        }
+
+        .csv-table tr:hover td { background: var(--chumbo-light); }
+
+        .csv-table .row-count {
+            font-size: 10px;
+            color: var(--grafite);
+            padding: 6px 12px;
+        }
+
+        /* ── MARKDOWN in assistant bubbles ── */
+        .msg.assistant .bubble h1,
+        .msg.assistant .bubble h2,
+        .msg.assistant .bubble h3 {
+            color: var(--gelo);
+            margin: 12px 0 6px;
+        }
+        .msg.assistant .bubble h1 { font-size: 18px; }
+        .msg.assistant .bubble h2 { font-size: 16px; }
+        .msg.assistant .bubble h3 { font-size: 14px; }
+
+        .msg.assistant .bubble p { margin: 6px 0; }
+
+        .msg.assistant .bubble ul,
+        .msg.assistant .bubble ol {
+            margin: 6px 0;
+            padding-left: 20px;
+        }
+
+        .msg.assistant .bubble li { margin: 3px 0; }
+
+        .msg.assistant .bubble code {
+            background: #111518;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+
+        .msg.assistant .bubble pre {
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            overflow-x: auto;
+        }
+
+        .msg.assistant .bubble pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .msg.assistant .bubble table {
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        .msg.assistant .bubble th,
+        .msg.assistant .bubble td {
+            border: 1px solid #2A3038;
+            padding: 6px 10px;
+        }
+
+        .msg.assistant .bubble th {
+            background: #111518;
+            color: var(--urucum);
+        }
+
+        .msg.assistant .bubble strong { color: var(--gelo); }
+        .msg.assistant .bubble em { color: var(--concreto); }
+
+        .msg.assistant .bubble blockquote {
+            border-left: 3px solid var(--urucum);
+            padding-left: 12px;
+            color: var(--concreto);
+            margin: 8px 0;
+        }
+
+        /* ── CHART ── */
+        .chart-container {
+            background: #111518;
+            border: 1px solid #2A3038;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 6px;
+            width: 100%;
+        }
+
+        .chart-container svg {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            display: block;
+        }
+
+        /* ── dbt result badges ── */
+        .dbt-pass { color: #22C55E; font-weight: 600; }
+        .dbt-fail { color: #EF4444; font-weight: 600; }
+        .dbt-warn { color: #EAB308; font-weight: 600; }
+
+        /* ── TOOL INDICATOR ── */
+        .tool-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--grafite);
+            padding: 4px 0;
+        }
+
+        .tool-indicator .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--urucum);
+            opacity: 0.6;
+        }
+
+        .msg.system-msg {
+            text-align: center;
+            font-size: 12px;
+            color: var(--grafite);
+            padding: 4px 0;
+        }
+
+        /* ── THINKING (live → collapsible "Pensou por Xs") ── */
+        .think-live {
+            display: flex; gap: 6px; align-items: baseline;
+            color: var(--grafite); font-size: 12px; font-style: italic;
+        }
+        .think-toggle {
+            background: none; border: none; padding: 0;
+            color: var(--grafite); font-size: 12px; cursor: pointer; font-family: inherit;
+        }
+        .think-toggle:hover { color: var(--concreto); }
+        .think-body {
+            margin-top: 6px; padding-left: 10px;
+            border-left: 2px solid #2A3038;
+            color: var(--grafite); font-size: 12px; line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .think-body[hidden] { display: none; }
+
+        /* ── ASK (disambiguation card — Claude.ai-style, dark theme) ── */
+        .msg.assistant .bubble.has-ask { background: none; padding: 0; }
+        .ask-preamble { margin-bottom: 12px; color: var(--gelo); }
+        .ask-card {
+            max-width: 640px;
+            border: 1px solid #2A3038; border-radius: 12px; overflow: hidden;
+            background: var(--chumbo-light);
+        }
+        .ask-card-header {
+            padding: 14px 16px; font-size: 14px; color: var(--gelo);
+            border-bottom: 1px solid #2A3038;
+        }
+        .ask-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; cursor: pointer;
+            border-bottom: 1px solid rgba(42, 48, 56, 0.5);
+            transition: background 0.12s ease;
+        }
+        .ask-row:last-child { border-bottom: none; }
+        .ask-row:hover { background: rgba(255, 255, 255, 0.04); }
+        .ask-num {
+            flex: none; width: 24px; height: 24px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; color: var(--concreto); background: rgba(255, 255, 255, 0.06);
+            transition: background 0.12s ease, color 0.12s ease;
+        }
+        .ask-row:hover .ask-num, .ask-row.chosen .ask-num { background: var(--urucum); color: #fff; }
+        .ask-label { font-size: 13px; color: var(--gelo); }
+        .ask-row.other .ask-num, .ask-row.other .ask-label { color: var(--concreto); }
+        .ask-row.chosen { background: rgba(225, 78, 45, 0.12); }
+        .ask-card.answered .ask-row { pointer-events: none; }
+        .ask-card.answered .ask-row:not(.chosen) { opacity: 0.45; }
+
+        .msg.result-msg {
+            text-align: center;
+        }
+
+        .msg.result-msg .badge {
+            display: inline-flex;
+            gap: 16px;
+            background: #111518;
+            border: 1px solid var(--urucum);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--concreto);
+        }
+
+        .msg.result-msg .badge strong {
+            color: var(--urucum);
+        }
+
+        /* ── Q&A BANNER ── */
+        .qa-banner {
+            display: none;
+            background: #2A1A18;
+            border: 1px solid var(--urucum);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 0 auto;
+            max-width: 780px;
+            width: 100%;
+        }
+
+        .qa-banner.visible { display: block; }
+
+        .qa-banner .qa-question {
+            font-size: 13px;
+            color: var(--gelo);
+            margin-bottom: 8px;
+        }
+
+        .qa-banner .qa-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .qa-banner input {
+            flex: 1;
+            background: var(--chumbo);
+            border: 1px solid #2A3038;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: 'Figtree', sans-serif;
+            font-size: 13px;
+            color: var(--gelo);
+            outline: none;
+        }
+
+        .qa-banner input:focus { border-color: var(--urucum); }
+
+        .qa-banner button {
+            background: var(--urucum);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-family: 'Figtree', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ── INPUT BAR ── */
+        .input-bar {
+            padding: 16px 24px 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .input-wrapper {
+            max-width: 780px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: var(--chumbo-light);
+            border: 1px solid #2A3038;
+            border-radius: 24px;
+            padding: 4px 4px 4px 20px;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrapper:focus-within { border-color: var(--urucum); }
+
+        .input-wrapper input {
+            flex: 1;
+            background: none;
+            border: none;
+            font-family: 'Figtree', sans-serif;
+            font-size: 14px;
+            color: var(--gelo);
+            outline: none;
+        }
+
+        .input-wrapper input::placeholder { color: var(--grafite); }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--urucum);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover { background: #E8443B; }
+        .send-btn:disabled { background: var(--grafite); cursor: not-allowed; }
+
+        /* ── TYPING INDICATOR ── */
+        .typing {
+            display: none;
+            max-width: 780px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 8px 0;
+            font-size: 12px;
+            color: var(--grafite);
+        }
+
+        .typing.visible { display: flex; align-items: center; gap: 8px; }
+
+        .typing-dots span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--urucum);
+            animation: dot-pulse 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dot-pulse {
+            0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ── Readonly viewer (manager.html iframe) ── */
+        body.readonly .sidebar,
+        body.readonly .input-bar,
+        body.readonly .qa-banner { display: none !important; }
+        body.readonly .topbar .db-connect-btn { pointer-events: none; opacity: 0.6; }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>Maestro</h1>
+                <span>Agent Runtime</span>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Agents</h3>
+                <div class="profile-item active" data-profile="sql-agent" onclick="switchProfile(&#39;sql-agent&#39;)">
+                    <div class="profile-icon">📊</div>
+                    <div class="profile-name">SQL Agent</div>
+                </div>
+                <div class="profile-item" data-profile="data-eng" onclick="switchProfile(&#39;data-eng&#39;)">
+                    <div class="profile-icon">⚙</div>
+                    <div class="profile-name">Data Engineer</div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user">
+                    <div class="avatar">L</div>
+                    <div>
+                        <div class="name">Luan Prado</div>
+                        <div class="org">Instituto Kunumi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN -->
+        <div class="main">
+            <div class="topbar">
+                <span class="model-name">SQL Agent</span>
+                <div class="provider-picker">
+                    <button class="provider-pill" id="providerPill" type="button">
+                        <span class="dot" id="providerDot"></span>
+                        <span id="providerLabel">Claude</span>
+                        <span class="chev">▾</span>
+                    </button>
+                    <div class="provider-menu" id="providerMenu"><div class="group">Modelo (próxima sessão)</div><div class="item active" data-opt="{&quot;label&quot;:&quot;Claude&quot;,&quot;provider&quot;:&quot;claude&quot;,&quot;model&quot;:null,&quot;sub&quot;:&quot;Anthropic (padrão)&quot;}">
+                    <div>
+                        <div>Claude</div>
+                        <div class="sub">Anthropic (padrão)</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Claude Sonnet 4.5&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;anthropic/claude-sonnet-4.5&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Claude Sonnet 4.5</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;GPT-4o&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;openai/gpt-4o&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>GPT-4o</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;GPT-4o mini&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;openai/gpt-4o-mini&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>GPT-4o mini</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Gemini 2.5 Pro&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;google/gemini-2.5-pro&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Gemini 2.5 Pro</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Gemini 2.5 Flash&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;google/gemini-2.5-flash&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Gemini 2.5 Flash</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Llama 3.3 70B&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;meta-llama/llama-3.3-70b-instruct&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Llama 3.3 70B</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div><div class="item" data-opt="{&quot;label&quot;:&quot;Mistral Large&quot;,&quot;provider&quot;:&quot;openrouter&quot;,&quot;model&quot;:&quot;mistralai/mistral-large&quot;,&quot;sub&quot;:&quot;via OpenRouter&quot;}">
+                    <div>
+                        <div>Mistral Large</div>
+                        <div class="sub">via OpenRouter</div>
+                    </div>
+                    <span class="check">✓</span>
+                </div></div>
+                </div>
+                <button class="db-connect-btn connected" id="connectBtn" type="button">nba.sqlite</button>
+            </div>
+
+            <!-- Connect modal: Local picks a file; Remote = Postgres (DB-4) -->
+            <div class="conn-overlay" id="connOverlay" hidden="">
+                <div class="conn-modal">
+                    <div class="conn-modal-head">
+                        <span>Conectar a um banco</span>
+                        <button class="conn-close" id="connClose" type="button">×</button>
+                    </div>
+                    <div class="conn-tabs">
+                        <button class="conn-tab" id="tabLocal" type="button">Local</button>
+                        <button class="conn-tab active" id="tabRemote" type="button">Remoto</button>
+                    </div>
+                    <div class="conn-body">
+                        <div id="panelLocal" hidden="">
+                            <input class="conn-path-input" id="connPath" placeholder="/caminho/da/pasta — Enter para ir">
+                            <div class="conn-hint" id="connHint">Navegue ou cole um caminho. Clique num arquivo para conectar.</div>
+                            <ul class="conn-files" id="connFiles"><li class="conn-file dir"><span>📁 ..</span></li><li class="conn-file dir"><span>📁 Desktop</span></li><li class="conn-file dir"><span>📁 Documents</span></li><li class="conn-file dir"><span>📁 Downloads</span></li><li class="conn-file dir"><span>📁 Music</span></li><li class="conn-file dir"><span>📁 Pictures</span></li><li class="conn-file dir"><span>📁 PlayOnLinux's virtual drives</span></li><li class="conn-file dir"><span>📁 ProgramasRFB</span></li><li class="conn-file dir"><span>📁 Public</span></li><li class="conn-file dir"><span>📁 Templates</span></li><li class="conn-file dir"><span>📁 Videos</span></li><li class="conn-file dir"><span>📁 XiaomiADBFastbootTools</span></li><li class="conn-file dir"><span>📁 anaconda3</span></li><li class="conn-file dir"><span>📁 cachedir_joblib</span></li><li class="conn-file dir"><span>📁 chromium-profile-copy</span></li><li class="conn-file dir"><span>📁 dd_odbc_uninstall_logs</span></li><li class="conn-file dir"><span>📁 go</span></li><li class="conn-file dir"><span>📁 google-cloud-sdk</span></li><li class="conn-file dir"><span>📁 nltk_data</span></li><li class="conn-file dir"><span>📁 scikit_learn_data</span></li><li class="conn-file dir"><span>📁 seaborn-data</span></li><li class="conn-file dir"><span>📁 snap</span></li><li class="conn-file dir"><span>📁 stanza_corenlp</span></li><li class="conn-file dir"><span>📁 tmp</span></li></ul>
+                        </div>
+                        <div id="panelRemote">
+                            <div class="conn-hint">Postgres — localhost também é uma conexão remota. As credenciais ficam no vault do servidor, nunca no navegador.</div>
+                            <div class="conn-row">
+                                <input class="conn-field host" id="rHost" placeholder="host">
+                                <input class="conn-field port" id="rPort" placeholder="5432">
+                            </div>
+                            <input class="conn-field" id="rDb" placeholder="database">
+                            <input class="conn-field" id="rUser" placeholder="usuário">
+                            <input class="conn-field" id="rPass" type="password" placeholder="senha">
+                            <button class="conn-remote-btn" id="rConnect" type="button">Conectar</button>
+                            <div class="conn-hint" id="rHint" style="margin-top:8px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="messages" id="messages"><div class="empty-state" id="emptyState" style="display: none;">
+                    <h2>Ready when you are.</h2>
+                    <p>Aponte para um banco e pergunte em portugues.</p>
+                </div><div class="msg user"><div class="bubble">Liste todos os jogos disputados em janeiro de 2025, ordenados por data.</div></div><div class="msg system-msg">Session b45dc38c-e178-4dcd-b8ed-b83ddba2dfd7 created</div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">I'll start by reviewing the knowledge files to understand what information is available.</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo RECIPES.md</span><div class="tool-result">1	# SQL Recipes
+2	
+3	Receitas de SQL validadas neste banco. O agente registra automaticamente.
+4	
+5	## RCP-001: Listar nome e cidade de todos os times
+6	- Contexto: tabela `team` (NBA, connection_id 87e6b067). Colunas full_name, city.
+7	- Query:
+8	  ```sql
+9	  SELECT full_name, city FROM [TEAM_TABLE] ORDER BY full_name
+10	  ```
+11	- Testada em: team (2026-06-17) → 30 linhas.
+12	
+13	## RCP-002: Listar nome, posição e altura dos jogadores
+14	- Contexto: `common_player_info` (NBA, 87e6b067). nome=display_first_last, posicao=position, altura=height ("pés-polegadas", ex 6-10).
+15	- Query:
+16	  ```sql
+17	  SELECT display_first_last AS nome, position AS posicao, height AS altura
+18	  FROM [CPI_TABLE]
+19	  WHERE position IS NOT NULL AND position &lt;&gt; ''
+20	  ORDER BY display_first_last
+21	  ```
+22	-...</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo NOTES.md</span><div class="tool-result">1	# Notes
+2	
+3	Metadados do banco: schema, relações, regras de negócio, limitações.
+4	
+5	## Conexão / Setup (IMPORTANTE)
+6	- O `connection_id` fixo nas instruções (`5ee606d7`) **NÃO existe** neste ambiente.
+7	- O processador inicia sem conexões registradas (`GET /connections` =&gt; vazio). É preciso
+8	  registrar via `POST /connections` com `{"type","path"}`. O `connection_id` é determinístico por arquivo.
+9	- Bancos disponíveis (`GET /databases` e `/connections/files`):
+10	  - `nba.sqlite` (/data/databases/nba.sqlite) =&gt; connection_id **87e6b067**
+11	  - `crime_database.db` =&gt; c907483f
+12	  - `dtsulv5.sqlite` (~10GB) =&gt; 7e459ffb
+13	  - `mimic4_demo.db` =&gt; 67c9a274
+14	  - `quikr_car.csv` =&gt; d4ead505 (type=csv)
+15	- Para perguntas sobre "times"/"teams" → banco **NBA** (connection_id 87e6b067)....</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo ERRORS.md</span><div class="tool-result">1	# Errors
+2	
+3	Registro de erros (sintáticos e de negócio) com post-mortem.
+4	
+5	## ERR-001: CAST falha em strings vazias em common_player_info
+6	- Tipo: syntactic
+7	- Query: `AVG(CAST(weight AS DOUBLE))` e `CAST(SPLIT_PART(height,'-',1) AS INT)`
+8	- Erro: `Could not convert string '' to DOUBLE/INT32`. weight/height têm valores '' (vazio).
+9	- Detalhe: `AVG(... ) FILTER (WHERE ...)` NÃO evita o erro — o CAST é avaliado em todas as linhas antes do FILTER.
+10	- Correção: usar **TRY_CAST** (retorna NULL em vez de erro). Ex.: `AVG(TRY_CAST(weight AS DOUBLE))`,
+11	  `TRY_CAST(SPLIT_PART(height,'-',1) AS INT)`.
+12	- Post-mortem: SEMPRE usar TRY_CAST ao converter colunas de texto em common_player_info (weight, height, etc.) — há strings vazias.
+13	
+14	## ERR-002: INTERNAL Error (CTE inlining) co...</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo INSIGHTS.md</span><div class="tool-result">1	# Insights
+2	
+3	Descoberta de negócio confirmadas pelo usuário.
+4</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Lendo SKILLS.md</span><div class="chart-container">{"detail":"Plot '...' not found."}</div></div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">I know the NBA dataset only covers games through June 2023, so there won't be any data for January 2025. Still, I should run the query to verify this. I also need to use the correct connection ID—87e6b067 instead of the one in my notes, since that other ID doesn't actually exist.</div></div><div class="msg assistant"><div class="bubble"><p>Minhas notas indicam um limite temporal crítico: os dados de jogos vão até 2023-06-12. Vou confirmar com uma query antes de responder.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Executando query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">CAST</span>(game_date <span class="hljs-keyword">AS</span> <span class="hljs-type">DATE</span>) <span class="hljs-keyword">AS</span> dia, season_id, team_name_home, pts_home, team_name_away, pts_away 
+<span class="hljs-keyword">FROM</span> game 
+<span class="hljs-keyword">WHERE</span> game_date <span class="hljs-operator">&gt;=</span> <span class="hljs-string">'\''2025-01-01'</span>\<span class="hljs-string">''</span> 
+<span class="hljs-keyword">AND</span> game_date <span class="hljs-operator">&lt;</span> <span class="hljs-string">'\''2025-02-01'</span>\<span class="hljs-string">''</span> 
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> game_date</code></pre></div><div class="tool-result">dia,season_id,team_name_home,pts_home,team_name_away,pts_away</div></div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">Let me check the maximum date in the data to give you some context around what we're working with.</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Executando query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">MIN</span>(<span class="hljs-built_in">CAST</span>(game_date <span class="hljs-keyword">AS</span> <span class="hljs-type">DATE</span>)) <span class="hljs-keyword">AS</span> primeiro, <span class="hljs-built_in">MAX</span>(<span class="hljs-built_in">CAST</span>(game_date <span class="hljs-keyword">AS</span> <span class="hljs-type">DATE</span>)) <span class="hljs-keyword">AS</span> ultimo, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">AS</span> total 
+<span class="hljs-keyword">FROM</span> game</code></pre></div><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>primeiro</th><th>ultimo</th><th>total</th></tr></thead><tbody><tr><td>1946-11-01</td><td>2023-06-12</td><td>65698</td></tr></tbody></table></div></div><div class="msg assistant"><div class="bubble"><p><strong>1. Query executada</strong></p>
+<pre><code class="language-sql">SELECT CAST(game_date AS DATE) AS dia, season_id, team_name_home, pts_home,
+       team_name_away, pts_away
+FROM game
+WHERE game_date &gt;= '2025-01-01' AND game_date &lt; '2025-02-01'
+ORDER BY game_date;
+</code></pre>
+<p><strong>2. Resultados</strong></p>
+<p><strong>0 linhas.</strong> Nenhum jogo encontrado em janeiro de 2025.</p>
+<p>Confirmação do intervalo disponível na tabela <code>game</code>:</p>
+<table>
+<thead>
+<tr>
+<th>primeiro</th>
+<th>último</th>
+<th>total de jogos</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1946-11-01</td>
+<td>2023-06-12</td>
+<td>65.698</td>
+</tr>
+</tbody></table>
+<p><strong>3. Interpretação</strong></p>
+<p>O banco NBA é um <strong>snapshot histórico encerrado na temporada 2022-23</strong> — não há nenhum jogo registrado após <strong>12/06/2023</strong>. Por isso, janeiro de 2025 (e qualquer data posterior a jun/2023) retorna vazio. Isso já estava documentado nas minhas notas como limitação temporal crítica; a query apenas confirmou.</p>
+<p><strong>4. Follow-up</strong></p>
+<p>Posso refazer a consulta para um período que exista no banco. Algumas opções:</p>
+<ul>
+<li>Jogos de <strong>janeiro de 2023</strong> (último mês de jan. disponível, temporada 2022-23)</li>
+<li>Jogos de uma <strong>data/temporada específica</strong> que você queira</li>
+<li>Os jogos mais recentes do banco (junho de 2023, finais da temporada)</li>
+</ul>
+<p>Qual prefere?</p>
+</div></div><div class="msg result-msg"><span class="badge"><span>Concluido</span> <span><strong>$0.33</strong></span> <span>8 turns</span></span></div><div class="msg user"><div class="bubble">Calcule o número total de vitórias e derrotas de cada time, somando os jogos em que jogou como casa e como visitante.</div></div><div class="msg system-msg">New message: Calcule o número total de vitórias e derrotas de cada time, somando os jogos em que jogou como casa e como visitante.</div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">I'm identifying this as RCP-006 and using the connection ID 87e6b067 from my notes.</div></div><div class="msg assistant"><div class="bubble"><p>Isso é exatamente a RCP-006 das minhas receitas. Vou aplicá-la.</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Executando query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">WITH</span> g 
+<span class="hljs-keyword">AS</span> (
+<span class="hljs-keyword">SELECT</span> team_id_home <span class="hljs-keyword">AS</span> tid, team_name_home <span class="hljs-keyword">AS</span> nome, wl_home <span class="hljs-keyword">AS</span> wl 
+<span class="hljs-keyword">FROM</span> game 
+<span class="hljs-keyword">UNION</span> <span class="hljs-keyword">ALL</span> 
+<span class="hljs-keyword">SELECT</span> team_id_away, team_name_away, wl_away 
+<span class="hljs-keyword">FROM</span> game) 
+<span class="hljs-keyword">SELECT</span> ANY_VALUE(nome) <span class="hljs-keyword">AS</span> <span class="hljs-type">time</span>, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
+<span class="hljs-keyword">WHERE</span> wl<span class="hljs-operator">=</span><span class="hljs-string">'\''W'</span>\<span class="hljs-string">''</span>) <span class="hljs-keyword">AS</span> vitorias, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
+<span class="hljs-keyword">WHERE</span> wl<span class="hljs-operator">=</span><span class="hljs-string">'\''L'</span>\<span class="hljs-string">''</span>) <span class="hljs-keyword">AS</span> derrotas 
+<span class="hljs-keyword">FROM</span> g 
+<span class="hljs-keyword">WHERE</span> tid <span class="hljs-keyword">IN</span> (
+<span class="hljs-keyword">SELECT</span> id 
+<span class="hljs-keyword">FROM</span> team) 
+<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> tid 
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> vitorias <span class="hljs-keyword">DESC</span></code></pre></div><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>time</th><th>vitorias</th><th>derrotas</th></tr></thead><tbody><tr><td>Minneapolis Lakers</td><td>3641</td><td>2495</td></tr><tr><td>Boston Celtics</td><td>3625</td><td>2581</td></tr><tr><td>Syracuse Nationals</td><td>3000</td><td>2818</td></tr><tr><td>New York Knicks</td><td>2863</td><td>3014</td></tr><tr><td>Philadelphia Warriors</td><td>2858</td><td>3057</td></tr><tr><td>Tri-Cities Blackhawks</td><td>2824</td><td>2889</td></tr><tr><td>Ft. Wayne Zollner Pistons</td><td>2779</td><td>2996</td></tr><tr><td>Rochester Royals</td><td>2572</td><td>3039</td></tr><tr><td>San Antonio Spurs</td><td>2427</td><td>1650</td></tr><tr><td>Phoenix Suns</td><td>2424</td><td>2065</td></tr><tr><td>Seattle SuperSonics</td><td>2421</td><td>2163</td></tr><tr><td>Chicago Bulls</td><td>2377</td><td>2231</td></tr><tr><td>San Diego Rockets</td><td>2356</td><td>2223</td></tr><tr><td>Milwaukee Bucks</td><td>2345</td><td>2165</td></tr><tr><td>Portland Trail Blazers</td><td>2274</td><td>2023</td></tr><tr><td>New Orleans Jazz</td><td>2199</td><td>1847</td></tr><tr><td>Chicago Zephyrs</td><td>2187</td><td>2646</td></tr><tr><td>Cleveland Cavaliers</td><td>2015</td><td>2243</td></tr><tr><td>Denver Nuggets</td><td>1935</td><td>2001</td></tr><tr><td>Indiana Pacers</td><td>1932</td><td>1974</td></tr><tr><td>Dallas Mavericks</td><td>1846</td><td>1832</td></tr><tr><td>Buffalo Braves</td><td>1744</td><td>2439</td></tr><tr><td>New Jersey Nets</td><td>1646</td><td>2201</td></tr><tr><td>Miami Heat</td><td>1594</td><td>1477</td></tr><tr><td>Orlando Magic</td><td>1363</td><td>1493</td></tr><tr><td>Charlotte Hornets</td><td>1186</td><td>1518</td></tr><tr><td>Toronto Raptors</td><td>1154</td><td>1207</td></tr><tr><td>Minnesota Timberwolves</td><td>1138</td><td>1646</td></tr><tr><td>Vancouver Grizzlies</td><td>1013</td><td>1333</td></tr><tr><td>New Orleans Hornets</td><td>824</td><td>932</td></tr></tbody></table></div></div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 12s ›</button><div class="think-body" hidden="">I'm looking at a dataset with 30 rows representing each franchise, where the names reflect historical data—using ANY_VALUE to pull one historical name per franchise, like "Minneapolis Lakers" for example.</div></div><div class="msg assistant"><div class="bubble"><p><strong>1. Query executada</strong> (RCP-006)</p>
+<pre><code class="language-sql">WITH g AS (
+  SELECT team_id_home AS tid, team_name_home AS nome, wl_home AS wl FROM game
+  UNION ALL
+  SELECT team_id_away, team_name_away, wl_away FROM game
+)
+SELECT ANY_VALUE(nome) AS time,
+       COUNT(*) FILTER (WHERE wl='W') AS vitorias,
+       COUNT(*) FILTER (WHERE wl='L') AS derrotas
+FROM g
+WHERE tid IN (SELECT id FROM team)   -- só as 30 franquias atuais
+GROUP BY tid
+ORDER BY vitorias DESC;
+</code></pre>
+<p><strong>2. Resultados</strong> (30 franquias, ordenadas por vitórias)</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Vitórias</th>
+<th>Derrotas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Minneapolis Lakers</td>
+<td>3641</td>
+<td>2495</td>
+</tr>
+<tr>
+<td>Boston Celtics</td>
+<td>3625</td>
+<td>2581</td>
+</tr>
+<tr>
+<td>Syracuse Nationals</td>
+<td>3000</td>
+<td>2818</td>
+</tr>
+<tr>
+<td>New York Knicks</td>
+<td>2863</td>
+<td>3014</td>
+</tr>
+<tr>
+<td>Philadelphia Warriors</td>
+<td>2858</td>
+<td>3057</td>
+</tr>
+<tr>
+<td>Tri-Cities Blackhawks</td>
+<td>2824</td>
+<td>2889</td>
+</tr>
+<tr>
+<td>Ft. Wayne Zollner Pistons</td>
+<td>2779</td>
+<td>2996</td>
+</tr>
+<tr>
+<td>Rochester Royals</td>
+<td>2572</td>
+<td>3039</td>
+</tr>
+<tr>
+<td>San Antonio Spurs</td>
+<td>2427</td>
+<td>1650</td>
+</tr>
+<tr>
+<td>Phoenix Suns</td>
+<td>2424</td>
+<td>2065</td>
+</tr>
+<tr>
+<td>Seattle SuperSonics</td>
+<td>2421</td>
+<td>2163</td>
+</tr>
+<tr>
+<td>Chicago Bulls</td>
+<td>2377</td>
+<td>2231</td>
+</tr>
+<tr>
+<td>San Diego Rockets</td>
+<td>2356</td>
+<td>2223</td>
+</tr>
+<tr>
+<td>Milwaukee Bucks</td>
+<td>2345</td>
+<td>2165</td>
+</tr>
+<tr>
+<td>Portland Trail Blazers</td>
+<td>2274</td>
+<td>2023</td>
+</tr>
+<tr>
+<td>New Orleans Jazz</td>
+<td>2199</td>
+<td>1847</td>
+</tr>
+<tr>
+<td>Chicago Zephyrs</td>
+<td>2187</td>
+<td>2646</td>
+</tr>
+<tr>
+<td>Cleveland Cavaliers</td>
+<td>2015</td>
+<td>2243</td>
+</tr>
+<tr>
+<td>Denver Nuggets</td>
+<td>1935</td>
+<td>2001</td>
+</tr>
+<tr>
+<td>Indiana Pacers</td>
+<td>1932</td>
+<td>1974</td>
+</tr>
+<tr>
+<td>Dallas Mavericks</td>
+<td>1846</td>
+<td>1832</td>
+</tr>
+<tr>
+<td>Buffalo Braves</td>
+<td>1744</td>
+<td>2439</td>
+</tr>
+<tr>
+<td>New Jersey Nets</td>
+<td>1646</td>
+<td>2201</td>
+</tr>
+<tr>
+<td>Miami Heat</td>
+<td>1594</td>
+<td>1477</td>
+</tr>
+<tr>
+<td>Orlando Magic</td>
+<td>1363</td>
+<td>1493</td>
+</tr>
+<tr>
+<td>Charlotte Hornets</td>
+<td>1186</td>
+<td>1518</td>
+</tr>
+<tr>
+<td>Toronto Raptors</td>
+<td>1154</td>
+<td>1207</td>
+</tr>
+<tr>
+<td>Minnesota Timberwolves</td>
+<td>1138</td>
+<td>1646</td>
+</tr>
+<tr>
+<td>Vancouver Grizzlies</td>
+<td>1013</td>
+<td>1333</td>
+</tr>
+<tr>
+<td>New Orleans Hornets</td>
+<td>824</td>
+<td>932</td>
+</tr>
+</tbody></table>
+<p><strong>3. Interpretação</strong></p>
+<p>São as <strong>30 franquias atuais</strong>, com o total acumulado de toda a história disponível (1946–2023). Dois pontos de atenção importantes:</p>
+<ul>
+<li><strong>Os nomes são históricos.</strong> <code>ANY_VALUE</code> traz <em>um</em> nome qualquer entre os que a franquia já usou — por isso aparece "Minneapolis Lakers" (= LA Lakers), "Syracuse Nationals" (= Philadelphia 76ers), "Tri-Cities Blackhawks" (= Atlanta Hawks), "San Diego Rockets" (= Houston Rockets), "Chicago Zephyrs" (= Washington Wizards), "Buffalo Braves" (= LA Clippers), etc. O total é por <strong>franquia</strong> (team_id), não pelo nome exibido.</li>
+<li>Filtrei por <code>tid IN (SELECT id FROM team)</code> para manter só as 30 franquias atuais e excluir times de exibição/extintos sem id canônico.</li>
+</ul>
+<p><strong>4. Follow-up</strong></p>
+<p>Posso refinar de algumas formas, se quiser:</p>
+<ul>
+<li>Trocar o nome histórico pelo <strong>nome atual</strong> da franquia (JOIN com <code>team.full_name</code>)</li>
+<li>Adicionar <strong>aproveitamento (%)</strong> = vitórias / (vitórias+derrotas) e reordenar por ele</li>
+<li>Restringir a uma <strong>temporada</strong> ou só <strong>temporada regular</strong> (excluindo playoffs)</li>
+</ul>
+<p>Quer que eu aplique algum desses ajustes?</p>
+</div></div><div class="msg result-msg"><span class="badge"><span>Concluido</span> <span><strong>$0.42</strong></span> <span>2 turns</span></span></div><div class="msg user"><div class="bubble">Calcule o aproveitamento (vitórias dividido por jogos disputados) de cada time nos últimos 10 jogos.</div></div><div class="msg system-msg">New message: Calcule o aproveitamento (vitórias dividido por jogos disputados) de cada time nos últimos 10 jogos.</div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 2s ›</button><div class="think-body" hidden="">I'm working through RCP-009 regarding the last N games. The approach uses a window function to rank games by date within each team, then filters to keep only the most recent ones while excluding exhibition games and non-team entries. There's some ambiguity about whether "últimos 10 jogos" means the last 10 games in the entire dataset or something else, but the most straightforward reading is the most recent games available through the end of the dataset.
+
+The real question is whether to include all game types or just regular season games. The note specifies filtering for regular season only, which excludes exhibition games, but this creates an inconsistency — teams that made deep playoff runs would have their last 10 games be playoff games, while teams that missed the playoffs would have regular season games. I'm thinking I should ask for clarification on whether the intent is to include playoffs or stick strictly to regular season games.</div></div><div class="msg assistant"><div class="bubble has-ask"><div class="ask-preamble"><p>Antes de consultar: "últimos 10 jogos" pode ser interpretado de duas formas que mudam o resultado, porque o banco termina nas finais de 2023 (jogos mais recentes incluem playoffs).</p>
+</div><div class="ask-card answered"><div class="ask-card-header">Quais 'últimos 10 jogos' devo considerar para cada time?</div><div class="ask-row"><span class="ask-num">1</span><span class="ask-label">Os 10 jogos mais recentes de qualquer tipo (inclui playoffs/pré-temporada)</span></div><div class="ask-row chosen"><span class="ask-num">2</span><span class="ask-label">Apenas os 10 últimos jogos de temporada regular</span></div><div class="ask-row"><span class="ask-num">3</span><span class="ask-label">Os 10 últimos de uma temporada específica (me diga qual)</span></div><div class="ask-row other"><span class="ask-num">✎</span><span class="ask-label">Outro (responder abaixo)</span></div></div></div></div><div class="msg result-msg"><span class="badge"><span>Concluido</span> <span><strong>$0.48</strong></span> <span>1 turns</span></span></div><div class="msg user"><div class="bubble">Para a pergunta "Quais 'últimos 10 jogos' devo considerar para cada time?", escolho: Apenas os 10 últimos jogos de temporada regular</div></div><div class="msg system-msg">New message: Para a pergunta "Quais 'últimos 10 jogos' devo considerar para cada time?", escolho: Apenas os 10 últimos jogos de temporada regular</div><div class="msg thinking"><button class="think-toggle">💭 Pensou por 1s ›</button><div class="think-body" hidden="">I'm applying the RCP-009 last-N approach by filtering for regular season games, then exploding the home and away teams, ranking them by recency within each team, keeping only the last 10 games, and calculating win percentages from that subset.</div></div><div class="msg assistant"><div class="bubble"><p>Perfeito — apenas temporada regular. Aplicando RCP-009 (aproveitamento últimos N).</p>
+</div></div><div class="msg tool"><span class="tool-indicator"><span class="dot"></span>Executando query...</span><div class="sql-query"><div class="sql-head"><span class="sql-label">&lt;/&gt; SQL</span><button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div><pre><code class="hljs language-sql"><span class="hljs-keyword">WITH</span> res 
+<span class="hljs-keyword">AS</span> (
+<span class="hljs-keyword">SELECT</span> team_id_home <span class="hljs-keyword">AS</span> tid, team_name_home <span class="hljs-keyword">AS</span> nome, game_date, wl_home <span class="hljs-keyword">AS</span> wl 
+<span class="hljs-keyword">FROM</span> game 
+<span class="hljs-keyword">WHERE</span> season_type<span class="hljs-operator">=</span><span class="hljs-string">'\''Regular Season'</span>\<span class="hljs-string">''</span> 
+<span class="hljs-keyword">UNION</span> <span class="hljs-keyword">ALL</span> 
+<span class="hljs-keyword">SELECT</span> team_id_away, team_name_away, game_date, wl_away 
+<span class="hljs-keyword">FROM</span> game 
+<span class="hljs-keyword">WHERE</span> season_type<span class="hljs-operator">=</span><span class="hljs-string">'\''Regular Season'</span>\<span class="hljs-string">''</span>), r 
+<span class="hljs-keyword">AS</span> (
+<span class="hljs-keyword">SELECT</span> tid, nome, wl, <span class="hljs-built_in">ROW_NUMBER</span>() <span class="hljs-keyword">OVER</span> (<span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">BY</span> tid 
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> game_date <span class="hljs-keyword">DESC</span>) <span class="hljs-keyword">AS</span> rn 
+<span class="hljs-keyword">FROM</span> res 
+<span class="hljs-keyword">WHERE</span> tid <span class="hljs-keyword">IN</span> (
+<span class="hljs-keyword">SELECT</span> id 
+<span class="hljs-keyword">FROM</span> team)) 
+<span class="hljs-keyword">SELECT</span> t.full_name <span class="hljs-keyword">AS</span> <span class="hljs-type">time</span>, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">AS</span> jogos, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
+<span class="hljs-keyword">WHERE</span> r.wl<span class="hljs-operator">=</span><span class="hljs-string">'\''W'</span>\<span class="hljs-string">''</span>) <span class="hljs-keyword">AS</span> vitorias, ROUND(<span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FILTER</span> (
+<span class="hljs-keyword">WHERE</span> r.wl<span class="hljs-operator">=</span><span class="hljs-string">'\''W'</span>\<span class="hljs-string">''</span>)<span class="hljs-operator">*</span><span class="hljs-number">1.0</span><span class="hljs-operator">/</span><span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>),<span class="hljs-number">3</span>) <span class="hljs-keyword">AS</span> aproveitamento 
+<span class="hljs-keyword">FROM</span> r 
+<span class="hljs-keyword">JOIN</span> team t 
+<span class="hljs-keyword">ON</span> t.id<span class="hljs-operator">=</span>r.tid 
+<span class="hljs-keyword">WHERE</span> r.rn<span class="hljs-operator">&lt;=</span><span class="hljs-number">10</span> 
+<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> t.full_name 
+<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> aproveitamento <span class="hljs-keyword">DESC</span>, vitorias <span class="hljs-keyword">DESC</span></code></pre></div><div class="csv-table-wrapper"><table class="csv-table"><thead><tr><th>time</th><th>jogos</th><th>vitorias</th><th>aproveitamento</th></tr></thead><tbody><tr><td>Los Angeles Lakers</td><td>10</td><td>8</td><td>0.8</td></tr><tr><td>Boston Celtics</td><td>10</td><td>8</td><td>0.8</td></tr><tr><td>Golden State Warriors</td><td>10</td><td>8</td><td>0.8</td></tr><tr><td>Phoenix Suns</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>Minnesota Timberwolves</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>New Orleans Pelicans</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>Cleveland Cavaliers</td><td>10</td><td>7</td><td>0.7</td></tr><tr><td>Toronto Raptors</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Milwaukee Bucks</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Brooklyn Nets</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Memphis Grizzlies</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Los Angeles Clippers</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Miami Heat</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Chicago Bulls</td><td>10</td><td>6</td><td>0.6</td></tr><tr><td>Atlanta Hawks</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Sacramento Kings</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Orlando Magic</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>New York Knicks</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Denver Nuggets</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Philadelphia 76ers</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Charlotte Hornets</td><td>10</td><td>5</td><td>0.5</td></tr><tr><td>Oklahoma City Thunder</td><td>10</td><td>4</td><td>0.4</td></tr><tr><td>Houston Rockets</td><td>10</td><td>4</td><td>0.4</td></tr><tr><td>San Antonio Spurs</td><td>10</td><td>3</td><td>0.3</td></tr><tr><td>Washington Wizards</td><td>10</td><td>3</td><td>0.3</td></tr><tr><td>Indiana Pacers</td><td>10</td><td>3</td><td>0.3</td></tr><tr><td>Utah Jazz</td><td>10</td><td>2</td><td>0.2</td></tr><tr><td>Dallas Mavericks</td><td>10</td><td>2</td><td>0.2</td></tr><tr><td>Portland Trail Blazers</td><td>10</td><td>1</td><td>0.1</td></tr><tr><td>Detroit Pistons</td><td>10</td><td>1</td><td>0.1</td></tr></tbody></table></div></div><div class="msg assistant"><div class="bubble"><p><strong>1. Query executada</strong> (RCP-009 — aproveitamento últimos N)</p>
+<pre><code class="language-sql">WITH res AS (
+  SELECT team_id_home AS tid, team_name_home AS nome, game_date, wl_home AS wl
+  FROM game WHERE season_type='Regular Season'
+  UNION ALL
+  SELECT team_id_away, team_name_away, game_date, wl_away
+  FROM game WHERE season_type='Regular Season'
+),
+r AS (
+  SELECT tid, nome, wl,
+         ROW_NUMBER() OVER (PARTITION BY tid ORDER BY game_date DESC) AS rn
+  FROM res WHERE tid IN (SELECT id FROM team)
+)
+SELECT t.full_name AS time, COUNT(*) AS jogos,
+       COUNT(*) FILTER (WHERE r.wl='W') AS vitorias,
+       ROUND(COUNT(*) FILTER (WHERE r.wl='W')*1.0/COUNT(*),3) AS aproveitamento
+FROM r JOIN team t ON t.id=r.tid
+WHERE r.rn&lt;=10
+GROUP BY t.full_name
+ORDER BY aproveitamento DESC, vitorias DESC;
+</code></pre>
+<p><strong>2. Resultados</strong> (30 times — usei <code>team.full_name</code>, nome atual)</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Jogos</th>
+<th>Vitórias</th>
+<th>Aproveitamento</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Los Angeles Lakers</td>
+<td>10</td>
+<td>8</td>
+<td>0.800</td>
+</tr>
+<tr>
+<td>Boston Celtics</td>
+<td>10</td>
+<td>8</td>
+<td>0.800</td>
+</tr>
+<tr>
+<td>Golden State Warriors</td>
+<td>10</td>
+<td>8</td>
+<td>0.800</td>
+</tr>
+<tr>
+<td>Phoenix Suns</td>
+<td>10</td>
+<td>7</td>
+<td>0.700</td>
+</tr>
+<tr>
+<td>Minnesota Timberwolves</td>
+<td>10</td>
+<td>7</td>
+<td>0.700</td>
+</tr>
+<tr>
+<td>New Orleans Pelicans</td>
+<td>10</td>
+<td>7</td>
+<td>0.700</td>
+</tr>
+<tr>
+<td>Cleveland Cavaliers</td>
+<td>10</td>
+<td>7</td>
+<td>0.700</td>
+</tr>
+<tr>
+<td>Toronto Raptors</td>
+<td>10</td>
+<td>6</td>
+<td>0.600</td>
+</tr>
+<tr>
+<td>Milwaukee Bucks</td>
+<td>10</td>
+<td>6</td>
+<td>0.600</td>
+</tr>
+<tr>
+<td>Brooklyn Nets</td>
+<td>10</td>
+<td>6</td>
+<td>0.600</td>
+</tr>
+<tr>
+<td>Memphis Grizzlies</td>
+<td>10</td>
+<td>6</td>
+<td>0.600</td>
+</tr>
+<tr>
+<td>Los Angeles Clippers</td>
+<td>10</td>
+<td>6</td>
+<td>0.600</td>
+</tr>
+<tr>
+<td>Miami Heat</td>
+<td>10</td>
+<td>6</td>
+<td>0.600</td>
+</tr>
+<tr>
+<td>Chicago Bulls</td>
+<td>10</td>
+<td>6</td>
+<td>0.600</td>
+</tr>
+<tr>
+<td>Atlanta Hawks</td>
+<td>10</td>
+<td>5</td>
+<td>0.500</td>
+</tr>
+<tr>
+<td>Sacramento Kings</td>
+<td>10</td>
+<td>5</td>
+<td>0.500</td>
+</tr>
+<tr>
+<td>Orlando Magic</td>
+<td>10</td>
+<td>5</td>
+<td>0.500</td>
+</tr>
+<tr>
+<td>New York Knicks</td>
+<td>10</td>
+<td>5</td>
+<td>0.500</td>
+</tr>
+<tr>
+<td>Denver Nuggets</td>
+<td>10</td>
+<td>5</td>
+<td>0.500</td>
+</tr>
+<tr>
+<td>Philadelphia 76ers</td>
+<td>10</td>
+<td>5</td>
+<td>0.500</td>
+</tr>
+<tr>
+<td>Charlotte Hornets</td>
+<td>10</td>
+<td>5</td>
+<td>0.500</td>
+</tr>
+<tr>
+<td>Oklahoma City Thunder</td>
+<td>10</td>
+<td>4</td>
+<td>0.400</td>
+</tr>
+<tr>
+<td>Houston Rockets</td>
+<td>10</td>
+<td>4</td>
+<td>0.400</td>
+</tr>
+<tr>
+<td>San Antonio Spurs</td>
+<td>10</td>
+<td>3</td>
+<td>0.300</td>
+</tr>
+<tr>
+<td>Washington Wizards</td>
+<td>10</td>
+<td>3</td>
+<td>0.300</td>
+</tr>
+<tr>
+<td>Indiana Pacers</td>
+<td>10</td>
+<td>3</td>
+<td>0.300</td>
+</tr>
+<tr>
+<td>Utah Jazz</td>
+<td>10</td>
+<td>2</td>
+<td>0.200</td>
+</tr>
+<tr>
+<td>Dallas Mavericks</td>
+<td>10</td>
+<td>2</td>
+<td>0.200</td>
+</tr>
+<tr>
+<td>Portland Trail Blazers</td>
+<td>10</td>
+<td>1</td>
+<td>0.100</td>
+</tr>
+<tr>
+<td>Detroit Pistons</td>
+<td>10</td>
+<td>1</td>
+<td>0.100</td>
+</tr>
+</tbody></table>
+<p><strong>3. Interpretação</strong></p>
+<p>São os <strong>últimos 10 jogos de temporada regular</strong> de cada franquia no banco — ou seja, o fim da <strong>temporada regular 2022-23</strong> (≈ abril/2023). Todos os 30 times têm exatamente 10 jogos, então o aproveitamento é simplesmente <code>vitórias/10</code>.</p>
+<p>Destaque: Lakers, Celtics e Warriors terminaram a fase regular embalados (8-2), enquanto Trail Blazers e Pistons fecharam mal (1-9). Como filtramos só temporada regular, eventuais jogos de playoff de 2023 ficaram <strong>de fora</strong> propositalmente, conforme você pediu.</p>
+<p><strong>4. Follow-up</strong></p>
+<p>Posso, se quiser:</p>
+<ul>
+<li>Mudar para <strong>últimos N</strong> jogos (5, 15, 20) — basta trocar o <code>rn&lt;=10</code></li>
+<li>Refazer <strong>incluindo playoffs</strong> para comparar a "forma" no fim da temporada vs. campanha completa</li>
+<li>Restringir a uma <strong>temporada específica</strong> (ex.: últimos 10 da 2021-22)</li>
+</ul>
+<p>Quer algum desses?</p>
+</div></div><div class="msg result-msg"><span class="badge"><span>Concluido</span> <span><strong>$0.59</strong></span> <span>2 turns</span></span></div></div>
+
+            <div class="qa-banner" id="qaBanner">
+                <div class="qa-question" id="qaQuestion"></div>
+                <div class="qa-actions">
+                    <input type="text" id="qaInput" placeholder="Sua resposta...">
+                    <button onclick="answerQA()">Enviar</button>
+                </div>
+            </div>
+
+            <div class="typing" id="typing">
+                <div class="typing-dots"><span></span><span></span><span></span></div>
+                <span id="typingText">Pensando...</span>
+            </div>
+
+            <div class="input-bar">
+                <div class="input-wrapper">
+                    <input type="text" id="userInput" placeholder="Pergunte sobre os dados..." onkeydown="if(event.key===&#39;Enter&#39;)send()">
+                    <button class="send-btn" id="sendBtn" onclick="send()">▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MAESTRO = 'http://localhost:8000';
+        const WS_BASE = 'ws://localhost:8000';
+
+        // ── Profile config ──
+        const PROFILES = {
+            'sql-agent': {
+                label: 'SQL Agent',
+                storageKey: 'sql-agent-session',
+                placeholder: 'Pergunte sobre os dados...',
+                emptyTitle: 'Ready when you are.',
+                emptyDesc: 'Aponte para um banco e pergunte em portugues.',
+                typingDefault: 'Analisando...',
+            },
+            'data-eng': {
+                label: 'Data Engineer',
+                storageKey: 'data-eng-session',
+                placeholder: 'Instrucoes para o engenheiro de dados...',
+                emptyTitle: 'dbt Pipeline Builder',
+                emptyDesc: 'Selecione um banco com CLEANING_ROADMAP pronto e inicie o pipeline.',
+                typingDefault: 'Construindo pipeline...',
+            },
+        };
+
+        // ── Readonly viewer mode (used by manager.html iframe) ─────────────
+        // URL: ?session=<id>&readonly=1 attaches read-only to an existing session
+        const URL_PARAMS = new URLSearchParams(window.location.search);
+        const URL_SESSION = URL_PARAMS.get('session');
+        const IS_READONLY = URL_PARAMS.get('readonly') === '1';
+        if (IS_READONLY) document.body.classList.add('readonly');
+
+        let activeProfile = 'sql-agent';
+        let sessionId = URL_SESSION || localStorage.getItem(PROFILES[activeProfile].storageKey) || null;
+        let ws = null;
+        let assistantBuffer = '';
+        // ── DOM refs ──
+        const messagesEl = document.getElementById('messages');
+        const emptyState = document.getElementById('emptyState');
+
+        // Copy icon (two overlapping rounded rects) for the SQL block header.
+        const COPY_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+
+        // Copy the raw SQL when the block's copy button is clicked (delegated).
+        messagesEl.addEventListener('click', (e) => {
+            const btn = e.target.closest('.sql-copy');
+            if (!btn) return;
+            const code = btn.closest('.sql-query').querySelector('code');
+            navigator.clipboard.writeText(code.textContent).then(() => {
+                btn.classList.add('copied');
+                setTimeout(() => btn.classList.remove('copied'), 1200);
+            }).catch(() => {});
+        });
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typing = document.getElementById('typing');
+        const typingText = document.getElementById('typingText');
+        const qaBanner = document.getElementById('qaBanner');
+        const qaQuestion = document.getElementById('qaQuestion');
+        const qaInput = document.getElementById('qaInput');
+        const connectBtn = document.getElementById('connectBtn');
+        const connOverlay = document.getElementById('connOverlay');
+        const connClose = document.getElementById('connClose');
+        const connFiles = document.getElementById('connFiles');
+        const connHint = document.getElementById('connHint');
+        const connPath = document.getElementById('connPath');
+
+        // Selected connection: {id, name} or null. The agent queries by
+        // connection_id (registered with the sql-processor), never by path.
+        let connection = null;
+
+        const modelNameEl = document.querySelector('.topbar .model-name');
+
+        // ── Profile switcher ──
+        function switchProfile(profile) {
+            if (profile === activeProfile) return;
+
+            // Disconnect current WS
+            if (ws) { ws.close(); ws = null; }
+
+            // Save nothing — each profile has its own localStorage key
+            activeProfile = profile;
+            const cfg = PROFILES[activeProfile];
+            sessionId = localStorage.getItem(cfg.storageKey) || null;
+
+            // Update sidebar active state
+            document.querySelectorAll('.profile-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.profile === activeProfile);
+            });
+
+            // Update topbar + input
+            modelNameEl.textContent = cfg.label;
+            userInput.placeholder = cfg.placeholder;
+
+            // Clear chat
+            currentAssistantBubble = null;
+            assistantBuffer = '';
+            thinkEl = null; thinkParts = [];
+            while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
+            messagesEl.appendChild(emptyState);
+            emptyState.style.display = '';
+            emptyState.querySelector('h2').textContent = cfg.emptyTitle;
+            emptyState.querySelector('p').textContent = cfg.emptyDesc;
+
+            // Reconnect if session exists
+            if (sessionId) {
+                fetch(MAESTRO + '/sessions/' + sessionId + '/status')
+                    .then(r => { if (r.ok) return r.json(); throw new Error('gone'); })
+                    .then(() => {
+                        emptyState.style.display = 'none';
+                        connectWS();
+                        sendBtn.disabled = false;
+                    })
+                    .catch(() => {
+                        sessionId = null;
+                        localStorage.removeItem(cfg.storageKey);
+                    });
+            }
+        }
+
+        // ── Connect modal: pick a local file → register → connection_id ──
+        const SQL_PROCESSOR = 'http://localhost:8001';
+        const connKey = () => PROFILES[activeProfile].storageKey + '-conn';
+
+        function setConnection(conn) {
+            connection = conn;
+            if (conn) {
+                connectBtn.textContent = conn.name;
+                connectBtn.classList.add('connected');
+                localStorage.setItem(connKey(), JSON.stringify(conn));
+            } else {
+                connectBtn.textContent = 'Conectar';
+                connectBtn.classList.remove('connected');
+                localStorage.removeItem(connKey());
+            }
+        }
+
+        function resetSession() {
+            if (sessionId) {
+                fetch(MAESTRO + '/sessions/' + sessionId, { method: 'DELETE' }).catch(() => {});
+            }
+            sessionId = null;
+            localStorage.removeItem(PROFILES[activeProfile].storageKey);
+            if (ws) { ws.close(); ws = null; }
+            while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
+            messagesEl.appendChild(emptyState);
+            emptyState.style.display = '';
+            currentAssistantBubble = null;
+            thinkEl = null; thinkParts = [];
+        }
+
+        function row(label, cls, onClick) {
+            const li = document.createElement('li');
+            li.className = 'conn-file' + (cls ? ' ' + cls : '');
+            const name = document.createElement('span');
+            name.textContent = label;
+            li.appendChild(name);
+            li.addEventListener('click', onClick);
+            return li;
+        }
+
+        // Navigate any folder the container can see. path=null → server default.
+        function browseTo(path) {
+            connHint.textContent = 'Carregando…';
+            connFiles.innerHTML = '';
+            const url = SQL_PROCESSOR + '/connections/browse' + (path ? '?path=' + encodeURIComponent(path) : '');
+            fetch(url)
+                .then(r => { if (!r.ok) throw new Error('browse'); return r.json(); })
+                .then(data => {
+                    connPath.value = data.path;
+                    connHint.textContent = 'Navegue ou cole um caminho. Clique num arquivo para conectar.';
+                    if (data.parent) {
+                        connFiles.appendChild(row('📁 ..', 'dir', () => browseTo(data.parent)));
+                    }
+                    (data.dirs || []).forEach(d => {
+                        connFiles.appendChild(row('📁 ' + d.name, 'dir', () => browseTo(d.path)));
+                    });
+                    (data.files || []).forEach(f => {
+                        const li = row(f.name, '', () => connectLocal(f.path, f.name));
+                        const sz = document.createElement('span');
+                        sz.className = 'sz';
+                        sz.textContent = (f.size / 1e6).toFixed(1) + ' MB';
+                        li.appendChild(sz);
+                        connFiles.appendChild(li);
+                    });
+                    if (!data.dirs.length && !data.files.length) {
+                        connHint.textContent = 'Pasta vazia (sem subpastas nem bancos).';
+                    }
+                })
+                .catch(() => { connHint.textContent = 'Não foi possível abrir essa pasta.'; });
+        }
+
+        function openConnModal() {
+            connOverlay.hidden = false;
+            showConnTab(false);   // always open on Local
+            browseTo(null);
+        }
+
+        function closeConnModal() { connOverlay.hidden = true; }
+
+        async function connectLocal(path, name) {
+            const type = (name.split('.').pop() || '').toLowerCase();
+            try {
+                const r = await fetch(SQL_PROCESSOR + '/connections', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type, path }),
+                });
+                if (!r.ok) throw new Error('register failed');
+                const { connection_id, db_key } = await r.json();
+                resetSession();               // new database → fresh session
+                setConnection({ id: connection_id, name, db_key });
+                closeConnModal();
+            } catch (e) {
+                connHint.textContent = 'Não foi possível conectar a ' + name + '.';
+            }
+        }
+
+        // ── Remote (Postgres): form → /connections/remote → connection_id ──
+        // localhost counts as remote — the engine is the Postgres driver, not a
+        // local file scan. Credentials go to the server's vault; the browser
+        // keeps only the opaque id (never the password).
+        const tabLocal = document.getElementById('tabLocal');
+        const tabRemote = document.getElementById('tabRemote');
+        const panelLocal = document.getElementById('panelLocal');
+        const panelRemote = document.getElementById('panelRemote');
+        const rHint = document.getElementById('rHint');
+        const rConnect = document.getElementById('rConnect');
+
+        function showConnTab(remote) {
+            tabLocal.classList.toggle('active', !remote);
+            tabRemote.classList.toggle('active', remote);
+            panelLocal.hidden = remote;
+            panelRemote.hidden = !remote;
+        }
+        tabLocal.addEventListener('click', () => showConnTab(false));
+        tabRemote.addEventListener('click', () => showConnTab(true));
+
+        async function connectRemote() {
+            const host = document.getElementById('rHost').value.trim();
+            const database = document.getElementById('rDb').value.trim();
+            if (!host || !database) { rHint.textContent = 'Informe ao menos host e database.'; return; }
+            const body = {
+                type: 'postgres', host, database,
+                port: parseInt(document.getElementById('rPort').value.trim(), 10) || 5432,
+                user: document.getElementById('rUser').value.trim() || 'postgres',
+                password: document.getElementById('rPass').value,   // sent once, kept only in the vault
+            };
+            rConnect.disabled = true; rHint.textContent = 'Conectando…';
+            try {
+                const r = await fetch(SQL_PROCESSOR + '/connections/remote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                if (!r.ok) throw new Error('register failed');
+                const { connection_id, db_key } = await r.json();
+                document.getElementById('rPass').value = '';   // don't leave it in the DOM
+                resetSession();                                 // new database → fresh session
+                setConnection({ id: connection_id, name: database, db_key });
+                closeConnModal();
+            } catch (e) {
+                rHint.textContent = 'Não foi possível conectar a ' + host + '/' + database + '.';
+            } finally {
+                rConnect.disabled = false;
+            }
+        }
+        rConnect.addEventListener('click', connectRemote);
+        panelRemote.addEventListener('keydown', (e) => { if (e.key === 'Enter') connectRemote(); });
+
+        connectBtn.addEventListener('click', openConnModal);
+        connClose.addEventListener('click', closeConnModal);
+        connPath.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && connPath.value.trim()) browseTo(connPath.value.trim());
+        });
+        connOverlay.addEventListener('click', (e) => { if (e.target === connOverlay) closeConnModal(); });
+
+        tryReconnect();
+
+        // ── Create session on first message ──
+        async function ensureSession(prompt) {
+            if (sessionId) return;
+            if (!connection) return;
+            const r = await fetch(MAESTRO + '/sessions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    profile: activeProfile,
+                    prompt: prompt,
+                    // db_key keys the agent's knowledge files per-database
+                    // (avoids the shared-default-path collision).
+                    options: { connection_id: connection.id, db_key: connection.db_key },
+                }),
+            });
+            const data = await r.json();
+            sessionId = data.session_id;
+            localStorage.setItem(PROFILES[activeProfile].storageKey, sessionId);
+            connectWS();
+        }
+
+        // ── WebSocket ──
+        function connectWS() {
+            if (ws) return;
+            ws = new WebSocket(WS_BASE + '/sessions/' + sessionId + '/ws');
+            ws.onmessage = (e) => handleEvent(JSON.parse(e.data));
+            ws.onclose = () => { ws = null; };
+        }
+
+        // ── Handle events ──
+        let currentAssistantBubble = null;
+        const toolRegistry = {};  // tool_id → {el: DOM, name: str}
+
+        // Thinking: a live muted element that overwrites with the latest thought,
+        // then collapses to "💭 Pensou por Xs ›" (click to expand the reasoning).
+        let thinkEl = null, thinkStart = 0, thinkParts = [];
+
+        function finalizeThinking() {
+            if (!thinkEl) return;
+            const secs = Math.max(1, Math.round((Date.now() - thinkStart) / 1000));
+            const full = thinkParts.join('\n\n');
+            const btn = document.createElement('button');
+            btn.className = 'think-toggle';
+            const body = document.createElement('div');
+            body.className = 'think-body';
+            body.hidden = true;
+            body.textContent = full;
+            const setLabel = () => { btn.textContent = `💭 Pensou por ${secs}s ${body.hidden ? '›' : '⌄'}`; };
+            btn.onclick = () => { body.hidden = !body.hidden; setLabel(); };
+            setLabel();
+            thinkEl.innerHTML = '';
+            thinkEl.appendChild(btn);
+            if (full) thinkEl.appendChild(body);
+            thinkEl = null;
+            thinkParts = [];
+        }
+
+        function toolLabel(name, input) {
+            const file = (input.file_path || '').split('/').pop();
+            if (name === 'Bash') {
+                const cmd = input.command || '';
+                // dbt/dagster commands (Data Eng)
+                if (cmd.includes('dbt run')) return 'dbt run ' + extractDbtSelect(cmd);
+                if (cmd.includes('dbt test')) return 'dbt test ' + extractDbtSelect(cmd);
+                if (cmd.includes('dbt build')) return 'dbt build ' + extractDbtSelect(cmd);
+                if (cmd.includes('dbt compile')) return 'dbt compile ' + extractDbtSelect(cmd);
+                if (cmd.includes('dbt debug')) return 'dbt debug';
+                if (cmd.includes('dbt init')) return 'dbt init';
+                if (cmd.includes('dbt docs')) return 'dbt docs';
+                if (cmd.includes('dbt source')) return 'dbt source freshness';
+                if (cmd.includes('dagster')) return 'dagster: ' + cmd.substring(0, 60);
+                // SQL queries (SQL Agent)
+                const sql = extractSQL(cmd);
+                if (sql) return 'Executando query...';
+                const short = cmd.length > 60 ? cmd.substring(0, 60) + '...' : cmd;
+                return 'Bash: ' + short;
+            }
+            if (name === 'Write') return 'Criando ' + file;
+            if (name === 'Edit') return 'Editando ' + file;
+            if (name === 'Read') return 'Lendo ' + file;
+            if (name === 'Glob') return 'Buscando: ' + (input.pattern || '');
+            if (name === 'Grep') return 'Grep: ' + (input.pattern || '');
+            return name;
+        }
+
+        function extractDbtSelect(cmd) {
+            const m = cmd.match(/--select\s+(\S+)/);
+            return m ? m[1] : '';
+        }
+
+        function sendChoice(question, opt) {
+            // Send the pick framed as the answer to the agent's own question,
+            // so it doesn't read a bare label as a context-less fragment.
+            userInput.value = question ? `Para a pergunta "${question}", escolho: ${opt}` : opt;
+            send();
+        }
+
+        // Detect the ===ASK===…===/ASK=== disambiguation block in assistant
+        // output → render preamble + clickable options. Deterministic markers
+        // (like ===HANDOFF===), parsed by delimiter — never NL regex.
+        function tryRenderAsk(bubble, buffer) {
+            const open = buffer.indexOf('===ASK===');
+            const close = buffer.indexOf('===/ASK===');
+            if (open === -1 || close === -1 || close < open) return false;
+            let spec;
+            try { spec = JSON.parse(buffer.slice(open + 9, close).trim()); }
+            catch (e) { return false; }
+            if (!spec || !Array.isArray(spec.options) || !spec.options.length) return false;
+
+            bubble.classList.add('has-ask');
+            bubble.innerHTML = '';
+
+            // The model may wrap the marker in a ``` fence — drop a dangling
+            // opening fence so it isn't rendered as an empty (black) code block.
+            const preamble = buffer.slice(0, open).replace(/`{3}[a-z]*\s*$/i, '').trim();
+            if (preamble) {
+                const pre = document.createElement('div');
+                pre.className = 'ask-preamble';
+                pre.innerHTML = marked.parse(preamble);
+                bubble.appendChild(pre);
+            }
+
+            const card = document.createElement('div');
+            card.className = 'ask-card';
+            if (spec.question) {
+                const h = document.createElement('div');
+                h.className = 'ask-card-header';
+                h.textContent = spec.question;
+                card.appendChild(h);
+            }
+            const choose = (row, text) => {
+                card.classList.add('answered');
+                row.classList.add('chosen');
+                sendChoice(spec.question, text);
+            };
+            spec.options.forEach((opt, i) => {
+                const text = String(opt);
+                const row = document.createElement('div');
+                row.className = 'ask-row';
+                row.innerHTML = `<span class="ask-num">${i + 1}</span><span class="ask-label"></span>`;
+                row.querySelector('.ask-label').textContent = text;
+                row.onclick = () => choose(row, text);
+                card.appendChild(row);
+            });
+            // "Outro" — answer freely in the input below
+            const other = document.createElement('div');
+            other.className = 'ask-row other';
+            other.innerHTML = '<span class="ask-num">✎</span><span class="ask-label">Outro (responder abaixo)</span>';
+            other.onclick = () => userInput.focus();
+            card.appendChild(other);
+
+            bubble.appendChild(card);
+            return true;
+        }
+
+        function handleEvent(ev) {
+            const t = ev.type;
+
+            // Any real content ends the current thinking burst → collapse it.
+            // (system = SDK metadata like thinking_tokens, which interleaves.)
+            if (t !== 'thinking' && t !== 'system') finalizeThinking();
+
+            if (t === 'system') {
+                // SDK SystemMessage events carry subtype/data but no human text —
+                // rendering them produced empty lines (the growing blank gap).
+                // Only show lifecycle messages that actually have text.
+                if (ev.message) addMessage('system-msg', ev.message);
+                showTyping(true, 'Pensando...');
+            }
+
+            else if (t === 'assistant') {
+                showTyping(false);
+                if (!currentAssistantBubble) {
+                    assistantBuffer = '';
+                    const msg = addMessage('assistant', '');
+                    currentAssistantBubble = msg.querySelector('.bubble');
+                }
+                assistantBuffer += ev.text || '';
+                const askOpen = assistantBuffer.indexOf('===ASK===');
+                if (askOpen !== -1 && assistantBuffer.indexOf('===/ASK===') === -1) {
+                    // marker open but not closed yet — boxless + muted placeholder
+                    // (avoids the empty dark "black box" while it streams)
+                    currentAssistantBubble.classList.add('has-ask');
+                    const pre = assistantBuffer.slice(0, askOpen).replace(/`{3}[a-z]*\s*$/i, '').trim();
+                    currentAssistantBubble.innerHTML = pre
+                        ? marked.parse(pre)
+                        : '<span class="think-live">preparando opções…</span>';
+                } else if (!tryRenderAsk(currentAssistantBubble, assistantBuffer)) {
+                    currentAssistantBubble.innerHTML = marked.parse(assistantBuffer);
+                }
+                scrollBottom();
+            }
+
+            else if (t === 'thinking') {
+                const txt = (ev.text || '').trim();
+                if (!txt) return;
+                if (!thinkEl) {
+                    thinkEl = document.createElement('div');
+                    thinkEl.className = 'msg thinking';
+                    thinkEl.innerHTML = '<div class="think-live">💭 <span class="think-text"></span></div>';
+                    messagesEl.appendChild(thinkEl);
+                    thinkStart = Date.now();
+                    thinkParts = [];
+                }
+                thinkParts.push(txt);
+                thinkEl.querySelector('.think-text').textContent = txt;  // overwrite live
+                showTyping(true, 'Pensando...');
+                scrollBottom();
+            }
+
+            else if (t === 'question') {
+                showTyping(false);
+                currentAssistantBubble = null;
+                const question = ev.question || ev.message || 'O agente precisa de uma resposta.';
+                showQA(question);
+            }
+
+            else if (t === 'tool_use') {
+                currentAssistantBubble = null;
+                const name = ev.tool_name || '?';
+                const input = ev.input || {};
+                const toolId = ev.tool_id;
+
+                // Always show the tool action inline
+                const label = toolLabel(name, input);
+                const el = addToolIndicator(label);
+
+                // Register for pairing with tool_result
+                if (toolId) toolRegistry[toolId] = { el, name };
+
+                // Special: SQL gets highlighted block appended to the indicator
+                if (name === 'Bash') {
+                    const cmd = input.command || '';
+                    const sql = extractSQL(cmd);
+                    if (sql) {
+                        const formatted = formatSQL(sql);
+                        const highlighted = hljs.highlight(formatted, { language: 'sql' }).value;
+                        el.insertAdjacentHTML('beforeend',
+                            `<div class="sql-query">`
+                            + `<div class="sql-head">`
+                            + `<span class="sql-label">&lt;/&gt; SQL</span>`
+                            + `<button class="sql-copy" title="Copiar SQL" aria-label="Copiar SQL">${COPY_ICON}</button>`
+                            + `</div>`
+                            + `<pre><code class="hljs language-sql">${highlighted}</code></pre>`
+                            + `</div>`);
+                    }
+                }
+
+                showTyping(true, label);
+            }
+
+            else if (t === 'tool_result') {
+                showTyping(true, 'Pensando...');
+                const content = String(ev.content || '').trim();
+                const useId = ev.tool_use_id;
+                const entry = useId && toolRegistry[useId];
+                const parentEl = entry ? entry.el : null;
+                const toolName = entry ? entry.name : '';
+
+                if (!content || content.length < 5) return;
+
+                let html;
+                // Plot reference — fetch SVG directly from sql-processor
+                const plotMatch = content.match(/"plot_id"\s*:\s*"([^"]+)"/);
+                if (plotMatch) {
+                    const plotId = plotMatch[1];
+                    const chartDiv = document.createElement('div');
+                    chartDiv.className = 'chart-container';
+                    chartDiv.textContent = 'Loading chart...';
+                    const target = parentEl || document.getElementById('messages');
+                    target.appendChild(chartDiv);
+                    scrollBottom();
+                    fetch(`${SQL_PROCESSOR}/plot/${plotId}`)
+                        .then(r => r.text())
+                        .then(svg => {
+                            let clean = svg.replace(/width="[^"]*"/i, '').replace(/height="[^"]*"/i, '');
+                            chartDiv.innerHTML = clean;
+                            scrollBottom();
+                        })
+                        .catch(() => { chartDiv.textContent = 'Failed to load chart.'; });
+                    html = null;
+                }
+                // SVG chart — render inline (fallback)
+                else if (content.includes('<svg') && content.includes('</svg>')) {
+                    const svgStart = content.indexOf('<svg');
+                    const svgEnd = content.indexOf('</svg>') + 6;
+                    let svgString = content.substring(svgStart, svgEnd);
+                    svgString = svgString.replace(/width="[^"]*"/i, '').replace(/height="[^"]*"/i, '');
+                    html = `<div class="chart-container">${svgString}</div>`;
+                }
+                // CSV table for query results
+                else if (toolName === 'Bash' && looksLikeCSV(content)) {
+                    html = csvToTable(content);
+                } else {
+                    const truncated = content.length > 800;
+                    const preview = truncated ? content.substring(0, 800) + '...' : content;
+                    // Colorize dbt output (PASS/FAIL/WARN)
+                    if (activeProfile === 'data-eng' && /\b(PASS|FAIL|ERROR|WARN|OK|SUCCESS)\b/.test(preview)) {
+                        html = `<div class="tool-result">${colorizeDbt(preview)}</div>`;
+                    } else {
+                        html = `<div class="tool-result">${escapeHtml(preview)}</div>`;
+                    }
+                }
+
+                if (html !== null) {
+                    if (parentEl) {
+                        parentEl.insertAdjacentHTML('beforeend', html);
+                    } else {
+                        const msg = addMessage('tool', '');
+                        msg.innerHTML = html;
+                    }
+                    scrollBottom();
+                }
+            }
+
+            else if (t === 'result') {
+                currentAssistantBubble = null;
+                showTyping(false);
+                const cost = ev.cost_usd ? '$' + Number(ev.cost_usd).toFixed(2) : '?';
+                const turns = ev.num_turns || '?';
+                addMessage('result-msg',
+                    `<span class="badge"><span>Concluido</span> <span><strong>${cost}</strong></span> <span>${turns} turns</span></span>`
+                );
+                sendBtn.disabled = false;
+            }
+
+            else if (t === 'error') {
+                currentAssistantBubble = null;
+                showTyping(false);
+                addMessage('system-msg', 'Erro: ' + (ev.message || ev.error || ''));
+                sendBtn.disabled = false;
+            }
+        }
+
+        // ── Extract SQL from curl command ──
+        function extractSQL(cmd) {
+            // query_string inside a JSON payload. Capture the WHOLE JSON string
+            // (escaped quotes/backslashes included) then unescape it, so queries
+            // with double-quoted identifiers, newlines or special chars don't get
+            // cut at the first `\"`.
+            const m = cmd.match(/"query_string"\s*:\s*"((?:\\.|[^"\\])*)"/);
+            if (m) {
+                try { return JSON.parse('"' + m[1] + '"'); }
+                catch (e) { return m[1].replace(/\\(["\\/])/g, '$1').replace(/\\n/g, '\n'); }
+            }
+            // Fallback: bare -d form without JSON quoting.
+            const m2 = cmd.match(/query_string['":\s]+([^}'"]+)/);
+            if (m2) return m2[1].replace(/['"\\]/g, '').trim();
+            return null;
+        }
+
+        // ── Format SQL for display ──
+        function formatSQL(sql) {
+            // Replace literal \n with real newlines
+            let s = sql.replace(/\\n/g, '\n');
+            // If still single-line, add breaks before major keywords
+            if (!s.includes('\n') || s.split('\n').length < 3) {
+                s = s.replace(/\b(SELECT|FROM|WHERE|JOIN|LEFT JOIN|RIGHT JOIN|INNER JOIN|OUTER JOIN|CROSS JOIN|ON|AND|OR|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|UNION|UNION ALL|WITH|AS \(|INSERT|UPDATE|DELETE|SET|VALUES|INTO|CREATE|ALTER|DROP|CASE|WHEN|THEN|ELSE|END)\b/gi, '\n$1');
+                s = s.trim();
+            }
+            return s;
+        }
+
+        // ── CSV detection ──
+        function looksLikeCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return false;
+            const commas = (lines[0].match(/,/g) || []).length;
+            return commas >= 1 && lines.length >= 2;
+        }
+
+        // ── CSV → HTML table ──
+        function csvToTable(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = parseCSVLine(lines[0]);
+            const maxRows = 50;
+            const dataLines = lines.slice(1, maxRows + 1);
+            const totalRows = lines.length - 1;
+
+            let html = '<div class="csv-table-wrapper"><table class="csv-table"><thead><tr>';
+            headers.forEach(h => { html += `<th>${escapeHtml(h)}</th>`; });
+            html += '</tr></thead><tbody>';
+
+            dataLines.forEach(line => {
+                const cols = parseCSVLine(line);
+                html += '<tr>';
+                cols.forEach(c => { html += `<td>${escapeHtml(c)}</td>`; });
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            if (totalRows > maxRows) {
+                html += `<tfoot><tr><td colspan="${headers.length}" class="row-count">Mostrando ${maxRows} de ${totalRows} linhas</td></tr></tfoot>`;
+            }
+            html += '</table></div>';
+            return html;
+        }
+
+        // ── Simple CSV line parser (handles quoted fields) ──
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const c = line[i];
+                if (c === '"') { inQuotes = !inQuotes; }
+                else if (c === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+                else { current += c; }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        // ── Send message ──
+        async function send() {
+            if (IS_READONLY) return;
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Must connect a database first (changing it resets the session
+            // in connectLocal, so no stale-db check is needed here).
+            if (!connection) {
+                connectBtn.classList.remove('flash');
+                void connectBtn.offsetWidth;
+                connectBtn.classList.add('flash');
+                openConnModal();
+                return;
+            }
+
+            // Now safe to mutate DOM
+            emptyState.style.display = 'none';
+            addMessage('user', text);
+            userInput.value = '';
+            sendBtn.disabled = true;
+            currentAssistantBubble = null;
+
+            if (!sessionId) {
+                await ensureSession(text);
+                if (!sessionId) return;
+            } else {
+                let r = await fetch(MAESTRO + '/sessions/' + sessionId + '/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text }),
+                });
+                if (!r.ok) {
+                    r = await fetch(MAESTRO + '/sessions/' + sessionId + '/resume', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: text }),
+                    });
+                    if (!r.ok) {
+                        sessionId = null;
+                        localStorage.removeItem(PROFILES[activeProfile].storageKey);
+                        await ensureSession(text);
+                    }
+                }
+            }
+        }
+
+        // ── Answer Q&A ──
+        async function answerQA() {
+            const answer = qaInput.value.trim();
+            if (!answer || !sessionId) return;
+
+            qaBanner.classList.remove('visible');
+            addMessage('user', answer);
+            qaInput.value = '';
+
+            await fetch(MAESTRO + '/sessions/' + sessionId + '/answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answer: answer }),
+            });
+        }
+
+        function showQA(question) {
+            qaQuestion.textContent = question;
+            qaBanner.classList.add('visible');
+            qaInput.focus();
+            qaInput.onkeydown = (e) => { if (e.key === 'Enter') answerQA(); };
+        }
+
+        // ── UI helpers ──
+        function addMessage(type, content) {
+            const div = document.createElement('div');
+            div.className = 'msg ' + type;
+            if (type === 'user') {
+                div.innerHTML = `<div class="bubble">${escapeHtml(content)}</div>`;
+            } else if (type === 'assistant') {
+                div.innerHTML = `<div class="bubble"></div>`;
+            } else if (type === 'result-msg') {
+                div.innerHTML = content;
+            } else {
+                div.textContent = content;
+            }
+            messagesEl.appendChild(div);
+            scrollBottom();
+            return div;
+        }
+
+        function addToolIndicator(text) {
+            const div = document.createElement('div');
+            div.className = 'msg tool';
+            div.innerHTML = `<span class="tool-indicator"><span class="dot"></span>${escapeHtml(text)}</span>`;
+            messagesEl.appendChild(div);
+            scrollBottom();
+            return div;
+        }
+
+        function showTyping(show, text) {
+            typing.classList.toggle('visible', show);
+            if (text) typingText.textContent = text;
+        }
+
+        function scrollBottom() {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function escapeHtml(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function colorizeDbt(text) {
+            return escapeHtml(text)
+                .replace(/\bPASS\b/g, '<span class="dbt-pass">PASS</span>')
+                .replace(/\bOK\b/g, '<span class="dbt-pass">OK</span>')
+                .replace(/\bSUCCESS\b/g, '<span class="dbt-pass">SUCCESS</span>')
+                .replace(/\bFAIL\b/g, '<span class="dbt-fail">FAIL</span>')
+                .replace(/\bERROR\b/g, '<span class="dbt-fail">ERROR</span>')
+                .replace(/\bWARN\b/g, '<span class="dbt-warn">WARN</span>')
+                .replace(/\bSKIP\b/g, '<span class="dbt-warn">SKIP</span>');
+        }
+
+        // Reconnect saved session (called after database options are loaded)
+        function tryReconnect() {
+            if (!sessionId) return;
+            // Readonly viewer: just attach to the WS, skip db/storage logic.
+            if (IS_READONLY) {
+                emptyState.style.display = 'none';
+                connectWS();
+                return;
+            }
+            // Restore the saved connection so the button reflects it.
+            const savedConn = localStorage.getItem(connKey());
+            if (savedConn) {
+                try { setConnection(JSON.parse(savedConn)); } catch (e) {}
+            }
+            // No connection → the session can't be used; drop it.
+            if (!connection) {
+                sessionId = null;
+                localStorage.removeItem(PROFILES[activeProfile].storageKey);
+                return;
+            }
+            fetch(MAESTRO + '/sessions/' + sessionId + '/status')
+                .then(r => {
+                    if (r.ok) return r.json();
+                    throw new Error('gone');
+                })
+                .then(() => {
+                    emptyState.style.display = 'none';
+                    connectWS();
+                    sendBtn.disabled = false;
+                })
+                .catch(() => {
+                    sessionId = null;
+                    localStorage.removeItem(PROFILES[activeProfile].storageKey);
+                });
+        }
+
+        // Focus input on load
+        userInput.focus();
+
+        // ── PROVIDER PICKER ───────────────────────────────────────────
+        const PROVIDER_OPTIONS = [
+            { label: 'Claude',           provider: 'claude',     model: null,                                       sub: 'Anthropic (padrão)' },
+            { label: 'Claude Sonnet 4.5',provider: 'openrouter', model: 'anthropic/claude-sonnet-4.5',              sub: 'via OpenRouter' },
+            { label: 'GPT-4o',           provider: 'openrouter', model: 'openai/gpt-4o',                            sub: 'via OpenRouter' },
+            { label: 'GPT-4o mini',      provider: 'openrouter', model: 'openai/gpt-4o-mini',                       sub: 'via OpenRouter' },
+            { label: 'Gemini 2.5 Pro',   provider: 'openrouter', model: 'google/gemini-2.5-pro',                    sub: 'via OpenRouter' },
+            { label: 'Gemini 2.5 Flash', provider: 'openrouter', model: 'google/gemini-2.5-flash',                  sub: 'via OpenRouter' },
+            { label: 'Llama 3.3 70B',    provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct',        sub: 'via OpenRouter' },
+            { label: 'Mistral Large',    provider: 'openrouter', model: 'mistralai/mistral-large',                  sub: 'via OpenRouter' },
+        ];
+
+        const providerPill   = document.getElementById('providerPill');
+        const providerLabel  = document.getElementById('providerLabel');
+        const providerDot    = document.getElementById('providerDot');
+        const providerMenuEl = document.getElementById('providerMenu');
+
+        function isSameProvider(a, b) {
+            return a.provider === b.provider && (a.model || null) === (b.model || null);
+        }
+        function labelFor(state) {
+            const match = PROVIDER_OPTIONS.find(o => isSameProvider(o, state));
+            if (match) return match.label;
+            if (state.provider === 'openrouter') return state.model || 'OpenRouter';
+            return 'Claude';
+        }
+        function paintPill(state) {
+            providerLabel.textContent = labelFor(state);
+            providerDot.classList.toggle('openrouter', state.provider === 'openrouter');
+            // Mark active in menu
+            providerMenuEl.querySelectorAll('.item').forEach(el => {
+                const opt = JSON.parse(el.dataset.opt);
+                el.classList.toggle('active', isSameProvider(opt, state));
+            });
+        }
+        async function fetchProvider() {
+            try {
+                const r = await fetch(MAESTRO + '/admin/provider');
+                return await r.json();
+            } catch { return { provider: 'claude', model: null }; }
+        }
+        async function setProvider(opt) {
+            try {
+                const r = await fetch(MAESTRO + '/admin/provider', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider: opt.provider, model: opt.model }),
+                });
+                if (!r.ok) { alert('Falha ao trocar: ' + (await r.text())); return; }
+                paintPill(await r.json());
+            } catch (e) { alert('Erro: ' + e.message); }
+        }
+        function buildMenu(state) {
+            providerMenuEl.innerHTML = '<div class="group">Modelo (próxima sessão)</div>';
+            for (const opt of PROVIDER_OPTIONS) {
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.dataset.opt = JSON.stringify(opt);
+                item.innerHTML = `
+                    <div>
+                        <div>${opt.label}</div>
+                        <div class="sub">${opt.sub}</div>
+                    </div>
+                    <span class="check">✓</span>
+                `;
+                item.addEventListener('click', async () => {
+                    providerMenuEl.classList.remove('open');
+                    await setProvider(opt);
+                });
+                providerMenuEl.appendChild(item);
+            }
+            paintPill(state);
+        }
+        providerPill.addEventListener('click', (e) => {
+            e.stopPropagation();
+            providerMenuEl.classList.toggle('open');
+        });
+        document.addEventListener('click', () => providerMenuEl.classList.remove('open'));
+
+        fetchProvider().then(buildMenu);
+    </script>
+
+
+
+</body></html>

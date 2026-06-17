@@ -1,0 +1,31 @@
+﻿pergunta,dificuldade
+Liste o nome e a cidade de todos os times cadastrados.,Fácil
+"Liste o nome, a posição e a altura de todos os jogadores.",Fácil
+Quantos jogadores estão cadastrados no banco de dados?,Fácil
+"Liste os jogadores com altura superior a 2,05 m, em ordem decrescente de altura.",Fácil
+"Liste todos os jogos disputados em janeiro de 2025, ordenados por data.",Fácil
+Qual é a altura média e o peso médio de todos os jogadores?,Fácil
+"Liste todos os jogadores que jogam na posição ""Pivô"".",Fácil
+"Liste os 5 jogadores mais velhos, do mais antigo para o mais novo.",Fácil
+Quantos times existem em cada conferência (Leste e Oeste)?,Fácil
+Liste o nome de todos os técnicos e a data em que foram contratados.,Fácil
+"Liste o total de pontos marcados por cada jogador somando as estatísticas de todas as partidas, ordenado do maior para o menor.",Médio
+Liste o nome de cada time e o total de pontos marcados por todos os seus jogadores somados na temporada.,Médio
+"Liste os 5 jogadores com mais assistências acumuladas, mostrando também o nome do time pelo qual jogam.",Médio
+Quantas vitórias cada time obteve jogando como visitante?,Médio
+"Calcule o número total de vitórias e derrotas de cada time, somando os jogos em que jogou como casa e como visitante.",Médio
+Liste o nome dos jogadores e a quantidade de partidas em que jogaram mais de 35 minutos.,Médio
+"Qual foi a partida com a maior diferença de pontos entre os times (maior ""goleada"") da temporada?",Médio
+"Calcule a média de rebotes por partida, agrupada pela posição dos jogadores.",Médio
+Liste os jogadores cuja média de pontos por jogo é maior que a média geral de pontos de todos os jogadores.,Médio
+"Para cada time, conte quantos jogos foram disputados em casa e quantos fora durante a temporada.",Médio
+"Classifique os jogadores por total de pontos dentro de cada time, indicando a colocação de cada um dentro do próprio time.",Difícil
+Calcule a maior sequência de vitórias consecutivas de cada time ao longo da temporada.,Difícil
+"Encontre os jogadores com média de pontos por jogo acima de 20, considerando apenas quem disputou pelo menos 15 partidas.",Difícil
+"Calcule o total acumulado de pontos marcados por cada time ao longo da temporada, mostrando como esse total evolui partida a partida.",Difícil
+Descubra quais dois times se enfrentaram o maior número de vezes ao longo de todas as temporadas registradas.,Difícil
+Identifique os jogadores que superaram a média de pontos do próprio time em mais da metade das partidas que jogaram.,Difícil
+Calcule o aproveitamento (vitórias dividido por jogos disputados) de cada time nos últimos 10 jogos.,Difícil
+Compare a pontuação de cada time entre jogos consecutivos e identifique sequências de melhora ou queda de desempenho.,Difícil
+"Para cada time, encontre o jogador ""mais consistente"": aquele com o menor desvio padrão de pontos entre as partidas, considerando apenas quem disputou pelo menos 15 jogos.",Difícil
+Liste os 3 times com o melhor saldo médio de pontos (marcados menos sofridos) na temporada.,Difícil

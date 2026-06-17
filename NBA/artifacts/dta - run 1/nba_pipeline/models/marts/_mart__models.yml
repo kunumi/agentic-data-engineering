@@ -1,0 +1,65 @@
+version: 2
+
+models:
+  - name: mart_nba__teams
+    description: "Canonical franchise dimension with current name + historical names (CLEAN-009)."
+    columns:
+      - name: team_id
+        description: "Primary key. One row per current NBA franchise."
+        data_tests:
+          - not_null
+          - unique
+      - name: canonical_team_name
+        description: "Current canonical franchise name; use this for franchise-level reporting."
+        data_tests:
+          - not_null
+      - name: historical_name_count
+        description: "Number of distinct names this franchise used across eras."
+        data_tests:
+          - not_null
+
+  - name: mart_nba__games
+    description: "Consumption games fact: standardized season_type + franchise flags (CLEAN-003/004)."
+    columns:
+      - name: game_id
+        description: "Primary key."
+        data_tests:
+          - not_null
+          - unique
+      - name: season_type
+        description: "Canonical season type."
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Regular Season', 'Playoffs', 'Pre Season', 'All-Star']
+      - name: is_official_nba_matchup
+        description: "Filter to true for clean NBA analytics."
+        data_tests:
+          - not_null
+
+  - name: mart_nba__player_profiles
+    description: "Player dimension: cleaned measures, age, coverage flag (CLEAN-005/006/007/008)."
+    columns:
+      - name: player_id
+        description: "Primary key. One row per canonical player."
+        data_tests:
+          - not_null
+          - unique
+      - name: position_group
+        description: "Position bucket, never NULL ('Unknown' when unavailable)."
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Guard', 'Forward', 'Center', 'Guard-Forward', 'Forward-Guard', 'Forward-Center', 'Center-Forward', 'Unknown']
+      - name: has_detailed_info
+        description: "Whether a detailed profile exists (CLEAN-008 coverage gap)."
+        data_tests:
+          - not_null
+      - name: height_cm
+        description: "Height in cm; NULL when unavailable."
+        data_tests:
+          - positive_values
+      - name: weight_kg
+        description: "Weight in kg; NULL when unavailable."
+        data_tests:
+          - positive_values
