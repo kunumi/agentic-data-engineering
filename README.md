@@ -66,7 +66,7 @@ SELECT COUNT(*) as total_rows FROM team_info_common;
 - **Recommended action:** Check if the table should be populated (via ETL (Extract-Transform-Load)) or dropped. If it's a duplicate of the table `team_details`, consolidate them and drop the table `team_info_common`.
 ---
 
-## Data Explorer Agent (DXA)
+## Data Transformation Agent (DTA)
 
 The DTA receives the roadmap and implements each roadmap contract as a data pipeline, i.e., the DTA translates the roadmap contracts into models, tests, and orchestration assets to transform the business database. In the current implementation, the DTA produces dbt1 models for transformation and uses Dagster for orchestration.
 
