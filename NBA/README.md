@@ -16,7 +16,7 @@ The experiment uses the **Maestro Agent Runtime** (Instituto Kunumi), which expo
 | **DXA** | 📊 | Answers business questions in natural language, explores the schema, validates SQL, and accumulates knowledge about the database. | Knowledge files: `NOTES.md`, `RECIPES.md`, `ERRORS.md`, `INSIGHTS.md`, `CLEANING_ROADMAP.md`, `SKILLS.md`. |
 | **DTA** | ⚙ | Reads the `CLEANING_ROADMAP` produced during exploration and builds a transformation pipeline (dbt + Dagster) that materializes the cleaning roadmap into tested models. | dbt project `nba_pipeline`, DuckDB data warehouse, `MODELS.md`, `TESTS.md`, `PIPELINE.md`. |
 
-The agents are driven by **natural-language questions** (see [`NBA/questions/`](NBA/questions/)) and can use different backend LLMs (Claude, GPT‑4o, Gemini, Llama, Mistral — selectable in the interface).
+The agents are driven by **natural-language questions** (see [`NBA/questions/`](questions/)) and can use different backend LLMs (Claude, GPT‑4o, Gemini, Llama, Mistral — selectable in the interface).
 
 > **About the `dxa` and `dta` labels:** they identify the recorded runs. By inspecting the transcripts, **`dxa` corresponds to DXA runs (exploration)** and **`dta` corresponds to the DTA run (pipeline)**. Each `… - run N` folder is an independent run.
 
@@ -25,7 +25,7 @@ The agents are driven by **natural-language questions** (see [`NBA/questions/`](
 ## 2. Repository map
 
 ```
-SBBD/
+AGENTIC-DATA-ENGINEERING/
 └── NBA/
     ├── questions/          # Evaluation question set (experiment input)
     ├── runs/               # HTML transcripts of the conversations with the agents (run evidence)
@@ -38,7 +38,7 @@ Each part is detailed below.
 
 ### 2.1 `NBA/questions/` — Evaluation set
 
-[`questions_sql_nba.csv`](NBA/questions/questions_sql_nba.csv) — **30 questions** about the NBA domain, classified by difficulty (`Easy`, `Medium`, `Hard`). This is the experiment input: what the agents are asked to answer.
+[`questions_sql_nba.csv`](questions/questions_sql_nba.csv) — **30 questions** about the NBA domain, classified by difficulty (`Easy`, `Medium`, `Hard`). This is the experiment input: what the agents are asked to answer.
 
 | Difficulty | # of questions | Examples |
 |------------|----------------|----------|
@@ -56,9 +56,9 @@ Each subfolder is a **self-contained HTML page** (open it in a browser) with the
 
 | Folder | Agent | Content |
 |--------|-------|---------|
-| [`dxa - run 1/`](NBA/runs/dxa-run-1/) | 📊 DXA | Longest exploration session (≈238 KB) — schema discovery, building the recipes and the roadmap. File: `dxa.html`. |
-| [`dxa - run 2/`](NBA/runs/dxa-run-2/) | 📊 DXA | Second exploration run. File: `SQL Agent.html`. |
-| [`dta - run 1/`](NBA/runs/dxa-run-1/) | ⚙ DTA | Building the dbt pipeline from the roadmap. File: `SQL Agent.html`. |
+| [`dxa - run 1/`](runs/dxa-run-1/) | 📊 DXA | Longest exploration session (≈238 KB) — schema discovery, building the recipes and the roadmap. File: `dxa.html`. |
+| [`dxa - run 2/`](runs/dxa-run-2/) | 📊 DXA | Second exploration run. File: `SQL Agent.html`. |
+| [`dta - run 1/`](runs/dxa-run-1/) | ⚙ DTA | Building the dbt pipeline from the roadmap. File: `SQL Agent.html`. |
 
 The `*_files/` subfolders contain only the static assets (CSS, syntax highlighting, `marked.js`) needed to render the HTML — **there is no research content there**.
 
@@ -74,12 +74,12 @@ Knowledge files that DXA accumulates and reuses across sessions:
 
 | File | Contents |
 |------|----------|
-| [`NOTES.md`](NBA/artifacts/dxa-run-1/NOTES.md) | **Database metadata**: tables, types, relationships, business rules confirmed with the user, and limitations. The starting point for understanding the NBA schema. |
-| [`RECIPES.md`](NBA/artifacts/dxa-run-1/RECIPES.md) | **Validated SQL recipes** (RCP‑001…009) — queries tested on the database, with context, the result obtained, and gotchas. Covers everything from "list teams" to window functions (win streaks, running totals, win rate). |
-| [`ERRORS.md`](NBA/artifacts/dxa-run-1/ERRORS.md) | **Error log with post‑mortems** (ERR‑001…) — syntactic and business errors encountered and how to avoid them (e.g., use `TRY_CAST` on text columns with empty strings; `data` is a reserved word in DuckDB). |
-| [`CLEANING_ROADMAP.md`](NBA/artifacts/dxa-run-1/CLEANING_ROADMAP.md) | **Prescriptive data-quality roadmap** (CLEAN‑001…010), ordered by severity, with SQL evidence, result, and recommended action. **This is the bridge between the two agents**: DTA consumes it as a specification. |
-| [`INSIGHTS.md`](NBA/artifacts/dxa-run-1/INSIGHTS.md) | Business findings confirmed by the user (empty in this run). |
-| [`SKILLS.md`](NBA/artifacts/dxa-run-1/SKILLS.md) | **Advanced agent skills**: protocols for **causal analysis** (prepare → discover → estimate → refute → report), **chart generation** (`/plot`), and **data profiling** with Desbordante (FDs, UCCs, INDs, association rules, denial constraints). |
+| [`NOTES.md`](artifacts/dxa-run-1/NOTES.md) | **Database metadata**: tables, types, relationships, business rules confirmed with the user, and limitations. The starting point for understanding the NBA schema. |
+| [`RECIPES.md`](artifacts/dxa-run-1/RECIPES.md) | **Validated SQL recipes** (RCP‑001…009) — queries tested on the database, with context, the result obtained, and gotchas. Covers everything from "list teams" to window functions (win streaks, running totals, win rate). |
+| [`ERRORS.md`](artifacts/dxa-run-1/ERRORS.md) | **Error log with post‑mortems** (ERR‑001…) — syntactic and business errors encountered and how to avoid them (e.g., use `TRY_CAST` on text columns with empty strings; `data` is a reserved word in DuckDB). |
+| [`CLEANING_ROADMAP.md`](artifacts/dxa-run-1/CLEANING_ROADMAP.md) | **Prescriptive data-quality roadmap** (CLEAN‑001…010), ordered by severity, with SQL evidence, result, and recommended action. **This is the bridge between the two agents**: DTA consumes it as a specification. |
+| [`INSIGHTS.md`](artifacts/dxa-run-1/INSIGHTS.md) | Business findings confirmed by the user (empty in this run). |
+| [`SKILLS.md`](artifacts/dxa-run-1/SKILLS.md) | **Advanced agent skills**: protocols for **causal analysis** (prepare → discover → estimate → refute → report), **chart generation** (`/plot`), and **data profiling** with Desbordante (FDs, UCCs, INDs, association rules, denial constraints). |
 
 #### `artifacts/dta - run 1/` — Data-engineering pipeline (DTA)
 
@@ -119,7 +119,7 @@ Other components of the dbt project:
 
 ## 3. The NBA database (summary)
 
-`nba.sqlite` (~2.3 GB) — a historical NBA snapshot. Main tables: `game`, `player`, `team`, `common_player_info`, `team_details`, `team_info_common`, `play_by_play`, among others. Key points (detailed in [`NOTES.md`](NBA/artifacts/dxa-run-1/NOTES.md)):
+`nba.sqlite` (~2.3 GB) — a historical NBA snapshot. Main tables: `game`, `player`, `team`, `common_player_info`, `team_details`, `team_info_common`, `play_by_play`, among others. Key points (detailed in [`NOTES.md`](artifacts/dxa-run-1/NOTES.md)):
 
 - **Temporal coverage:** 1946‑11‑01 to **2023‑06‑12** (ends with the 2022‑23 season). No games after June 2023.
 - **Team-level stats only:** `pts/ast/reb/min…` exist only at team level (`_home`/`_away`) in the `game` table. **There is no per-player box score.**
@@ -148,10 +148,10 @@ This is the main analytical contribution of the case study — questions from th
 
 ## 5. How to navigate (suggested for reviewers)
 
-1. **Input:** read [`NBA/questions/questions_sql_nba.csv`](NBA/questions/questions_sql_nba.csv) to see what was asked.
-2. **Runs:** open the HTML files in [`NBA/runs/`](NBA/runs/) in a browser to follow the agents' reasoning step by step.
-3. **Exploration knowledge:** read, in this order, `NOTES.md` → `RECIPES.md` → `ERRORS.md` → `CLEANING_ROADMAP.md` in [`artifacts/dxa - run 1/`](NBA/artifacts/dxa-run-1/).
-4. **Data pipeline:** read `PIPELINE.md` → `MODELS.md` → `TESTS.md` in [`artifacts/dta - run 1/`](NBA/artifacts/dxa-run-1/), and inspect the dbt project under `nba_pipeline/models/`.
+1. **Input:** read [`NBA/questions/questions_sql_nba.csv`](questions/questions_sql_nba.csv) to see what was asked.
+2. **Runs:** open the HTML files in [`NBA/runs/`](runs/) in a browser to follow the agents' reasoning step by step.
+3. **Exploration knowledge:** read, in this order, `NOTES.md` → `RECIPES.md` → `ERRORS.md` → `CLEANING_ROADMAP.md` in [`artifacts/dxa - run 1/`](artifacts/dxa-run-1/).
+4. **Data pipeline:** read `PIPELINE.md` → `MODELS.md` → `TESTS.md` in [`artifacts/dta - run 1/`](artifacts/dxa-run-1/), and inspect the dbt project under `nba_pipeline/models/`.
 
 ### Reproducing the dbt pipeline (optional)
 
@@ -163,7 +163,7 @@ dbt build           # run all models + tests in dependency order
 dbt docs generate   # generate manifest + catalog
 ```
 
-The resulting warehouse is already versioned at [`artifacts/dta - run 1/warehouse/nba_dbt.duckdb`](NBA/artifacts/dxa-run-1/warehouse/) and can be queried directly with the DuckDB CLI.
+The resulting warehouse is already versioned at [`artifacts/dta - run 1/warehouse/nba_dbt.duckdb`](artifacts/dxa-run-1/warehouse/) and can be queried directly with the DuckDB CLI.
 
 ---
 
