@@ -1,6 +1,6 @@
 # Agentic Data Engineering
 
-This page details the Agentic Data Engineering archtecture presented in the paper "Towards Agentic Data Engineering: A Contract-Driven System with Self-Evolving Knowledge" [1].
+This repo presents details about Agentic Data Engineering archtecture proposed in the paper "Towards Agentic Data Engineering: A Contract-Driven System with Self-Evolving Knowledge" [1] and the [demonstration](./NBA/README.md) of the archicture use to improve the NBA database [2].
 
 The agentic architecture comprises (Figure 1): 
 
@@ -67,3 +67,4 @@ An example of a roadmap contract is presented as follows.
 ## References
 
 [1] Silva, L. P., Azevedo, L. G., Veloso, A. "Towards Agentic Data Engineering: A Contract-Driven System with Self-Evolving Knowledge". In: 41o Brazilian Symposium in Databases (SBBD 2026), São Carlos, SP, Brazil. (To be published)
+[2] Walsh, W. (2026). NBA database. Version 3.1. Available at: https://www.kaggle.com/datasets/wyattowalsh/basketball. URL date: June 15th, 2026.
