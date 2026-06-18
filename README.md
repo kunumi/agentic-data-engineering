@@ -89,4 +89,5 @@ recorded, generalized, and made available for reuse in later contracts and futur
 ## References
 
 [1] Silva, L. P., Azevedo, L. G., Veloso, A. "Towards Agentic Data Engineering: A Contract-Driven System with Self-Evolving Knowledge". In: 41o Brazilian Symposium in Databases (SBBD 2026), São Carlos, SP, Brazil. (To be published)
+
 [2] Walsh, W. (2026). NBA database. Version 3.1. Available at: https://www.kaggle.com/datasets/wyattowalsh/basketball. URL date: June 15th, 2026.
