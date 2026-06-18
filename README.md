@@ -38,31 +38,34 @@ During database exploration, DXA builds a persistent knowledge base (KB) compose
 
 Examples of DXA artificats corresponding to the experiments conducted over the NBA database are available at [/NBA/artifacts/dxa](./NBA/artifacts/dxa-run-1/).
 
-Once the business database exploration is complete, DXA produces a roadmap. Each roadmap item corresponds to a contract that specifies a data engineering issue validated by the DXA and to be resolved by the DTA. A contract is created only after a query that evidence the issue has been executed and validated. Each roadmap contract contains:
+Once the business database exploration is complete, DXA produces a roadmap. Each roadmap item corresponds to a contract that specifies a data engineering issue validated by the DXA and to be resolved by the DTA. A contract is created only after a query that evidence the issue has been executed and validated. An example of roadmap is presented [here](NBA/artifacts/dxa-run-1/CLEANING_ROADMAP.md). 
 
-- Short issue description;
-- Artifact where the issue was found (e.g., a table);
-- Issue characterization (e.g., nulls, inconsistent types, denormalizations, ambiguous encodings);
-- Severity level of the issue, such as critical, warning, or info);
-- Query that evidences the issue and summary of its execution results (e.g., number of query columns and returned rows, mixed data types in a column); and
-- Recommended action to solve the issue (e.g., cast, impute, normalize, deduplicate, or remove).
+Each roadmap contract contains:
+
+- **Problem issue id and description**: e.g., "CLEAN-001: Table team_info_common is completely empty";
+- **Severity**: critical, warning, or info;
+- **Artifact**: where the issue was found (e.g., a table `team_info_common`);
+- **Problem**: Issue characterization (e.g., nulls, inconsistent types, denormalizations, ambiguous encodings);
+- **Evidence**: Query that evidences the issue and summary of its execution results (e.g., number of query columns and returned rows, mixed data types in a column); and
+- **Recommended action**: action to solve the issue (e.g., cast, impute, normalize, deduplicate, or remove).
 
 
 An example of a roadmap contract is presented as follows.
 
-```
-## CLEAN-001: Table `team_info_common` is empty.
+---
+
+**CLEAN-001: Table `team_info_common` is empty.**
 - **Table:** `team_info_common`
 - **Severity:** critical
 - **Problem:** The table exists with 26 columns but contains 0 rows. It cannot be used as a data source and may cause confusion in joins.
 - **Evidence:**
-  ```sql
-  SELECT COUNT(*) as total_rows FROM team_info_common;
-  -- Result: 0
-  ```
+```sql
+SELECT COUNT(*) as total_rows FROM team_info_common;
+-- Result: 0
+```
 - **Result:** 0 lines, 26 columns — Table 100% empty
 - **Recommended action:** Check if the table should be populated (via ETL (Extract-Transform-Load)) or dropped. If it's a duplicate of the table `team_details`, consolidate them and drop the table `team_info_common`.
-```
+---
 
 ## References
 
