@@ -25,8 +25,7 @@ The user interaction is optional during DTA execution.
 
 ## Data Explorer Agent (DXA)
 
-The DXA supports analysts, domain experts, and data engineers during database exploration and requirement elicitation. 
-The current implementation targets relational databases and relies on SQL queries plus standard DBMS metadata facilities.
+The DXA supports analysts, domain experts, and data engineers during database exploration and requirement elicitation. The current implementation targets relational databases and relies on SQL queries plus standard DBMS metadata facilities.
 
 During database exploration, DXA builds a persistent knowledge base (KB) composed of four Markdown files:
 
@@ -66,6 +65,26 @@ SELECT COUNT(*) as total_rows FROM team_info_common;
 - **Result:** 0 lines, 26 columns — Table 100% empty
 - **Recommended action:** Check if the table should be populated (via ETL (Extract-Transform-Load)) or dropped. If it's a duplicate of the table `team_details`, consolidate them and drop the table `team_info_common`.
 ---
+
+## Data Explorer Agent (DXA)
+
+The DTA receives the roadmap and implements each roadmap contract as a data pipeline, i.e., the DTA translates the roadmap contracts into models, tests, and orchestration assets to transform the business database. In the current implementation, the DTA produces dbt1 models for transformation and uses Dagster for orchestration.
+
+Examples of DTA artificats corresponding to the experiments conducted over the NBA database are available at [/NBA/artifacts/dta](./NBA/artifacts/dta-run-1/).
+
+dbt expresses transformations declaratively as SQL SELECT statements, while handling testing, documentation, lineage, and versioning. Dagster complements this by orchestrating asset execution, inferring dependencies, attaching observability metadata, and managing scheduling and recovery. Together, they enable DTA to translate validated specifications into executable, monitorable pipelines.
+
+The DTA maintains its own KB, composed of:
+
+- ROADMAP.md: the contracts received from DXA;
+- MODELS.md: the created dbt models;
+- TESTS.md: tests and results;
+- PIPELINE.md: assets, dependencies, and schedules;
+- ERRORS.md: transformation-time failures and workarounds;
+- SKILLS.md: command references for dbt and Dagster.
+
+On the first session, DTA initializes the dbt project, configures the target database, and processes the roadmap contracts sequentially. Then, DTA follows an execution loop. For each contract, it reads the specification, writes the corresponding model and tests, executes them, and either registers success or records the failure and its workaround. Once the full pipeline succeeds, DTA generates Dagster assets, runs the workflow, updates PIPELINE.md, and commits changes to Git3, for version control. Failures are also
+recorded, generalized, and made available for reuse in later contracts and future sessions.
 
 ## References
 
