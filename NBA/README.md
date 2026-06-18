@@ -58,7 +58,7 @@ Each subfolder is a **self-contained HTML page** (open it in a browser) with the
 |--------|-------|---------|
 | [`dxa - run 1/`](runs/dxa-run-1/) | 📊 DXA | Longest exploration session (≈238 KB) — schema discovery, building the recipes and the roadmap. File: `dxa.html`. |
 | [`dxa - run 2/`](runs/dxa-run-2/) | 📊 DXA | Second exploration run. File: `SQL Agent.html`. |
-| [`dta - run 1/`](runs/dxa-run-1/) | ⚙ DTA | Building the dbt pipeline from the roadmap. File: `SQL Agent.html`. |
+| [`dta - run 1/`](runs/dta-run-1/) | ⚙ DTA | Building the dbt pipeline from the roadmap. File: `SQL Agent.html`. |
 
 The `*_files/` subfolders contain only the static assets (CSS, syntax highlighting, `marked.js`) needed to render the HTML — **there is no research content there**.
 
@@ -151,11 +151,11 @@ This is the main analytical contribution of the case study — questions from th
 1. **Input:** read [`NBA/questions/questions_sql_nba.csv`](questions/questions_sql_nba.csv) to see what was asked.
 2. **Runs:** open the HTML files in [`NBA/runs/`](runs/) in a browser to follow the agents' reasoning step by step.
 3. **Exploration knowledge:** read, in this order, `NOTES.md` → `RECIPES.md` → `ERRORS.md` → `CLEANING_ROADMAP.md` in [`artifacts/dxa - run 1/`](artifacts/dxa-run-1/).
-4. **Data pipeline:** read `PIPELINE.md` → `MODELS.md` → `TESTS.md` in [`artifacts/dta - run 1/`](artifacts/dxa-run-1/), and inspect the dbt project under `nba_pipeline/models/`.
+4. **Data pipeline:** read `PIPELINE.md` → `MODELS.md` → `TESTS.md` in [`artifacts/dta - run 1/`](artifacts/dta-run-1/), and inspect the dbt project under `nba_pipeline/models/`.
 
 ### Reproducing the dbt pipeline (optional)
 
-Requires `dbt-duckdb` and `nba.sqlite` mounted at `/data/databases/`. From `artifacts/dta - run 1/nba_pipeline/`:
+Requires `dbt-duckdb` and `nba.sqlite` mounted at `/data/databases/`. From `artifacts/dta-run-1/nba_pipeline/`:
 
 ```bash
 export DBT_PROFILES_DIR="$(pwd)"
@@ -163,7 +163,7 @@ dbt build           # run all models + tests in dependency order
 dbt docs generate   # generate manifest + catalog
 ```
 
-The resulting warehouse is already versioned at [`artifacts/dta - run 1/warehouse/nba_dbt.duckdb`](artifacts/dxa-run-1/warehouse/) and can be queried directly with the DuckDB CLI.
+The resulting warehouse is already versioned at [`artifacts/dta-run-1/warehouse/nba_dbt.duckdb`](artifacts/dta-run-1/warehouse/) and can be queried directly with the DuckDB CLI.
 
 ---
 
