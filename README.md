@@ -48,11 +48,11 @@ During database exploration, DXA builds a persistent knowledge base (KB) compose
 - RECIPES.md: query templates validated through execution.
 - SKILLS.md: instructions to perform causal analysis, to plot charts, graphs, or other kinds of visualization, to execute data profiling.
 
-Examples of DXA artificats corresponding to the experiments conducted over the NBA database are available at [/NBA/artifacts/dxa](./NBA/artifacts/dxa-run-1/).
+Examples of DXA artifacts corresponding to the experiments conducted over the NBA database are available at [/NBA/artifacts/dxa](./NBA/artifacts/dxa-run-1/).
 
 Once the business database exploration is complete, DXA produces a roadmap. Each roadmap item corresponds to a contract that specifies a data engineering issue validated by the DXA and to be resolved by the DTA. A contract is created only after a query that evidence the issue has been executed and validated. An example of roadmap is presented [here](NBA/artifacts/dxa-run-1/CLEANING_ROADMAP.md). 
 
-### Roadmap
+### ROADMAP
 
 The roadmap (CLEANING_ROADMAP.md) contains a list of issues where each one acts as a contract containing:
 
@@ -170,6 +170,63 @@ The DTA maintains its own KB, composed of:
 
 On the first session, DTA initializes the dbt project, configures the target database, and processes the roadmap contracts sequentially. Then, DTA follows an execution loop. For each contract, it reads the specification, writes the corresponding model and tests, executes them, and either registers success or records the failure and its workaround. Once the full pipeline succeeds, DTA generates Dagster assets, runs the workflow, updates PIPELINE.md, and commits changes to Git3, for version control. Failures are also
 recorded, generalized, and made available for reuse in later contracts and future sessions.
+
+Examples of DTA artifacts corresponding to the experiments conducted over the NBA database are available at [/NBA/artifacts/dta](./NBA/artifacts/dta-run-1/). The roadmap entries are explained in [DXA section](#roadmap).
+
+### MODELS
+
+dbt models created by the DTA to transform the database considering the staging, intermediate, and mart conceptual layers:
+
+- Staging: ingestion, cleaning, and standardization of raw data in a one-to-one relationship with the source; 
+- Intermediate: an isolated transition layer for data joins and the application of complex business logic; and 
+- Mart: the final presentation layer, structured dimensionally or denormalized, and optimized for analytical consumption
+
+Each dbt model has:
+
+- id: e.g., `MOD-001`.
+- name: e.g., `stg_nba__teams`.
+- layer: e.g., staging.
+- source: e.g., the table `nba.team`.
+- materialization type: e.g., `view`.
+- tests to be executed: e.g., `not_null+unique(team_id)`, `not_null(team_full_name)`.
+- the roadmap contracts from which the model was created: `CLEAN-004`, `CLEAN-009`.
+- status of its execution: e.g., `✅ green`, `✅ green (gap documented)`, `⚠️ warn`.
+
+Examples of models are presented at [NBA/artifacts/dta-run-1/MODELS.md](./NBA/artifacts/dta-run-1/MODELS.md), and example is:
+
+---
+**MOD-001: stg_nba__teams**
+
+- Layer: staging | Source: nba.team | Materialization: view
+- Tests: not_null+unique(team_id), not_null(team_full_name)
+- Roadmap: CLEAN-004, CLEAN-009 | Status: ✅ green | Created: 2026-06-17
+---
+
+
+### TESTS
+
+Test results and coverage of the dbt test runs, presenting a summary by layer, custom tests, warnings, and verified business outcomes. An example is presented at [](./NBA/artifacts/dta-run-1/TESTS.md).
+
+### PIPELINE
+
+The pipeline contains the data required to execute the database transformation like:
+
+- source and target databases
+- dbt profiles
+- inventory: summary about the execution
+- dependency graph about the dbt models and source tables.
+- dagster orchestration
+- run commands
+
+An example of pipeline is presented at [NBA/artifacts/dta-run-1/PIPELINE.md](./NBA/artifacts/dta-run-1/PIPELINE.md).
+
+### ERRORS
+
+Log of errors (syntactic and business) with post-mortem, i.e., the agent records the social and technical context of the error for diagnostic purposes. An example of ERRORS.md is presented at [NBA/artifacts/dta-run-1/ERRORS.md](./NBA/artifacts/dta-run-1/ERRORS.md).
+
+### SKILLS
+
+Command references for dbt, DuckDB, Spark, and Dagster. An example of SKILLS.md is presented at [NBA/artifacts/dta-run-1/SKILLS.md](./NBA/artifacts/dta-run-1/SKILLS.md).
 
 ## References
 
