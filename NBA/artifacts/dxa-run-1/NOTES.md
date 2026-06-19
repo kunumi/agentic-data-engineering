@@ -2,18 +2,6 @@
 
 Database metadata: schema, relationships, business rules, limitations.
 
-## Connection / Setup (IMPORTANT)
-- The fixed `connection_id` in the instructions (`5ee606d7`) **DOES NOT exist** in this environment.
-- The processor starts with no registered connections (`GET /connections` => empty). You must
-  register one via `POST /connections` with `{"type","path"}`. The `connection_id` is deterministic per file.
-- Available databases (`GET /databases` and `/connections/files`):
-  - `nba.sqlite` (/data/databases/nba.sqlite) => connection_id **87e6b067**
-  - `crime_database.db` => c907483f
-  - `dtsulv5.sqlite` (~10GB) => 7e459ffb
-  - `mimic4_demo.db` => 67c9a274
-  - `quikr_car.csv` => d4ead505 (type=csv)
-- For questions about "times"/"teams" → **NBA** database (connection_id 87e6b067).
-
 ## NBA Database (87e6b067)
 - Tables: game, game_summary, other_stats, officials, inactive_players, game_info,
   line_score, play_by_play, player, team, common_player_info, team_details,
