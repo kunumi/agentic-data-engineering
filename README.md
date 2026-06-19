@@ -36,6 +36,18 @@ The roadmap is consumed by the DTA to create production-grade data pipelines.
 DTA employs data tools to transform the business database in a improved one based on the pipelines.
 The user interaction is optional during DTA execution.
 
+We provide 31 examples of questions the user may ask during when using DXA to explore the database at [./NBA/questions/questions_sql_nba.csv](./NBA/questions/questions_sql_nba.csv). The questions are categorized by difficulty level as easy, medium or hard to be processed by the agent.
+
+We provide examples of the agentic user interface (IU) at [./NBA/runs/dxa-run-1/dxa.html](./NBA/runs/dxa-run-1/dxa.html) (Figure 2) and at [./NBA/runs/dta-run-1/dta.html](./NBA/runs/dta-run-1/dta.html) (Figure 3).
+
+![Example of DXA UI](./images/dxa-ui.png)
+
+Figure 2 - Example of DXA UI.
+
+![Example of DTA UI](./images/dta-ui.png)
+
+Figure 3 - Example of DTA UI.
+
 ## Data Explorer Agent (DXA)
 
 The DXA supports analysts, domain experts, and data engineers during database exploration and requirement elicitation. The current implementation targets relational databases and relies on SQL queries plus standard DBMS metadata facilities.
@@ -83,7 +95,7 @@ SELECT COUNT(*) as total_rows FROM team_info_common;
 
 ### NOTES
 
-The `NOTES.md` file stores information about database metadata, like schema, relationships, business rules, and limitations. An example of NOTES.md is presented at [NBA/artifacts/dxa-run-1/NOTES.md](./NBA/artifacts/dxa-run-1/NOTES.md) and examples of entries are:
+The `NOTES.md` file stores information about database metadata, like schema, relationships, business rules, and limitations. An example of NOTES.md is presented at [./NBA/artifacts/dxa-run-1/NOTES.md](./NBA/artifacts/dxa-run-1/NOTES.md) and examples of entries are:
 
 - schema:
   - Name of the database tables, e.g., `game`, `game_summary`.
@@ -100,7 +112,7 @@ The `NOTES.md` file stores information about database metadata, like schema, rel
 
 ### ERRORS
 
-Log of errors (syntactic and business) with post-mortem, i.e., the agent records the social and technical context of the error for diagnostic purposes. An example of ERRORS.md is presented at [NBA/artifacts/dxa-run-1/ERRORS.md](./NBA/artifacts/dxa-run-1/ERRORS.md) and an example of one of its entries is:
+Log of errors (syntactic and business) with post-mortem, i.e., the agent records the social and technical context of the error for diagnostic purposes. An example of ERRORS.md is presented at [./NBA/artifacts/dxa-run-1/ERRORS.md](./NBA/artifacts/dxa-run-1/ERRORS.md) and an example of one of its entries is:
 
 ---
 **ERR-001: CAST fails on empty strings in common_player_info**
@@ -119,7 +131,7 @@ Business findings confirmed by the user. It is only generated when the user inte
 
 ### RECIPES
 
-SQL templates validated by the agent. An example of  RECIPES.md file is [NBA/artifacts/dxa-run-1/RECIPES.md](./NBA/artifacts/dxa-run-1/RECIPES.md) and one example of template is:
+SQL templates validated by the agent. An example of  RECIPES.md file is [./NBA/artifacts/dxa-run-1/RECIPES.md](./NBA/artifacts/dxa-run-1/RECIPES.md) and one example of template is:
 
 ---
 **RCP-003: Convert height "feet-inches" to meters and filter**
@@ -148,7 +160,7 @@ Currently, we define three types of skills for the agent. They are used when the
 - Plot: When the user asks for a chart, graph, or visualization.
 - Data Profiling: Structural pattern discovery powered by [Desbordante](https://github.com/Desbordante/desbordante-core).
 
-An example of SKILLS.md is [NBA/artifacts/dxa-run-1/SKILLS.md](./NBA/artifacts/dxa-run-1/SKILLS.md).
+An example of SKILLS.md is [./NBA/artifacts/dxa-run-1/SKILLS.md](./NBA/artifacts/dxa-run-1/SKILLS.md).
 
 
 ## Data Transformation Agent (DTA)
@@ -192,7 +204,7 @@ Each dbt model has:
 - the roadmap contracts from which the model was created: `CLEAN-004`, `CLEAN-009`.
 - status of its execution: e.g., `✅ green`, `✅ green (gap documented)`, `⚠️ warn`.
 
-Examples of models are presented at [NBA/artifacts/dta-run-1/MODELS.md](./NBA/artifacts/dta-run-1/MODELS.md), and example is:
+Examples of models are presented at [./NBA/artifacts/dta-run-1/MODELS.md](./NBA/artifacts/dta-run-1/MODELS.md), and example is:
 
 ---
 **MOD-001: stg_nba__teams**
@@ -218,15 +230,15 @@ The pipeline contains the data required to execute the database transformation l
 - dagster orchestration
 - run commands
 
-An example of pipeline is presented at [NBA/artifacts/dta-run-1/PIPELINE.md](./NBA/artifacts/dta-run-1/PIPELINE.md).
+An example of pipeline is presented at [./NBA/artifacts/dta-run-1/PIPELINE.md](./NBA/artifacts/dta-run-1/PIPELINE.md).
 
 ### ERRORS
 
-Log of errors (syntactic and business) with post-mortem, i.e., the agent records the social and technical context of the error for diagnostic purposes. An example of ERRORS.md is presented at [NBA/artifacts/dta-run-1/ERRORS.md](./NBA/artifacts/dta-run-1/ERRORS.md).
+Log of errors (syntactic and business) with post-mortem, i.e., the agent records the social and technical context of the error for diagnostic purposes. An example of ERRORS.md is presented at [./NBA/artifacts/dta-run-1/ERRORS.md](./NBA/artifacts/dta-run-1/ERRORS.md).
 
 ### SKILLS
 
-Command references for dbt, DuckDB, Spark, and Dagster. An example of SKILLS.md is presented at [NBA/artifacts/dta-run-1/SKILLS.md](./NBA/artifacts/dta-run-1/SKILLS.md).
+Command references for dbt, DuckDB, Spark, and Dagster. An example of SKILLS.md is presented at [./NBA/artifacts/dta-run-1/SKILLS.md](./NBA/artifacts/dta-run-1/SKILLS.md).
 
 ## References
 
