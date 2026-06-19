@@ -52,7 +52,9 @@ Examples of DXA artificats corresponding to the experiments conducted over the N
 
 Once the business database exploration is complete, DXA produces a roadmap. Each roadmap item corresponds to a contract that specifies a data engineering issue validated by the DXA and to be resolved by the DTA. A contract is created only after a query that evidence the issue has been executed and validated. An example of roadmap is presented [here](NBA/artifacts/dxa-run-1/CLEANING_ROADMAP.md). 
 
-Each roadmap contract contains:
+### Roadmap
+
+The roadmap (CLEANING_ROADMAP.md) contains a list of issues where each one acts as a contract containing:
 
 - **Problem issue id and description**: e.g., "CLEAN-001: Table team_info_common is completely empty";
 - **Severity**: critical, warning, or info;
@@ -62,7 +64,7 @@ Each roadmap contract contains:
 - **Recommended action**: action to solve the issue (e.g., cast, impute, normalize, deduplicate, or remove).
 
 
-An example of a roadmap contract is presented as follows.
+An example of a roadmap contract is:
 
 ---
 
@@ -78,6 +80,76 @@ SELECT COUNT(*) as total_rows FROM team_info_common;
 - **Result:** 0 lines, 26 columns — Table 100% empty
 - **Recommended action:** Check if the table should be populated (via ETL (Extract-Transform-Load)) or dropped. If it's a duplicate of the table `team_details`, consolidate them and drop the table `team_info_common`.
 ---
+
+### NOTES
+
+The `NOTES.md` file stores information about database metadata, like schema, relationships, business rules, and limitations. An example of NOTES.md is presented at [NBA/artifacts/dxa-run-1/NOTES.md](./NBA/artifacts/dxa-run-1/NOTES.md) and examples of entries are:
+
+- schema:
+  - Name of the database tables, e.g., `game`, `game_summary`.
+  - For each table
+    - columns, e.g., `id (BIGINT, e.g. 1610612737)`, `full_name`, `abbreviation`.
+    - columns' types that are awkward, e.g., `team.year_founded` has `FLOAT` datatype.
+    - summary of the table, e.g., "table `team` corresponds to 30 teams, current (current NBA franchises)".
+    - Gotchas, e.g., "`city` is sometimes a region, not a literal city (e.g. "Golden State", "Indiana", "Utah", "Minnesota")."
+- Limitations, e.g.:
+    - For "name+position+height" use common_player_info (it cannot be obtained from player).
+    - **TEMPORAL LIMIT: data ranges from 1946-11-01 to 2023-06-12.** There are NO games after Jun/2023 (e.g. Jan/2025 returns 0). Historical snapshot ending at the 2022-23 season.
+- Business rules, e.g.:
+    - "Pivô"=Center and INCLUDES hybrids (Forward-Center, Center-Forward) → `position LIKE '%Center%'`. Translations: Armador=Guard, Ala=Forward, Pivô=Center.
+
+### ERRORS
+
+Log of errors (syntactic and business) with post-mortem, i.e., the agent records the social and technical context of the error for diagnostic purposes. An example of ERRORS.md is presented at [NBA/artifacts/dxa-run-1/ERRORS.md](./NBA/artifacts/dxa-run-1/ERRORS.md) and an example of one of its entries is:
+
+---
+**ERR-001: CAST fails on empty strings in common_player_info**
+- Type: syntactic
+- Query: `AVG(CAST(weight AS DOUBLE))` and `CAST(SPLIT_PART(height,'-',1) AS INT)`
+- Error: `Could not convert string '' to DOUBLE/INT32`. weight/height have '' (empty) values.
+- Detail: `AVG(... ) FILTER (WHERE ...)` does NOT avoid the error — the CAST is evaluated on all rows before the FILTER.
+- Fix: use **TRY_CAST** (returns NULL instead of an error). E.g.: `AVG(TRY_CAST(weight AS DOUBLE))`,
+  `TRY_CAST(SPLIT_PART(height,'-',1) AS INT)`.
+- Post-mortem: ALWAYS use TRY_CAST when converting text columns in common_player_info (weight, height, etc.) — there are empty strings.
+---
+
+### INSIGHTS
+
+Business findings confirmed by the user. It is only generated when the user interacts with the system and confirm that the insight found should be registered in the Knowledge Base.
+
+### RECIPES
+
+SQL templates validated by the agent. An example of  RECIPES.md file is [NBA/artifacts/dxa-run-1/RECIPES.md](./NBA/artifacts/dxa-run-1/RECIPES.md) and one example of template is:
+
+---
+**RCP-003: Convert height "feet-inches" to meters and filter**
+- Context: `common_player_info.height` is text like "7-2". Conversion: (feet*12 + inches)*0.0254 m.
+- Query:
+  ```sql
+  WITH h AS (
+    SELECT display_first_last AS nome, position AS posicao, height AS altura_ft,
+           (CAST(SPLIT_PART(height,'-',1) AS INT)*12 + CAST(SPLIT_PART(height,'-',2) AS INT)) * 0.0254 AS altura_m
+    FROM [CPI_TABLE]
+    WHERE height IS NOT NULL AND height LIKE '%-%'
+  )
+  SELECT nome, posicao, altura_ft, ROUND(altura_m,3) AS altura_m
+  FROM h WHERE altura_m > [LIMITE_M] ORDER BY altura_m DESC, nome
+  ```
+- Tested on: common_player_info (2026-06-17) → 986 players above 2.05 m.
+- Combines with: RCP-002.
+- Note: 2.05 m ≈ 80.7 in → includes 6-9 (2.057 m) and above.
+---
+
+### SKILLS
+
+Currently, we define three types of skills for the agent. They are used when the user interacts with the UI and asks.
+
+- Causal Analysis: a set of endpoints that the agent may invoke to execute an analysis of a metric value. 
+- Plot: When the user asks for a chart, graph, or visualization.
+- Data Profiling: Structural pattern discovery powered by [Desbordante](https://github.com/Desbordante/desbordante-core).
+
+An example of SKILLS.md is [NBA/artifacts/dxa-run-1/SKILLS.md](./NBA/artifacts/dxa-run-1/SKILLS.md).
+
 
 ## Data Transformation Agent (DTA)
 
