@@ -1,5 +1,18 @@
 # Agentic Data Engineering
 
+**Open source notice**
+>
+> This repository is publicly available as part of the materials
+> presented at **[CONFERENCE NAME]**. It has been made open source
+> to support transparency, reproducibility, and community engagement
+> around the work shared at the conference.
+>
+> Outside of this context, the code and resources contained here are
+> provided as-is, without active maintenance or support guarantees.
+> Contributions and feedback are welcome, but response times may vary.
+
+
+
 This repo presents details about Agentic Data Engineering archtecture proposed in the paper "Towards Agentic Data Engineering: A Contract-Driven System with Self-Evolving Knowledge" [1] and the [demonstration](./NBA/README.md) of the archicture use to improve the NBA database [2].
 
 The agentic architecture comprises (Figure 1): 
