@@ -38,7 +38,7 @@ The user interaction is optional during DTA execution.
 
 We provide 31 examples of questions the user may ask when using DXA to explore the database at [./NBA/questions/questions_sql_nba.csv](./NBA/questions/questions_sql_nba.csv). The questions are categorized by difficulty level as easy, medium, or hard to be processed by the agent.
 
-We provide examples of the agentic user interface (IU) at [./NBA/runs/dxa-run-1/dxa.html](./NBA/runs/dxa-run-1/dxa.html) (Figure 2) and at [./NBA/runs/dta-run-1/dta.html](./NBA/runs/dta-run-1/dta.html) (Figure 3).
+We provide examples of the user interacting with the agentic user interface (IU) at [./NBA/runs/dxa-run-1/dxa.html](./NBA/runs/dxa-run-1/dxa.html) (Figure 2) and at [./NBA/runs/dta-run-1/dta.html](./NBA/runs/dta-run-1/dta.html) (Figure 3).
 
 ![Example of DXA UI](./images/dxa-ui.png)
 
