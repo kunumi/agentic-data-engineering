@@ -11,7 +11,18 @@
 > provided as-is, without active maintenance or support guarantees.
 > Contributions and feedback are welcome, but response times may vary.
 
+**Citation**
 
+If you using, comparing, or developing based on our architecture, please cite our work as follow. We also suggest you read our paper.
+
+```
+@inproceedings{pradoetal2026agenticdataengineering,
+  title={Towards Agentic Data Engineering: A Contract-Driven System with Self-Evolving Knowledge},
+  author={Luan Prado and Leonardo Guerreiro Azevedo and Adriano Veloso},
+  booktitle={Brazilian Symposium on Databases},
+  year={2026}
+}
+```
 
 This repo presents details of the Agentic Data Engineering architecture proposed in the paper "Towards Agentic Data Engineering: A Contract-Driven System with Self-Evolving Knowledge" [1] and the [demonstration](./NBA/README.md) of the archicture used to improve the NBA database [2].
 
